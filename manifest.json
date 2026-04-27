@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "Ajudante Eproc",
+  "version": "2.0.0",
+  "description": "Assistente modular para o Eproc. Ative ou desative funcionalidades nas configurações.",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": "icons/icon-48.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "options_page": "settings/settings.html",
+  "content_scripts": [
+    {
+      "matches": ["*://*.jus.br/*"],
+      "js": [
+        "content.js",
+        "modules/lembretes/lembretes.js",
+        "scripts/localizador-busca/localizador-busca.js"
+      ],
+      "css": [
+        "styles.css",
+        "modules/lembretes/lembretes.css",
+        "scripts/localizador-busca/localizador-busca.css"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ],
+  "permissions": ["storage", "activeTab", "tabs"],
+  "host_permissions": ["*://*.jus.br/*"]
+}

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configurações — Ajudante Eproc</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+
+  <div class="app-shell">
+
+    <!-- ─── Sidebar ──────────────────────────────────────────────── -->
+    <aside class="sidebar">
+
+      <div class="sidebar-brand">
+        <!-- Logo Ajudante Eproc — círculos sobrepostos inspirados no Eproc -->
+        <svg class="sidebar-brand__logo" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <!-- círculo grande -->
+          <circle cx="20" cy="20" r="16" fill="#7ab3d8" opacity="0.85"/>
+          <!-- círculo direito -->
+          <circle cx="32" cy="22" r="11" fill="#4a8fc4" opacity="0.75"/>
+          <!-- círculo inferior -->
+          <circle cx="26" cy="33" r="9" fill="#2d6fa8" opacity="0.80"/>
+          <!-- checkmark / "A" — símbolo do ajudante -->
+          <path d="M14 20 L18.5 25 L27 15" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="sidebar-brand__text">
+          <span class="sidebar-brand__name">Ajudante Eproc</span>
+          <span class="sidebar-brand__tag">Extensão</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" id="sidebar-nav">
+
+        <button class="sidebar-nav__item sidebar-nav__item--active" data-panel="geral">
+          <svg class="sidebar-nav__icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Geral
+        </button>
+
+        <div class="sidebar-nav__section-label">Módulos</div>
+
+        <button class="sidebar-nav__item" data-panel="lembretes">
+          <svg class="sidebar-nav__icon" viewBox="0 0 20 20" fill="none"><path d="M10 2.5a5.5 5.5 0 0 1 5.5 5.5c0 3.5 1.5 4.5 1.5 5H3c0-.5 1.5-1.5 1.5-5A5.5 5.5 0 0 1 10 2.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8.5 13v.5a1.5 1.5 0 0 0 3 0V13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Lembretes
+        </button>
+
+      </nav>
+
+      <div class="sidebar-footer">
+        <span class="sidebar-version" id="sidebar-version">v2.0.0</span>
+      </div>
+
+    </aside>
+
+    <!-- ─── Área de conteúdo ──────────────────────────────────────── -->
+    <main class="content-area" id="content-area">
+
+      <!-- Painel: Geral -->
+      <section class="content-panel" id="panel-geral" data-panel="geral">
+        <div class="panel-header">
+          <h1 class="panel-header__title">Geral</h1>
+          <p class="panel-header__desc">Visão geral dos módulos instalados e configurações globais da extensão.</p>
+        </div>
+
+        <div class="panel-body">
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">Módulos</span>
+              <span class="card__hint">Clique em um módulo na barra lateral para configurá-lo.</span>
+            </div>
+            <div id="modules-overview-list" class="modules-overview"></div>
+          </div>
+
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">Ajustes Gerais</span>
+              <span class="card__hint">Scripts globais independentes de módulo.</span>
+            </div>
+            <div id="scripts-gerais-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Painel: Lembretes -->
+      <section class="content-panel content-panel--hidden" id="panel-lembretes" data-panel="lembretes">
+        <div class="panel-header">
+          <div class="panel-header__icon">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5a5.5 5.5 0 0 1 5.5 5.5c0 3.5 1.5 4.5 1.5 5H3c0-.5 1.5-1.5 1.5-5A5.5 5.5 0 0 1 10 2.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8.5 13v.5a1.5 1.5 0 0 0 3 0V13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <h1 class="panel-header__title">Lembretes</h1>
+            <p class="panel-header__desc">Adiciona lembretes personalizados às preferências do Eproc — Minutas, Movimentações, Intimações e Automatizações.</p>
+          </div>
+        </div>
+
+        <div class="panel-body">
+
+          <!-- Card: status do módulo -->
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">Status do módulo</span>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Lembretes</span>
+                <span class="card__row-sub">Ativar ou desativar o módulo por completo.</span>
+              </div>
+              <div class="toggle-group">
+                <span class="toggle-label" id="lbl-mod-lembretes">Ativo</span>
+                <label class="toggle" title="Ativar/desativar módulo Lembretes">
+                  <input type="checkbox" class="toggle__input" id="toggle-mod-lembretes" checked>
+                  <span class="toggle__slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: gerenciar dados -->
+          <div class="card" id="card-lembretes-dados">
+            <div class="card__head">
+              <span class="card__title">Gerenciar dados</span>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Exportar lembretes</span>
+                <span class="card__row-sub">Salva todos os lembretes em um arquivo JSON.</span>
+              </div>
+              <button class="btn-outline-sm" id="btn-exportar-json">
+                <svg viewBox="0 0 16 16" fill="none" width="13" height="13"><path d="M8 2v7M5 6.5l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Exportar JSON
+              </button>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Importar lembretes</span>
+                <span class="card__row-sub">Mescla lembretes de um arquivo JSON com os existentes.</span>
+              </div>
+              <div>
+                <label class="btn-outline-sm" for="import-json-settings" style="cursor:pointer;">
+                  <svg viewBox="0 0 16 16" fill="none" width="13" height="13"><path d="M8 13V6M5 8.5l3-3 3 3M3 3h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Importar JSON
+                </label>
+                <input type="file" id="import-json-settings" accept=".json" style="display:none">
+              </div>
+            </div>
+            <div class="card__row card__row--danger">
+              <div class="card__row-info">
+                <span class="card__row-label card__row-label--danger">Limpar todos os lembretes</span>
+                <span class="card__row-sub">Remove permanentemente todos os lembretes salvos.</span>
+              </div>
+              <button class="btn-danger-sm" id="btn-limpar-todos">Limpar tudo</button>
+            </div>
+          </div>
+
+          <!-- Card: lista de lembretes salvos -->
+          <div class="card" id="card-lembretes-lista">
+            <div class="card__head">
+              <span class="card__title">Lembretes salvos</span>
+              <div class="card__head-actions">
+                <span class="card__hint" id="lembretes-total-hint"></span>
+                <button class="btn-outline-sm" id="btn-exportar-csv">
+                  <svg viewBox="0 0 16 16" fill="none" width="13" height="13"><path d="M8 2v7M5 6.5l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Exportar CSV
+                </button>
+              </div>
+            </div>
+            <div id="lembretes-lista-body" class="lembretes-lista"></div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- Feedback de salvamento global -->
+  <div class="save-toast" id="save-toast"></div>
+
+  <script src="settings.js"></script>
+</body>
+</html>
