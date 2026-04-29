@@ -28,28 +28,6 @@
     });
   }
 
-  // ─── Geração de cor por hash do nome (HSL pastel) ───────────────
-  function hashCor(nome) {
-    let h = 0;
-    for (let i = 0; i < nome.length; i++) {
-      h = Math.imul(31, h) + nome.charCodeAt(i) | 0;
-    }
-    h = Math.abs(h);
-    const hue = h % 360;
-    const sat = 50 + (h >> 8 & 0xff) % 25;   // 50–75 %
-    const lig = 84 + (h >> 16 & 0xff) % 10;  // 84–94 % (fundo claro)
-    return hslParaHex(hue, sat, lig);
-  }
-
-  function hslParaHex(h, s, l) {
-    s /= 100; l /= 100;
-    const k = n => (n + h / 30) % 12;
-    const a = s * Math.min(l, 1 - l);
-    const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
-    const hex = v => Math.round(v * 255).toString(16).padStart(2, '0');
-    return '#' + hex(f(0)) + hex(f(8)) + hex(f(4));
-  }
-
   // ─── Contraste WCAG (luminância relativa) ───────────────────────
   function luminancia(hex) {
     const parse = (s) => parseInt(s, 16) / 255;
@@ -73,13 +51,16 @@
   }
 
   // ─── Aplicar cor a um link de localizador ───────────────────────
+  // Só colore se houver vínculo configurado — sem fallback automático.
   function colorirLink(link) {
     if (link.dataset.localizadorColorido) return;
 
     const nome = link.textContent.trim();
     if (!nome) return;
 
-    const bgHex = coresMap[nome] || hashCor(nome);
+    if (!coresMap[nome]) return;  // sem vínculo → não altera o link
+
+    const bgHex = coresMap[nome];
     const fg    = textoContraste(bgHex);
 
     link.style.setProperty('background-color', bgHex, 'important');
@@ -90,7 +71,6 @@
     link.style.setProperty('font-weight', '600', 'important');
     link.style.setProperty('display', 'inline-block', 'important');
 
-    // Guarda nome e id para referência (debug / futuras features)
     link.dataset.localizadorColorido = '1';
     link.dataset.localizadorNome     = nome;
     const idLoc = extrairId(link);
@@ -111,21 +91,171 @@
       delete el.dataset.localizadorNome;
       delete el.dataset.localizadorId;
     });
+    document.querySelectorAll('.loc-btn-cor-wrap').forEach(el => el.remove());
+    document.querySelectorAll('.loc-editor-cor').forEach(el => el.remove());
+  }
+
+  // ─── Botão de vínculo de cor (somente em #dvLocalizadoresOrgao) ──
+  function injetarBotaoCor(link) {
+    if (link.nextElementSibling?.classList.contains('loc-btn-cor-wrap')) return;
+
+    const nome = link.textContent.trim();
+    if (!nome) return;
+
+    const wrap = document.createElement('span');
+    wrap.className = 'loc-btn-cor-wrap';
+
+    const btn = document.createElement('button');
+    btn.className = 'loc-btn-cor';
+    btn.title = 'Definir cor deste localizador';
+    btn.setAttribute('aria-label', `Definir cor: ${nome}`);
+    btn.innerHTML =
+      '<svg viewBox="0 0 16 16" fill="none" width="10" height="10" aria-hidden="true">' +
+        '<circle cx="4"  cy="4"  r="2" fill="currentColor"/>' +
+        '<circle cx="12" cy="4"  r="2" fill="currentColor" opacity=".65"/>' +
+        '<circle cx="4"  cy="12" r="2" fill="currentColor" opacity=".5"/>' +
+        '<circle cx="12" cy="12" r="2" fill="currentColor" opacity=".85"/>' +
+      '</svg>';
+
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      abrirEditorCor(nome, link, btn);
+    });
+
+    wrap.appendChild(btn);
+    link.insertAdjacentElement('afterend', wrap);
+  }
+
+  // ─── Editor inline de cor ────────────────────────────────────────
+  function abrirEditorCor(nome, linkEl, btnRef) {
+    document.querySelectorAll('.loc-editor-cor').forEach(el => el.remove());
+
+    const corAtual  = coresMap[nome] || '#7ab3d8';
+    const temVinculo = !!coresMap[nome];
+
+    const editor = document.createElement('div');
+    editor.className = 'loc-editor-cor';
+
+    const titulo = document.createElement('div');
+    titulo.className = 'loc-editor-cor__titulo';
+    titulo.innerHTML =
+      '<svg viewBox="0 0 16 16" fill="none" width="12" height="12" aria-hidden="true">' +
+        '<circle cx="4"  cy="4"  r="2" fill="currentColor"/>' +
+        '<circle cx="12" cy="4"  r="2" fill="currentColor" opacity=".65"/>' +
+        '<circle cx="4"  cy="12" r="2" fill="currentColor" opacity=".5"/>' +
+        '<circle cx="12" cy="12" r="2" fill="currentColor" opacity=".85"/>' +
+      '</svg> Cor do localizador';
+
+    const nomeEl = document.createElement('div');
+    nomeEl.className = 'loc-editor-cor__nome';
+    nomeEl.textContent = nome;
+
+    const field = document.createElement('div');
+    field.className = 'loc-editor-cor__field';
+
+    const picker = document.createElement('input');
+    picker.type = 'color';
+    picker.className = 'loc-editor-cor__picker';
+    picker.value = corAtual;
+
+    const preview = document.createElement('span');
+    preview.className = 'loc-editor-cor__preview';
+
+    function atualizarPreview() {
+      const cor = picker.value;
+      const fg  = textoContraste(cor);
+      preview.style.background = cor;
+      preview.style.color = fg;
+      preview.textContent = nome;
+    }
+    picker.addEventListener('input', atualizarPreview);
+    atualizarPreview();
+
+    field.appendChild(picker);
+    field.appendChild(preview);
+
+    const botoes = document.createElement('div');
+    botoes.className = 'loc-editor-cor__botoes';
+
+    function salvarCor() {
+      const cor = picker.value.toLowerCase();
+      coresMap[nome] = cor;
+      chrome.storage.local.set({ [STORAGE_KEY]: coresMap }, () => {
+        editor.remove();
+        limpar();
+        escanear();
+      });
+    }
+
+    const btnSalvar = document.createElement('button');
+    btnSalvar.className = 'loc-editor-cor__btn loc-editor-cor__btn--salvar';
+    btnSalvar.textContent = 'Salvar';
+    btnSalvar.addEventListener('click', salvarCor);
+
+    const btnCancelar = document.createElement('button');
+    btnCancelar.className = 'loc-editor-cor__btn loc-editor-cor__btn--cancelar';
+    btnCancelar.textContent = 'Cancelar';
+    btnCancelar.addEventListener('click', () => editor.remove());
+
+    botoes.appendChild(btnSalvar);
+
+    if (temVinculo) {
+      const btnRemover = document.createElement('button');
+      btnRemover.className = 'loc-editor-cor__btn loc-editor-cor__btn--remover';
+      btnRemover.textContent = 'Remover';
+      btnRemover.addEventListener('click', () => {
+        delete coresMap[nome];
+        chrome.storage.local.set({ [STORAGE_KEY]: coresMap }, () => {
+          editor.remove();
+          limpar();
+          escanear();
+        });
+      });
+      botoes.appendChild(btnRemover);
+    }
+
+    botoes.appendChild(btnCancelar);
+
+    editor.appendChild(titulo);
+    editor.appendChild(nomeEl);
+    editor.appendChild(field);
+    editor.appendChild(botoes);
+
+    const rect = btnRef.getBoundingClientRect();
+    editor.style.position = 'fixed';
+    editor.style.top      = `${rect.bottom + 6}px`;
+    editor.style.left     = `${Math.min(rect.left, window.innerWidth - 250)}px`;
+    editor.style.zIndex   = '2147483647';
+
+    document.body.appendChild(editor);
+    picker.click(); // abre o color picker nativo imediatamente
+
+    setTimeout(() => {
+      document.addEventListener('mousedown', function fecharFora(ev) {
+        if (!editor.contains(ev.target) && ev.target !== btnRef) {
+          editor.remove();
+          document.removeEventListener('mousedown', fecharFora);
+        }
+      });
+    }, 100);
   }
 
   // ─── Varredura do DOM ────────────────────────────────────────────
   function escanear() {
-    // (a) Filhos diretos de div#dvLocalizadoresOrgao (tela de detalhes)
+    // (a) Filhos diretos de div#dvLocalizadoresOrgao — colorir + botão
     const dvLoc = document.querySelector('#dvLocalizadoresOrgao');
     if (dvLoc) {
-      dvLoc.querySelectorAll(':scope > ' + SELETOR_LOC).forEach(colorirLink);
+      dvLoc.querySelectorAll(':scope > ' + SELETOR_LOC).forEach((link) => {
+        colorirLink(link);
+        injetarBotaoCor(link);
+      });
     }
 
-    // (b) Dentro de tabelas de listagem de processos
+    // (b) Dentro de tabelas de listagem — só colorir, sem botão
     document.querySelectorAll('table ' + SELETOR_LOC).forEach(colorirLink);
   }
 
-  // Varredura com debounce para evitar trabalho excessivo ao MutationObserver
   function escanearDebounced() {
     if (scanTimer) return;
     scanTimer = setTimeout(() => {

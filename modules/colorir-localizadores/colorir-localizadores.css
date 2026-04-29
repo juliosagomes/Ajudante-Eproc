@@ -1,11 +1,6 @@
 /* modules/colorir-localizadores/colorir-localizadores.css */
 
-/*
- * As cores de fundo e texto dos links são aplicadas inline via JS.
- * Este arquivo adiciona a transição suave para evitar flash brusco
- * na primeira renderização e ajusta a aparência visual do badge.
- */
-
+/* Links coloridos */
 [data-localizador-colorido] {
   transition: background-color 0.15s, color 0.15s;
   white-space: nowrap;
@@ -16,3 +11,141 @@
 [data-localizador-colorido]:hover {
   filter: brightness(0.92);
 }
+
+/* ─── Wrapper do botão de cor ───────────────────────────────────── */
+.loc-btn-cor-wrap {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+.loc-btn-cor {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #64748b;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.loc-btn-cor:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  color: #334155;
+}
+
+/* ─── Editor inline de cor ──────────────────────────────────────── */
+.loc-editor-cor {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(15,23,42,0.18), 0 2px 8px rgba(15,23,42,0.08);
+  padding: 14px 16px;
+  width: 240px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  color: #0f172a;
+  animation: locEditorEntrar 0.15s ease;
+}
+
+@keyframes locEditorEntrar {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.loc-editor-cor__titulo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+.loc-editor-cor__nome {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.loc-editor-cor__field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.loc-editor-cor__picker {
+  width: 40px;
+  height: 36px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 2px;
+  cursor: pointer;
+  background: none;
+  flex-shrink: 0;
+}
+
+.loc-editor-cor__preview {
+  flex: 1;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,0,0,0.08);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.1s, color 0.1s;
+}
+
+.loc-editor-cor__botoes {
+  display: flex;
+  gap: 6px;
+}
+
+.loc-editor-cor__btn {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.12s;
+}
+
+.loc-editor-cor__btn--salvar {
+  background: #2563eb;
+  color: #fff;
+}
+.loc-editor-cor__btn--salvar:hover { background: #1d4ed8; }
+
+.loc-editor-cor__btn--remover {
+  background: #fff1f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+.loc-editor-cor__btn--remover:hover { background: #fee2e2; }
+
+.loc-editor-cor__btn--cancelar {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+}
+.loc-editor-cor__btn--cancelar:hover { background: #e2e8f0; }
