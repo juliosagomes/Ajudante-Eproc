@@ -2,7 +2,8 @@
 
 const DEFAULT_SETTINGS = {
   modules: {
-    lembretes: { enabled: true }
+    lembretes:           { enabled: true },
+    colorirLocalizadores: { enabled: true },
   },
   scripts: {
     localizadorBusca: { enabled: true }
@@ -15,12 +16,19 @@ chrome.runtime.onInstalled.addListener(() => {
     if (!data.eprocSettings) {
       chrome.storage.local.set({ eprocSettings: DEFAULT_SETTINGS });
     } else {
-      // Migração: garantir que scripts existam em instalações anteriores
+      // Migração: garantir que novas chaves existam em instalações anteriores
       const atual = data.eprocSettings;
+      let dirty = false;
       if (!atual.scripts) {
         atual.scripts = DEFAULT_SETTINGS.scripts;
-        chrome.storage.local.set({ eprocSettings: atual });
+        dirty = true;
       }
+      if (!atual.modules?.colorirLocalizadores) {
+        if (!atual.modules) atual.modules = {};
+        atual.modules.colorirLocalizadores = DEFAULT_SETTINGS.modules.colorirLocalizadores;
+        dirty = true;
+      }
+      if (dirty) chrome.storage.local.set({ eprocSettings: atual });
     }
   });
 });
@@ -72,6 +80,33 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
   if (msg.tipo === 'limparTodosLembretes') {
     chrome.storage.local.set({ eprocLembretes: {} }, () => {
+      sendResponse({ ok: true });
+    });
+    return true;
+  }
+
+  // ─── Módulo Colorir Localizadores ────────────────────────────────
+  if (msg.tipo === 'exportarCoresLocalizadores') {
+    chrome.storage.local.get('eprocCoresLocalizadores', (data) => {
+      sendResponse({ cores: data.eprocCoresLocalizadores || {} });
+    });
+    return true;
+  }
+
+  if (msg.tipo === 'importarCoresLocalizadores') {
+    chrome.storage.local.get('eprocCoresLocalizadores', (data) => {
+      const existentes = data.eprocCoresLocalizadores || {};
+      const novos = msg.dados || {};
+      const merged = { ...existentes, ...novos };
+      chrome.storage.local.set({ eprocCoresLocalizadores: merged }, () => {
+        sendResponse({ ok: true, total: Object.keys(merged).length });
+      });
+    });
+    return true;
+  }
+
+  if (msg.tipo === 'limparCoresLocalizadores') {
+    chrome.storage.local.set({ eprocCoresLocalizadores: {} }, () => {
       sendResponse({ ok: true });
     });
     return true;

@@ -1,0 +1,18 @@
+/* modules/colorir-localizadores/colorir-localizadores.css */
+
+/*
+ * As cores de fundo e texto dos links são aplicadas inline via JS.
+ * Este arquivo adiciona a transição suave para evitar flash brusco
+ * na primeira renderização e ajusta a aparência visual do badge.
+ */
+
+[data-localizador-colorido] {
+  transition: background-color 0.15s, color 0.15s;
+  white-space: nowrap;
+  vertical-align: middle;
+  line-height: 1.4;
+}
+
+[data-localizador-colorido]:hover {
+  filter: brightness(0.92);
+}

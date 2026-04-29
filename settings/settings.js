@@ -31,7 +31,12 @@
       id: 'lembretes',
       label: 'Lembretes',
       descricao: 'Adiciona lembretes personalizados às preferências do Eproc.',
-    }
+    },
+    {
+      id: 'colorirLocalizadores',
+      label: 'Colorir Localizadores',
+      descricao: 'Aplica cores personalizadas nos links de localizadores do Eproc.',
+    },
   ];
 
   // ─── Definição dos ajustes gerais (scripts globais) ─────────────
@@ -69,6 +74,8 @@
       bindCsvButton();
       bindDadosLembretes();
       renderListaLembretes();
+      bindDadosLocalizadores();
+      renderCoresLocalizadores();
     };
 
     if (typeof chrome !== 'undefined' && chrome.runtime) {
@@ -83,7 +90,9 @@
 
     if (typeof chrome !== 'undefined' && chrome.storage) {
       chrome.storage.onChanged.addListener((changes, area) => {
-        if (area === 'local' && changes.eprocLembretes) renderListaLembretes();
+        if (area !== 'local') return;
+        if (changes.eprocLembretes)          renderListaLembretes();
+        if (changes.eprocCoresLocalizadores) renderCoresLocalizadores();
       });
     }
   }
@@ -201,7 +210,8 @@
     contentArea.querySelectorAll('.content-panel').forEach((p) => {
       p.classList.toggle('content-panel--hidden', p.dataset.panel !== panelId);
     });
-    if (panelId === 'lembretes') renderListaLembretes();
+    if (panelId === 'lembretes')            renderListaLembretes();
+    if (panelId === 'colorirLocalizadores') renderCoresLocalizadores();
   }
 
   // ─── Lista de lembretes salvos ────────────────────────────────────
@@ -342,6 +352,193 @@
         URL.revokeObjectURL(url);
       });
     });
+  }
+
+  // ─── Colorir Localizadores — utilitários de cor ──────────────────
+  function luminanciaCor(hex) {
+    if (!hex || hex.length < 7) return 1;
+    const parse = (s) => parseInt(s, 16) / 255;
+    const lin   = (v) => v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    return 0.2126 * lin(parse(hex.slice(1, 3)))
+         + 0.7152 * lin(parse(hex.slice(3, 5)))
+         + 0.0722 * lin(parse(hex.slice(5, 7)));
+  }
+
+  function textoContrasteLoc(bgHex) {
+    return luminanciaCor(bgHex) > 0.35 ? '#1a1a2e' : '#ffffff';
+  }
+
+  // ─── Colorir Localizadores — renderizar lista ─────────────────────
+  function renderCoresLocalizadores() {
+    const listaEl = document.getElementById('loc-mapa-body');
+    const hintEl  = document.getElementById('loc-total-hint');
+    if (!listaEl) return;
+
+    const doRender = (cores) => {
+      const entradas = Object.entries(cores || {});
+      entradas.sort(([a], [b]) => a.localeCompare(b, 'pt'));
+
+      if (hintEl) {
+        hintEl.textContent = `${entradas.length} vínculo${entradas.length !== 1 ? 's' : ''}`;
+      }
+
+      if (entradas.length === 0) {
+        listaEl.innerHTML = `
+          <div class="card__empty">
+            <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/><path d="M8 12h8M12 8v8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <span>Nenhum vínculo configurado — as cores serão geradas automaticamente pelo nome.</span>
+          </div>`;
+        return;
+      }
+
+      listaEl.innerHTML = '';
+      for (const [nome, cor] of entradas) {
+        const fg   = textoContrasteLoc(cor);
+        const item = document.createElement('div');
+        item.className = 'loc-item';
+        item.innerHTML = `
+          <span class="loc-item__swatch" style="background:${escapeHtml(cor)};color:${escapeHtml(fg)};"
+                title="${escapeHtml(cor)}">${escapeHtml(nome)}</span>
+          <div class="loc-item__info">
+            <span class="loc-item__nome" title="${escapeHtml(nome)}">${escapeHtml(nome)}</span>
+            <span class="loc-item__cor">${escapeHtml(cor)}</span>
+          </div>
+          <button class="btn-danger-sm loc-item__remover" data-nome="${escapeHtml(nome)}" title="Remover vínculo">
+            <svg viewBox="0 0 16 16" fill="none" width="12" height="12"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>`;
+
+        item.querySelector('.loc-item__remover').addEventListener('click', (e) => {
+          const nomeDel = e.currentTarget.dataset.nome;
+          if (typeof chrome === 'undefined' || !chrome.storage) return;
+          chrome.storage.local.get('eprocCoresLocalizadores', (data) => {
+            const cores = data.eprocCoresLocalizadores || {};
+            delete cores[nomeDel];
+            chrome.storage.local.set({ eprocCoresLocalizadores: cores }, () => {
+              mostrarToast(`✓ Vínculo "${nomeDel}" removido`);
+              renderCoresLocalizadores();
+            });
+          });
+        });
+
+        listaEl.appendChild(item);
+      }
+    };
+
+    if (typeof chrome !== 'undefined' && chrome.storage) {
+      chrome.storage.local.get('eprocCoresLocalizadores', (data) => doRender(data.eprocCoresLocalizadores));
+    } else {
+      doRender({});
+    }
+  }
+
+  // ─── Colorir Localizadores — adicionar, exportar, importar, limpar
+  function bindDadosLocalizadores() {
+    // Preview ao vivo da cor selecionada
+    const inputCor     = document.getElementById('loc-input-cor');
+    const preview      = document.getElementById('loc-color-preview');
+    const inputNome    = document.getElementById('loc-input-nome');
+
+    function atualizarPreview() {
+      if (!preview || !inputCor) return;
+      const cor = inputCor.value;
+      const fg  = textoContrasteLoc(cor);
+      preview.style.background = cor;
+      preview.style.color      = fg;
+      preview.textContent      = inputNome?.value.trim() || cor;
+    }
+    if (inputCor)  inputCor.addEventListener('input',  atualizarPreview);
+    if (inputNome) inputNome.addEventListener('input',  atualizarPreview);
+    atualizarPreview();
+
+    // Adicionar novo vínculo
+    const btnAdicionar = document.getElementById('btn-loc-adicionar');
+    if (btnAdicionar) {
+      btnAdicionar.addEventListener('click', () => {
+        const nome = inputNome?.value.trim();
+        const cor  = inputCor?.value || '#7ab3d8';
+        if (!nome) {
+          mostrarToast('Informe o nome do localizador', true);
+          inputNome?.focus();
+          return;
+        }
+        if (!/^#[0-9a-fA-F]{6}$/.test(cor)) {
+          mostrarToast('Cor inválida', true);
+          return;
+        }
+        if (typeof chrome === 'undefined' || !chrome.storage) return;
+        chrome.storage.local.get('eprocCoresLocalizadores', (data) => {
+          const cores = data.eprocCoresLocalizadores || {};
+          cores[nome] = cor.toLowerCase();
+          chrome.storage.local.set({ eprocCoresLocalizadores: cores }, () => {
+            mostrarToast(`✓ Vínculo "${nome}" → ${cor} salvo`);
+            if (inputNome) inputNome.value = '';
+            atualizarPreview();
+            renderCoresLocalizadores();
+          });
+        });
+      });
+    }
+
+    // Exportar JSON
+    const btnExportar = document.getElementById('btn-loc-exportar-json');
+    if (btnExportar) {
+      btnExportar.addEventListener('click', () => {
+        if (typeof chrome === 'undefined' || !chrome.storage) return;
+        chrome.storage.local.get('eprocCoresLocalizadores', (data) => {
+          const cores = data.eprocCoresLocalizadores || {};
+          const blob  = new Blob([JSON.stringify(cores, null, 2)], { type: 'application/json' });
+          const url   = URL.createObjectURL(blob);
+          const a     = document.createElement('a');
+          a.href      = url;
+          a.download  = `cores-localizadores-eproc-${new Date().toISOString().slice(0, 10)}.json`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        });
+      });
+    }
+
+    // Importar JSON
+    const inputImportar = document.getElementById('loc-import-json');
+    if (inputImportar) {
+      inputImportar.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          try {
+            const dados = JSON.parse(ev.target.result);
+            if (typeof dados !== 'object' || Array.isArray(dados)) throw new Error();
+            if (typeof chrome === 'undefined' || !chrome.storage) return;
+            chrome.storage.local.get('eprocCoresLocalizadores', (data) => {
+              const merged = { ...(data.eprocCoresLocalizadores || {}), ...dados };
+              chrome.storage.local.set({ eprocCoresLocalizadores: merged }, () => {
+                mostrarToast(`✓ ${Object.keys(dados).length} vínculo(s) importado(s)`);
+                renderCoresLocalizadores();
+              });
+            });
+          } catch {
+            mostrarToast('Arquivo JSON inválido', true);
+          }
+          e.target.value = '';
+        };
+        reader.readAsText(file);
+      });
+    }
+
+    // Limpar tudo
+    const btnLimpar = document.getElementById('btn-loc-limpar');
+    if (btnLimpar) {
+      btnLimpar.addEventListener('click', () => {
+        if (!confirm('Tem certeza? Todos os vínculos nome→cor serão apagados e as cores voltarão a ser geradas automaticamente.')) return;
+        if (typeof chrome === 'undefined' || !chrome.storage) return;
+        chrome.storage.local.set({ eprocCoresLocalizadores: {} }, () => {
+          mostrarToast('✓ Todos os vínculos apagados');
+          renderCoresLocalizadores();
+        });
+      });
+    }
   }
 
   // ─── Salvar ───────────────────────────────────────────────────────
