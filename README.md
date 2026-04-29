@@ -22,21 +22,7 @@ A estrutura de arquivos da extensão é organizada da seguinte forma:
 - `scripts/`: Pasta com scripts adicionais, como `localizador-busca/` (contém `localizador-busca.css` e `localizador-busca.js`).
 - `settings/`: Página de configurações (`settings.html`, `settings.css`, `settings.js`).
 
-## Instruções para IA (Assistente de Desenvolvimento)
-
-Para trabalhar neste projeto, siga as diretrizes abaixo para garantir consistência, segurança e eficiência no desenvolvimento de novos scripts ou módulos.
-
-### Obrigações
-- **Seguir a Estrutura Existente**: Novos módulos devem ser adicionados à pasta `modules/` com subpastas nomeadas de forma descritiva (ex.: `novo-modulo/novo-modulo.js` e `novo-modulo/novo-modulo.css`). Scripts devem ir para `scripts/`.
-- **Compatibilidade com Chrome Extensions**: Garantir que todos os códigos sejam compatíveis com a API de extensões do Chrome. Evitar uso de APIs não suportadas.
-- **Integração com Página de Opções**: Novos módulos/scripts devem ser integrados à página de configurações (`settings/`) para permitir ativação/desativação pelo usuário.
-- **Testes e Validação**: Sempre testar novos códigos em um ambiente de desenvolvimento Chrome, verificando se não quebram funcionalidades existentes e se funcionam corretamente no Eproc.
-- **Documentação**: Adicionar comentários claros no código e atualizar este README.md se necessário para refletir mudanças.
-- **Segurança**: Usar apenas permissões mínimas no `manifest.json` e evitar injeção de código inseguro.
-
-### Proibições
-- **Não Modificar Arquivos Core sem Justificativa**: Evite alterações em `manifest.json`, `background.js` e `content.js` a menos que seja essencial e aprovado pelo desenvolvedor.
-- **Não Adicionar Dependências Externas**: Não incluir bibliotecas ou frameworks externos sem avaliação prévia de compatibilidade e segurança.
-- **Evitar Código Malicioso ou Inseguro**: Não implementar funcionalidades que possam comprometer a segurança do usuário ou violar políticas do Chrome.
-- **Não Ignorar Estrutura de Pastas**: Não criar arquivos fora das pastas designadas (`modules/`, `scripts/`, etc.) sem confirmar com o desenvolvedor.
-- **Não Sobrescrever Configurações Existentes**: Ao adicionar novas opções, garantir que não interfiram com configurações já existentes na página de settings.
+## Recursos:
+- **Lembretes em Preferências**: Possibilidade de inserir orientações adicionais a preferências
+- **Colorir Localizadores**: Possbilidade de adicionar cores aos localizadores
+- **Busca no campo "novo localizador**: Retira a necessidade do usuário scrollar até o novo localizador desejado ao realizar agendamento de minuta
