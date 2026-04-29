@@ -1,18 +1,26 @@
 /* modules/lembretes/lembretes.css — Estilos do módulo de Lembretes */
 
+/* ─── Forçar inline nas âncoras dos painéis de preferência ─────── */
+
+#div-preferencia-minuta a.content-link.text-primary,
+#div-preferencia-movimentacao a.content-link.text-success,
+#div-preferencia-intimacao a.content-link.text-danger {
+  display: inline !important;
+}
+
+
 /* ─── Wrapper do ícone + balão ─────────────────────────────── */
 .eproc-lembrete-wrapper {
   display: inline-flex;
   align-items: center;
   position: relative;
-  margin-left: 5px;
+  margin-left: 4px;
   vertical-align: middle;
 }
 
 /* ─── Ícone de lembrete ────────────────────────────────────── */
 .eproc-lembrete-icon {
-  display: inline-flex;
-  align-items: center;
+  display: inline-block;
   justify-content: center;
   width: 20px;
   height: 20px;
