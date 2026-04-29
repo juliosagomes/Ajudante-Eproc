@@ -22,11 +22,13 @@
       "js": [
         "content.js",
         "modules/lembretes/lembretes.js",
+        "modules/colorir-localizadores/colorir-localizadores.js",
         "scripts/localizador-busca/localizador-busca.js"
       ],
       "css": [
         "styles.css",
         "modules/lembretes/lembretes.css",
+        "modules/colorir-localizadores/colorir-localizadores.css",
         "scripts/localizador-busca/localizador-busca.css"
       ],
       "run_at": "document_idle",

@@ -48,6 +48,11 @@
           Lembretes
         </button>
 
+        <button class="sidebar-nav__item" data-panel="colorirLocalizadores">
+          <svg class="sidebar-nav__icon" viewBox="0 0 20 20" fill="none"><circle cx="6.5" cy="6.5" r="2.5" stroke="currentColor" stroke-width="1.4"/><circle cx="13.5" cy="6.5" r="2.5" stroke="currentColor" stroke-width="1.4"/><circle cx="6.5" cy="13.5" r="2.5" stroke="currentColor" stroke-width="1.4"/><circle cx="13.5" cy="13.5" r="2.5" stroke="currentColor" stroke-width="1.4"/></svg>
+          Colorir Localizadores
+        </button>
+
       </nav>
 
       <div class="sidebar-footer">
@@ -169,6 +174,110 @@
               </div>
             </div>
             <div id="lembretes-lista-body" class="lembretes-lista"></div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Painel: Colorir Localizadores -->
+      <section class="content-panel content-panel--hidden" id="panel-colorirLocalizadores" data-panel="colorirLocalizadores">
+        <div class="panel-header">
+          <div class="panel-header__icon">
+            <svg viewBox="0 0 20 20" fill="none"><circle cx="6.5" cy="6.5" r="2.5" stroke="currentColor" stroke-width="1.5"/><circle cx="13.5" cy="6.5" r="2.5" stroke="currentColor" stroke-width="1.5"/><circle cx="6.5" cy="13.5" r="2.5" stroke="currentColor" stroke-width="1.5"/><circle cx="13.5" cy="13.5" r="2.5" stroke="currentColor" stroke-width="1.5"/></svg>
+          </div>
+          <div>
+            <h1 class="panel-header__title">Colorir Localizadores</h1>
+            <p class="panel-header__desc">Aplica cores personalizadas nos links de localizadores do Eproc — tanto na tela de detalhes do processo quanto nas listagens de processos.</p>
+          </div>
+        </div>
+
+        <div class="panel-body">
+
+          <!-- Card: status do módulo -->
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">Status do módulo</span>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Colorir Localizadores</span>
+                <span class="card__row-sub">Ativar ou desativar o módulo por completo.</span>
+              </div>
+              <div class="toggle-group">
+                <span class="toggle-label" id="lbl-mod-colorirLocalizadores">Ativo</span>
+                <label class="toggle" title="Ativar/desativar módulo Colorir Localizadores">
+                  <input type="checkbox" class="toggle__input" id="toggle-mod-colorirLocalizadores" checked>
+                  <span class="toggle__slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: adicionar nova cor -->
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">Adicionar cor</span>
+              <span class="card__hint">Nome exato como aparece no Eproc</span>
+            </div>
+            <div class="card__row loc-add-row">
+              <div class="loc-add-fields">
+                <input type="text" id="loc-input-nome" class="loc-input-nome" placeholder="Nome do localizador" autocomplete="off" spellcheck="false">
+                <div class="loc-color-wrap">
+                  <input type="color" id="loc-input-cor" class="loc-input-cor" value="#7ab3d8" title="Escolher cor de fundo">
+                  <span class="loc-color-preview" id="loc-color-preview"></span>
+                </div>
+              </div>
+              <button class="btn-outline-sm" id="btn-loc-adicionar">
+                <svg viewBox="0 0 16 16" fill="none" width="13" height="13"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                Adicionar
+              </button>
+            </div>
+          </div>
+
+          <!-- Card: mapa de cores configurado -->
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">Mapa de cores</span>
+              <span class="card__hint" id="loc-total-hint"></span>
+            </div>
+            <div id="loc-mapa-body" class="loc-mapa-lista"></div>
+          </div>
+
+          <!-- Card: gerenciar dados -->
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">Gerenciar dados</span>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Exportar mapa de cores</span>
+                <span class="card__row-sub">Salva todos os vínculos nome→cor em um arquivo JSON.</span>
+              </div>
+              <button class="btn-outline-sm" id="btn-loc-exportar-json">
+                <svg viewBox="0 0 16 16" fill="none" width="13" height="13"><path d="M8 2v7M5 6.5l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Exportar JSON
+              </button>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Importar mapa de cores</span>
+                <span class="card__row-sub">Mescla vínculos de um arquivo JSON com os existentes.</span>
+              </div>
+              <div>
+                <label class="btn-outline-sm" for="loc-import-json" style="cursor:pointer;">
+                  <svg viewBox="0 0 16 16" fill="none" width="13" height="13"><path d="M8 13V6M5 8.5l3-3 3 3M3 3h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Importar JSON
+                </label>
+                <input type="file" id="loc-import-json" accept=".json" style="display:none">
+              </div>
+            </div>
+            <div class="card__row card__row--danger">
+              <div class="card__row-info">
+                <span class="card__row-label card__row-label--danger">Limpar todos os vínculos</span>
+                <span class="card__row-sub">Remove todos os vínculos nome→cor e volta a usar cores automáticas.</span>
+              </div>
+              <button class="btn-danger-sm" id="btn-loc-limpar">Limpar tudo</button>
+            </div>
           </div>
 
         </div>

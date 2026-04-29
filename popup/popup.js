@@ -7,16 +7,23 @@
     {
       id: 'lembretes',
       label: 'Lembretes',
-      icone: '📌',
-      renderPainel: renderPainelLembretes
-    }
+      iconeSvg: '<svg viewBox="0 0 20 20" fill="none" width="14" height="14"><path d="M10 2.5a5.5 5.5 0 0 1 5.5 5.5c0 3.5 1.5 4.5 1.5 5H3c0-.5 1.5-1.5 1.5-5A5.5 5.5 0 0 1 10 2.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8.5 13v.5a1.5 1.5 0 0 0 3 0V13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+      carregarStat: carregarStatLembretes,
+      renderPainel: renderPainelLembretes,
+    },
+    {
+      id: 'colorirLocalizadores',
+      label: 'Colorir Localizadores',
+      iconeSvg: '<svg viewBox="0 0 20 20" fill="none" width="14" height="14"><circle cx="5.5" cy="5.5" r="2" fill="currentColor"/><circle cx="14.5" cy="5.5" r="2" fill="currentColor" opacity=".65"/><circle cx="5.5" cy="14.5" r="2" fill="currentColor" opacity=".5"/><circle cx="14.5" cy="14.5" r="2" fill="currentColor" opacity=".85"/></svg>',
+      carregarStat: carregarStatLocalizadores,
+      renderPainel: renderPainelLocalizadores,
+    },
   ];
 
   let settings = { modules: {} };
 
-  const tabsEl   = document.getElementById('popup-tabs');
-  const panelsEl = document.getElementById('popup-panels');
-  const emptyEl  = document.getElementById('popup-empty');
+  const accordionEl = document.getElementById('popup-accordion');
+  const emptyEl     = document.getElementById('popup-empty');
 
   // ─── Abrir configurações em aba separada ────────────────────────
   function abrirConfiguracoes() {
@@ -42,90 +49,100 @@
 
   // ─── Render principal ────────────────────────────────────────────
   function renderUI() {
-    renderTabs();
-    renderPaineisModulos();
+    accordionEl.innerHTML = '';
 
     const ativos = MODULOS_DEFINIDOS.filter((m) => settings.modules[m.id]?.enabled);
 
-    if (ativos.length > 0) {
-      emptyEl.style.display = 'none';
-      ativarTab(ativos[0].id);
-    } else {
-      tabsEl.style.display = 'none';
+    if (ativos.length === 0) {
+      accordionEl.style.display = 'none';
       emptyEl.style.display = 'flex';
+      return;
     }
-  }
 
-  // ─── Tabs ────────────────────────────────────────────────────────
-  function renderTabs() {
-    tabsEl.innerHTML = '';
-    tabsEl.style.display = '';
+    emptyEl.style.display = 'none';
+    accordionEl.style.display = '';
 
-    MODULOS_DEFINIDOS.forEach((m) => {
-      if (settings.modules[m.id]?.enabled) {
-        tabsEl.appendChild(criarTab(m.id, `${m.icone} ${m.label}`));
-      }
+    ativos.forEach((m, idx) => {
+      const item = criarItemAcordeon(m, idx === 0);
+      accordionEl.appendChild(item);
     });
   }
 
-  function criarTab(id, label) {
-    const btn = document.createElement('button');
-    btn.className = 'popup-tab';
-    btn.dataset.tab = id;
-    btn.textContent = label;
-    btn.setAttribute('role', 'tab');
-    btn.addEventListener('click', () => ativarTab(id));
-    return btn;
-  }
+  // ─── Criar item do acordeão ──────────────────────────────────────
+  function criarItemAcordeon(modulo, expandidoInicial) {
+    const item = document.createElement('div');
+    item.className = 'acc-item';
+    item.id = `acc-${modulo.id}`;
 
-  function ativarTab(id) {
-    tabsEl.querySelectorAll('.popup-tab').forEach((btn) => {
-      const ativa = btn.dataset.tab === id;
-      btn.classList.toggle('popup-tab--ativa', ativa);
-      btn.setAttribute('aria-selected', ativa ? 'true' : 'false');
+    // Header (botão clicável)
+    const header = document.createElement('button');
+    header.className = 'acc-header';
+    header.setAttribute('aria-expanded', expandidoInicial ? 'true' : 'false');
+    header.setAttribute('aria-controls', `acc-body-${modulo.id}`);
+    header.innerHTML = `
+      <span class="acc-header__icon">${modulo.iconeSvg}</span>
+      <span class="acc-header__label">${modulo.label}</span>
+      <span class="acc-header__stat" id="stat-${modulo.id}"></span>
+      <svg class="acc-header__chevron" viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true">
+        <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    `;
+
+    // Body (conteúdo retrátil)
+    const body = document.createElement('div');
+    body.className = 'acc-body';
+    body.id = `acc-body-${modulo.id}`;
+    body.setAttribute('role', 'region');
+    if (!expandidoInicial) body.classList.add('acc-body--hidden');
+
+    // Renderiza conteúdo do painel dentro do body
+    modulo.renderPainel(body);
+
+    // Toggle ao clicar no header
+    header.addEventListener('click', () => {
+      const expandido = body.classList.toggle('acc-body--hidden');
+      // classList.toggle retorna true se a classe foi ADICIONADA (ou seja, colapsou)
+      header.setAttribute('aria-expanded', expandido ? 'false' : 'true');
     });
 
-    panelsEl.querySelectorAll('.popup-panel').forEach((panel) => {
-      panel.classList.toggle('popup-panel--hidden', panel.id !== `panel-${id}`);
-    });
-  }
+    item.appendChild(header);
+    item.appendChild(body);
 
-  // ─── Painéis de módulos ──────────────────────────────────────────
-  function renderPaineisModulos() {
-    panelsEl.querySelectorAll('.popup-panel').forEach(el => el.remove());
+    // Carrega stat assincronamente no header
+    if (modulo.carregarStat) {
+      modulo.carregarStat((txt) => {
+        const el = item.querySelector(`#stat-${modulo.id}`);
+        if (el) el.textContent = txt;
+      });
+    }
 
-    MODULOS_DEFINIDOS.forEach((m) => {
-      if (!settings.modules[m.id]?.enabled) return;
-
-      const panel = document.createElement('section');
-      panel.className = 'popup-panel popup-panel--hidden';
-      panel.id = `panel-${m.id}`;
-      panel.setAttribute('role', 'tabpanel');
-      m.renderPainel(panel);
-      panelsEl.appendChild(panel);
-    });
+    return item;
   }
 
   // ═══════════════════════════════════════════════════════════════
   // PAINEL DO MÓDULO LEMBRETES
   // ═══════════════════════════════════════════════════════════════
+
+  function carregarStatLembretes(cb) {
+    chrome.runtime.sendMessage({ tipo: 'obterTotalLembretes' }, (resp) => {
+      const total = resp?.total ?? 0;
+      cb(`${total} lembrete${total !== 1 ? 's' : ''}`);
+    });
+  }
+
   function renderPainelLembretes(panel) {
     panel.innerHTML = `
-      <div class="lembretes-panel">
-        <div class="lembretes-stat">
-          <span class="lembretes-stat__count" id="lembrete-count">…</span>
-          <span class="lembretes-stat__label">lembretes salvos</span>
+      <div class="mod-panel">
+        <div class="mod-stat" id="lembretes-stat-box">
+          <span class="mod-stat__count" id="lembrete-count">…</span>
+          <span class="mod-stat__label">lembretes salvos</span>
         </div>
-
-        <div class="lembretes-actions">
-          <button class="popup-btn popup-btn--secondary" id="btn-modo-edicao">
-            ✏️ Ativar modo edição
-          </button>
-        </div>
+        <button class="popup-btn popup-btn--secondary" id="btn-modo-edicao">
+          ✏️ Ativar modo edição
+        </button>
       </div>
     `;
 
-    // Carregar contagem
     chrome.runtime.sendMessage({ tipo: 'obterTotalLembretes' }, (resp) => {
       const el = panel.querySelector('#lembrete-count');
       if (el) el.textContent = resp?.total ?? 0;
@@ -143,7 +160,6 @@
       }
     }
 
-    // Consultar estado atual do modo edição na aba ativa
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (!tabs[0]) return;
       chrome.tabs.sendMessage(tabs[0].id, { tipo: 'obterEstado' }, (resp) => {
@@ -152,7 +168,6 @@
       });
     });
 
-    // Clicar alterna o modo
     btn.addEventListener('click', () => {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (!tabs[0]) return;
@@ -164,6 +179,67 @@
           });
         });
       });
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // PAINEL DO MÓDULO COLORIR LOCALIZADORES
+  // ═══════════════════════════════════════════════════════════════
+
+  function carregarStatLocalizadores(cb) {
+    chrome.storage.local.get('eprocCoresLocalizadores', (data) => {
+      const total = Object.keys(data.eprocCoresLocalizadores || {}).length;
+      cb(`${total} cor${total !== 1 ? 'es' : ''}`);
+    });
+  }
+
+  function renderPainelLocalizadores(panel) {
+    panel.innerHTML = `
+      <div class="mod-panel">
+        <div class="mod-stat mod-stat--green" id="loc-stat-box">
+          <span class="mod-stat__count" id="loc-count">…</span>
+          <span class="mod-stat__label">vínculos configurados</span>
+        </div>
+
+        <div class="loc-info-box">
+          <svg viewBox="0 0 16 16" fill="none" width="13" height="13" aria-hidden="true" style="flex-shrink:0;margin-top:1px">
+            <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3" opacity=".6"/>
+            <path d="M8 7v4M8 5.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>Clique no botão <strong>⬤</strong> ao lado de cada localizador na tela do processo para vincular uma cor.</span>
+        </div>
+
+        <button class="popup-btn popup-btn--secondary" id="btn-loc-settings">
+          ⚙️ Gerenciar cores
+        </button>
+      </div>
+    `;
+
+    // Contagem de vínculos
+    chrome.storage.local.get('eprocCoresLocalizadores', (data) => {
+      const total = Object.keys(data.eprocCoresLocalizadores || {}).length;
+      const el = panel.querySelector('#loc-count');
+      if (el) el.textContent = total;
+    });
+
+    // Botão para abrir settings na página do módulo
+    panel.querySelector('#btn-loc-settings').addEventListener('click', () => {
+      chrome.tabs.create({
+        url: chrome.runtime.getURL('settings/settings.html') + '#colorirLocalizadores',
+      });
+      window.close();
+    });
+
+    // Atualiza contagem em tempo real enquanto o popup estiver aberto
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area === 'local' && changes.eprocCoresLocalizadores) {
+        const total = Object.keys(changes.eprocCoresLocalizadores.newValue || {}).length;
+        const countEl = panel.querySelector('#loc-count');
+        if (countEl) countEl.textContent = total;
+        // atualiza stat no header também
+        const statEl = document.getElementById('stat-colorirLocalizadores');
+        if (statEl) statEl.textContent = `${total} cor${total !== 1 ? 'es' : ''}`;
+      }
     });
   }
 

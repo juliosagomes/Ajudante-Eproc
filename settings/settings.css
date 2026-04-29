@@ -557,3 +557,120 @@ html, body {
   display: block;
   line-height: 1.4;
 }
+
+/* ─── Colorir Localizadores — linha de adição ───────────────────── */
+.loc-add-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.loc-add-fields {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex: 1;
+}
+
+.loc-input-nome {
+  flex: 1;
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--text-primary);
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 10px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.loc-input-nome:focus {
+  border-color: var(--blue-400);
+  background: #fff;
+}
+
+.loc-color-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.loc-input-cor {
+  width: 36px;
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px;
+  cursor: pointer;
+  background: none;
+}
+
+.loc-color-preview {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,0,0,0.08);
+  min-width: 60px;
+  text-align: center;
+  white-space: nowrap;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.15s, color 0.15s;
+}
+
+/* ─── Colorir Localizadores — lista do mapa ──────────────────────── */
+.loc-mapa-lista {
+  min-height: 48px;
+}
+
+.loc-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.loc-item__swatch {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,0,0,0.10);
+  flex-shrink: 0;
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.loc-item__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.loc-item__nome {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.loc-item__cor {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  display: block;
+  margin-top: 2px;
+}
+
+.loc-item__remover {
+  flex-shrink: 0;
+}
