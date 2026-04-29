@@ -11,8 +11,7 @@
 
 /* ─── Wrapper do ícone + balão ─────────────────────────────── */
 .eproc-lembrete-wrapper {
-  display: inline-flex;
-  align-items: center;
+  display: inline-block;
   position: relative;
   margin-left: 4px;
   vertical-align: middle;
@@ -20,7 +19,8 @@
 
 /* ─── Ícone de lembrete ────────────────────────────────────── */
 .eproc-lembrete-icon {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
   width: 20px;
   height: 20px;
