@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Ajudante Eproc",
+  "name": "Ajudante +Eproc",
   "version": "2.0.0",
   "description": "Assistente modular para o Eproc. Ative ou desative funcionalidades nas configurações.",
   "icons": {
