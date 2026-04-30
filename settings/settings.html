@@ -53,6 +53,11 @@
           Colorir Localizadores
         </button>
 
+        <button class="sidebar-nav__item" data-panel="filtrosEventos">
+          <svg class="sidebar-nav__icon" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M5 9h10M8 13h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          +Filtros de Eventos
+        </button>
+
       </nav>
 
       <div class="sidebar-footer">
@@ -277,6 +282,74 @@
                 <span class="card__row-sub">Remove todos os vínculos nome→cor e volta a usar cores automáticas.</span>
               </div>
               <button class="btn-danger-sm" id="btn-loc-limpar">Limpar tudo</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Painel: +Filtros de Eventos -->
+      <section class="content-panel content-panel--hidden" id="panel-filtrosEventos" data-panel="filtrosEventos">
+        <div class="panel-header">
+          <div class="panel-header__icon">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M2 5h16M5 9h10M8 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <h1 class="panel-header__title">+Filtros de Eventos</h1>
+            <p class="panel-header__desc">Adiciona controles avançados de filtragem e agrupamento na aba Eventos de cada processo — filtragem por categoria, origem, autoria e período, além de agrupamento automático de cadeias de intimação.</p>
+          </div>
+        </div>
+
+        <div class="panel-body">
+
+          <!-- Card: status do módulo -->
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">Status do módulo</span>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">+Filtros de Eventos</span>
+                <span class="card__row-sub">Ativar ou desativar o módulo por completo.</span>
+              </div>
+              <div class="toggle-group">
+                <span class="toggle-label" id="lbl-mod-filtrosEventos">Ativo</span>
+                <label class="toggle" title="Ativar/desativar módulo +Filtros de Eventos">
+                  <input type="checkbox" class="toggle__input" id="toggle-mod-filtrosEventos" checked>
+                  <span class="toggle__slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: como usar -->
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">Como usar</span>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Barra "+Filtros de Eventos"</span>
+                <span class="card__row-sub">Na tela de qualquer processo, uma barra de filtros é injetada logo acima da tabela de eventos. Clique nela para expandir e configurar as opções de filtragem e agrupamento.</span>
+              </div>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Filtros disponíveis</span>
+                <span class="card__row-sub">Ocultar por categoria (decisões, despachos, intimações, publicações no DJEN, atos ordinatórios, certidões etc.), por origem (internos / externos / sistema), e por intervalo de datas.</span>
+              </div>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Cadeia de intimação</span>
+                <span class="card__row-sub">Quando ativado, os eventos de confirmação e publicação que referenciam uma intimação expedida são agrupados num bloco colapsável, reduzindo o ruído visual na timeline.</span>
+              </div>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Persistência</span>
+                <span class="card__row-sub">As preferências de filtro são salvas automaticamente e restauradas na próxima vez que a aba Eventos for aberta.</span>
+              </div>
             </div>
           </div>
 

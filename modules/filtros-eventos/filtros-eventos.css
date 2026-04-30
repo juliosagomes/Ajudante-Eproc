@@ -1,0 +1,222 @@
+/* modules/filtros-eventos/filtros-eventos.css — +Filtros de Eventos */
+
+/* ─── Ocultar por filtro ──────────────────────────────────────────── */
+tr.fe-filtrado       { display: none !important; }
+tr.fe-cadeia-colapsado { display: none !important; }
+
+/* ─── Indicador visual de cadeia de intimação ────────────────────── */
+tr.fe-cadeia-raiz td:first-child,
+tr.fe-cadeia-membro td:first-child {
+  box-shadow: inset 3px 0 0 #3b82f6;
+}
+
+tr.fe-cadeia-membro {
+  background-color: #eff6ff !important;
+}
+
+/* ─── Toolbar container ──────────────────────────────────────────── */
+#fe-toolbar {
+  margin: 6px 0 4px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #f8fafc;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 12px;
+  color: #334155;
+  line-height: 1.4;
+}
+
+/* ─── Header (sempre visível) ───────────────────────────────────── */
+.fe-toolbar__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  user-select: none;
+}
+
+.fe-toolbar__toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #334155;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.fe-toolbar__toggle:hover .fe-toolbar__title {
+  text-decoration: underline;
+}
+
+.fe-toolbar__title {
+  font-weight: 600;
+  color: #334155;
+}
+
+.fe-toolbar__spacer { flex: 1; }
+
+.fe-contador {
+  font-size: 11px;
+  color: #64748b;
+  background: #e2e8f0;
+  border-radius: 10px;
+  padding: 1px 7px;
+  white-space: nowrap;
+}
+
+.fe-toolbar__chevron {
+  color: #64748b;
+  transition: transform 0.18s ease;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+/* ─── Body (expansível) ─────────────────────────────────────────── */
+.fe-toolbar__body {
+  border-top: 1px solid #e2e8f0;
+  padding: 10px 12px 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 24px;
+  align-items: flex-start;
+}
+
+.fe-toolbar__body[hidden] { display: none; }
+
+/* ─── Seções dentro do body ─────────────────────────────────────── */
+.fe-section {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fe-section__label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+}
+
+/* ─── Checkboxes ────────────────────────────────────────────────── */
+.fe-checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.fe-checkboxes--grid {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 3px 20px;
+}
+
+.fe-check {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #475569;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 1px 0;
+}
+
+.fe-check input[type="checkbox"] {
+  width: 13px;
+  height: 13px;
+  cursor: pointer;
+  accent-color: #3b82f6;
+  flex-shrink: 0;
+}
+
+/* ─── Filtro de período ─────────────────────────────────────────── */
+.fe-date-range {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fe-date-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #475569;
+  font-size: 12px;
+}
+
+.fe-date-input {
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 2px 5px;
+  font-size: 11px;
+  color: #334155;
+  background: #fff;
+  outline: none;
+  font-family: inherit;
+}
+
+.fe-date-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px #bfdbfe;
+}
+
+/* ─── Footer / Reset ────────────────────────────────────────────── */
+.fe-toolbar__footer {
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 1px;
+}
+
+.fe-btn-reset {
+  background: none;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: #64748b;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.14s, color 0.14s;
+}
+
+.fe-btn-reset:hover {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+/* ─── Linha-toggle da cadeia de intimação ───────────────────────── */
+.fe-cadeia-toggle-row td.fe-cadeia-toggle-cell {
+  padding: 3px 8px !important;
+  background: #f1f5f9 !important;
+  border-top: none !important;
+}
+
+.fe-cadeia-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  color: #3b82f6;
+  cursor: pointer;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  transition: background 0.14s, border-color 0.14s;
+}
+
+.fe-cadeia-btn:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
+}
+
+.fe-cadeia-btn__icon {
+  color: #3b82f6;
+  transition: transform 0.18s ease;
+  flex-shrink: 0;
+}
