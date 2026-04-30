@@ -26,6 +26,11 @@
       label: 'Publicações no DJEN',
       teste: s => s.includes('publicado no djen') || s.includes('disponibilizado no djen') || (s.includes('disponibilizado') && (s.includes('djen') || s.includes('diario'))),
     },
+    {
+  key: 'complementar',
+  label: 'Complementares a evento',
+  teste: s => s.includes('complementar ao evento'),
+},
   ];
 
   // ─── Padrões de etapa de cadeia de intimação ────────────────────
@@ -42,7 +47,7 @@
   ];
 
   const FILTROS_PADRAO = {
-    categoriasOcultas: [],
+    categoriasOcultas: ['complementar'],
     ocultarSistema:    false,
     ocultarInterno:    false,
     ocultarExterno:    false,
