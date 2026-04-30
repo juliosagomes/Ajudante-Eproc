@@ -88,6 +88,8 @@
   let toolbarEl    = null;
   let scanTimer    = null;
   let aplicando    = false;
+  // Persiste estado de colapso (rootNum → true=colapsado) entre re-renders do agrupador
+  const estadoCadeias = new Map();
 
   // ─── Normalizar texto para comparação (strip acentos, lowercase) ─
   function norm(s) {
@@ -203,13 +205,20 @@
 
       if (g.rootInIdx && g.rootTr && !g.rootTr.classList.contains('fe-filtrado')) {
         g.rootTr.classList.add('fe-cadeia-raiz');
-        g.rootTr.dataset.feCadeiaRoot = String(rootNum);
+        // data-fe-cadeia-root-self (distinto de data-fe-cadeia-root) garante que a raiz
+        // nunca caia no seletor tr.fe-cadeia-membro[data-fe-cadeia-root="N"] do toggle
+        g.rootTr.dataset.feCadeiaRootSelf = String(rootNum);
       }
 
-      // Ordenar por rowIndex para encontrar o topo do grupo no DOM
+      // Preservar estado de colapso entre re-renders
+      const estaColapsado = estadoCadeias.get(rootNum) === true;
+      if (estaColapsado) {
+        membrosVisiveis.forEach(m => { m.tr.style.display = 'none'; });
+      }
+
       const sorted = membrosVisiveis.map(m => m.tr).sort((a, b) => a.rowIndex - b.rowIndex);
       const primeiroMembro = sorted[0];
-      const toggleRow = criarToggleCadeia(rootNum, g.rootInIdx, membrosVisiveis.length);
+      const toggleRow = criarToggleCadeia(rootNum, g.rootInIdx, membrosVisiveis.length, estaColapsado);
       primeiroMembro.parentNode.insertBefore(toggleRow, primeiroMembro);
     }
   }
@@ -221,10 +230,11 @@
     // Remover UI de cadeias anteriores — incluindo style.display inline do colapso
     document.querySelectorAll('.fe-cadeia-toggle-row').forEach(el => el.remove());
     if (tabela) {
-      tabela.querySelectorAll('[data-fe-cadeia-root]').forEach(tr => {
+      tabela.querySelectorAll('[data-fe-cadeia-root], [data-fe-cadeia-root-self]').forEach(tr => {
         tr.classList.remove('fe-cadeia-membro', 'fe-cadeia-raiz');
         tr.style.removeProperty('display');
         delete tr.dataset.feCadeiaRoot;
+        delete tr.dataset.feCadeiaRootSelf;
       });
     }
 
@@ -278,10 +288,11 @@
 
   // ─── Construir linha-toggle da cadeia ───────────────────────────
   // rootInIdx: se false, raiz não está na página (paginação/filtro nativo)
-  function criarToggleCadeia(rootNum, rootInIdx, count) {
+  // inicialmenteColapsado: restaura estado salvo em estadoCadeias
+  function criarToggleCadeia(rootNum, rootInIdx, count, inicialmenteColapsado) {
     const tr = document.createElement('tr');
     tr.className = 'fe-cadeia-toggle-row';
-    tr.dataset.feCadeiaRoot = String(rootNum);
+    tr.dataset.feCadeiaToggle = String(rootNum);
 
     const td = document.createElement('td');
     td.colSpan = 6;
@@ -290,35 +301,42 @@
     const btn = document.createElement('button');
     btn.type      = 'button';
     btn.className = 'fe-cadeia-btn';
-    btn.setAttribute('aria-expanded', 'true');
+    btn.setAttribute('aria-expanded', String(!inicialmenteColapsado));
 
     const prefixo = rootInIdx
       ? `Cadeia de intimação (ato: ${rootNum})`
       : `Etapas de intimação`;
 
+    const etapas = count === 1 ? '1 etapa' : `${count} etapas`;
+
     const renderLabel = (expandido) => expandido
-      ? `${prefixo} — ocultar ${count} etapa${count !== 1 ? 's' : ''}`
-      : `${prefixo} — mostrar ${count} etapa${count !== 1 ? 's' : ''}`;
+      ? `${prefixo} — ocultar ${etapas}`
+      : `${prefixo} — exibir ${etapas}`;
 
     btn.innerHTML = `
       <svg class="fe-cadeia-btn__icon" viewBox="0 0 16 16" fill="none" width="11" height="11" aria-hidden="true">
         <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      <span class="fe-cadeia-btn__label">${renderLabel(true)}</span>
+      <span class="fe-cadeia-btn__label">${renderLabel(!inicialmenteColapsado)}</span>
     `;
 
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const expandido = btn.getAttribute('aria-expanded') === 'true';
+    if (inicialmenteColapsado) {
+      btn.querySelector('.fe-cadeia-btn__icon').style.transform = 'rotate(-90deg)';
+    }
+
+    btn.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const btnEl     = ev.currentTarget;           // robusto: ignora cliques em filhos (span, svg)
+      const expandido = btnEl.getAttribute('aria-expanded') === 'true';
       const novoEstado = !expandido;
-      btn.setAttribute('aria-expanded', String(novoEstado));
-      btn.querySelector('.fe-cadeia-btn__icon').style.transform = novoEstado ? '' : 'rotate(-90deg)';
-      btn.querySelector('.fe-cadeia-btn__label').textContent = renderLabel(novoEstado);
-      // Buscar membros pelo data-attribute — robusto mesmo após re-renders
+      btnEl.setAttribute('aria-expanded', String(novoEstado));
+      btnEl.querySelector('.fe-cadeia-btn__icon').style.transform = novoEstado ? '' : 'rotate(-90deg)';
+      btnEl.querySelector('.fe-cadeia-btn__label').textContent = renderLabel(novoEstado);
+      estadoCadeias.set(rootNum, !novoEstado);       // persiste: colapsado = !expandido
       const tbl = tr.closest('table') || tabela;
       if (tbl) {
-        tbl.querySelectorAll(`tr.fe-cadeia-membro[data-fe-cadeia-root="${rootNum}"]`)
+        tbl.querySelectorAll(`tr.fe-cadeia-membro[data-fe-cadeia-root="${CSS.escape(String(rootNum))}"]`)
           .forEach(mTr => { mTr.style.display = novoEstado ? '' : 'none'; });
       }
     });
@@ -511,7 +529,9 @@
       tr.classList.remove('fe-filtrado', 'fe-cadeia-membro', 'fe-cadeia-raiz');
       tr.style.removeProperty('display');
       delete tr.dataset.feCadeiaRoot;
+      delete tr.dataset.feCadeiaRootSelf;
     });
+    estadoCadeias.clear();
     tabela = null;
   }
 
