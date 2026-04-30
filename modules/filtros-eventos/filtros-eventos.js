@@ -240,6 +240,7 @@
     td.className = 'fe-cadeia-toggle-cell';
 
     const btn = document.createElement('button');
+    btn.type      = 'button';
     btn.className = 'fe-cadeia-btn';
     btn.setAttribute('aria-expanded', 'true');
 
@@ -255,7 +256,9 @@
       <span class="fe-cadeia-btn__label">${renderLabel(true)}</span>
     `;
 
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       const expandido = btn.getAttribute('aria-expanded') === 'true';
       const novoEstado = !expandido;
       btn.setAttribute('aria-expanded', String(novoEstado));
@@ -302,7 +305,7 @@
 
     toolbarEl.innerHTML = `
       <div class="fe-toolbar__header">
-        <button class="fe-toolbar__toggle" aria-expanded="false" aria-controls="fe-body"
+        <button type="button" class="fe-toolbar__toggle" aria-expanded="false" aria-controls="fe-body"
                 title="Expandir/recolher +Filtros de Eventos">
           <svg viewBox="0 0 16 16" fill="none" width="12" height="12" aria-hidden="true">
             <path d="M2 4h12M4 8h8M6 12h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -342,7 +345,7 @@
           </div>
         </div>
         <div class="fe-toolbar__footer">
-          <button class="fe-btn-reset" id="fe-reset">↺ Limpar filtros</button>
+          <button type="button" class="fe-btn-reset" id="fe-reset">↺ Limpar filtros</button>
         </div>
       </div>
     `;
@@ -352,7 +355,9 @@
     const bodyEl    = toolbarEl.querySelector('#fe-body');
     const chevron   = toolbarEl.querySelector('.fe-toolbar__chevron');
 
-    toggleBtn.addEventListener('click', () => {
+    toggleBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       const aberto = bodyEl.hidden;
       bodyEl.hidden = !aberto;
       toggleBtn.setAttribute('aria-expanded', String(aberto));
@@ -394,10 +399,20 @@
     });
 
     // Reset
-    toolbarEl.querySelector('#fe-reset').addEventListener('click', () => {
+    toolbarEl.querySelector('#fe-reset').addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       filtros = { ...FILTROS_PADRAO };
       sincronizarUI();
       salvarEAplicar();
+    });
+
+    // Suprimir Enter em inputs do toolbar — inputs type=date/text dentro de <form>
+    // acionariam submit ao pressionar Enter
+    toolbarEl.querySelectorAll('input').forEach(inp => {
+      inp.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); }
+      });
     });
 
     sincronizarUI();
