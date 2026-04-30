@@ -12,16 +12,6 @@
   // ─── Categorias de evento (testadas contra label normalizado) ────
   const CATEGORIAS = [
     {
-      key: 'decisao',
-      label: 'Decisões',
-      teste: s => s.includes('decisao') || s.includes('sentenca') || s.includes('antecipacao') || s.includes('gratuidade') || s.includes('outras decisoes'),
-    },
-    {
-      key: 'despacho',
-      label: 'Despachos / Conclusos',
-      teste: s => s.includes('despacho') || s.includes('conclusos'),
-    },
-    {
       key: 'intimacao_expedida',
       label: 'Intimações expedidas',
       teste: s => s.includes('expedida') && s.includes('intimacao'),
@@ -35,26 +25,6 @@
       key: 'publicacao_djen',
       label: 'Publicações no DJEN',
       teste: s => s.includes('publicado no djen') || s.includes('disponibilizado no djen') || (s.includes('disponibilizado') && (s.includes('djen') || s.includes('diario'))),
-    },
-    {
-      key: 'ato_ordinatorio',
-      label: 'Atos Ordinatórios',
-      teste: s => s.includes('ato ordinatorio'),
-    },
-    {
-      key: 'certidao',
-      label: 'Certidões',
-      teste: s => s.includes('certidao'),
-    },
-    {
-      key: 'peticao',
-      label: 'Petições / Pareceres',
-      teste: s => s.includes('peticao') || s.includes('parecer'),
-    },
-    {
-      key: 'distribuicao',
-      label: 'Distribuição',
-      teste: s => s.includes('distribuido') || s.includes('distribuicao'),
     },
   ];
 
