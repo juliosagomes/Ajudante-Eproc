@@ -37,6 +37,11 @@
       label: 'Colorir Localizadores',
       descricao: 'Aplica cores personalizadas nos links de localizadores do Eproc.',
     },
+    {
+      id: 'filtrosEventos',
+      label: '+Filtros de Eventos',
+      descricao: 'Filtragem e agrupamento avançados na aba Eventos de cada processo.',
+    },
   ];
 
   // ─── Definição dos ajustes gerais (scripts globais) ─────────────
@@ -212,6 +217,7 @@
     });
     if (panelId === 'lembretes')            renderListaLembretes();
     if (panelId === 'colorirLocalizadores') renderCoresLocalizadores();
+    // filtrosEventos: sem dados gerenciáveis nesta tela (filtros são config. inline no processo)
   }
 
   // ─── Lista de lembretes salvos ────────────────────────────────────

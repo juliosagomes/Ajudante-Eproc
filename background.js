@@ -2,8 +2,9 @@
 
 const DEFAULT_SETTINGS = {
   modules: {
-    lembretes:           { enabled: true },
+    lembretes:            { enabled: true },
     colorirLocalizadores: { enabled: true },
+    filtrosEventos:       { enabled: true },
   },
   scripts: {
     localizadorBusca: { enabled: true }
@@ -26,6 +27,11 @@ chrome.runtime.onInstalled.addListener(() => {
       if (!atual.modules?.colorirLocalizadores) {
         if (!atual.modules) atual.modules = {};
         atual.modules.colorirLocalizadores = DEFAULT_SETTINGS.modules.colorirLocalizadores;
+        dirty = true;
+      }
+      if (!atual.modules?.filtrosEventos) {
+        if (!atual.modules) atual.modules = {};
+        atual.modules.filtrosEventos = DEFAULT_SETTINGS.modules.filtrosEventos;
         dirty = true;
       }
       if (dirty) chrome.storage.local.set({ eprocSettings: atual });
