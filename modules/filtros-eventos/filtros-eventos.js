@@ -54,6 +54,7 @@
     dataInicio:        '',
     dataFim:           '',
     agruparIntimacoes: true,
+    colapsarIntimacoes: false,
   };
 
   let filtros      = { ...FILTROS_PADRAO };
@@ -186,7 +187,9 @@
       }
 
       // Preservar estado de colapso entre re-renders
-      const estaColapsado = estadoCadeias.get(rootNum) === true;
+      const estaColapsado = estadoCadeias.has(rootNum)
+        ? estadoCadeias.get(rootNum) === true
+        : !!filtros.colapsarIntimacoes;
       if (estaColapsado) {
         membrosVisiveis.forEach(m => { m.tr.style.display = 'none'; });
       }
@@ -391,6 +394,7 @@
           <span class="fe-section__label">Agrupamento</span>
           <div class="fe-checkboxes">
             <label class="fe-check"><input type="checkbox" id="fe-agrupar-intimacoes"> Agrupar cadeia de intimação</label>
+            <label class="fe-check"><input type="checkbox" id="fe-colapsar-intimacoes"> Retrair cadeias por padrão</label>
           </div>
         </div>
         <div class="fe-toolbar__footer">
@@ -432,6 +436,7 @@
       ['fe-ocultar-externo',    'ocultarExterno'],
       ['fe-ocultar-sistema',    'ocultarSistema'],
       ['fe-agrupar-intimacoes', 'agruparIntimacoes'],
+      ['fe-colapsar-intimacoes', 'colapsarIntimacoes'],
     ].forEach(([id, campo]) => {
       const el = toolbarEl.querySelector(`#${id}`);
       if (el) el.addEventListener('change', () => { filtros[campo] = el.checked; salvarEAplicar(); });
@@ -480,6 +485,7 @@
       ['fe-ocultar-externo',    'ocultarExterno'],
       ['fe-ocultar-sistema',    'ocultarSistema'],
       ['fe-agrupar-intimacoes', 'agruparIntimacoes'],
+      ['fe-colapsar-intimacoes', 'colapsarIntimacoes'],
     ].forEach(([id, campo]) => {
       const el = toolbarEl.querySelector(`#${id}`);
       if (el) el.checked = !!filtros[campo];
