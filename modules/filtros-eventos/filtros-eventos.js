@@ -47,7 +47,7 @@
   ];
 
   const FILTROS_PADRAO = {
-    categoriasOcultas: ['complementar'],
+    categoriasOcultas: [],
     ocultarSistema:    false,
     ocultarInterno:    false,
     ocultarExterno:    false,
