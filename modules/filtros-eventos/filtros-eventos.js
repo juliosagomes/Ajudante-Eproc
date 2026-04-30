@@ -9,28 +9,36 @@
   const STORAGE_KEY  = 'eprocFiltrosEventos';
   const MODULE_NAME  = 'filtrosEventos';
 
-  // ─── Categorias de evento (testadas contra label normalizado) ────
+  // ─── Categorias de evento ────────────────────────────────────────
+  // teste(tipoNorm, descNorm, parsed) — cada categoria escolhe o que olhar:
+  //   tipoNorm = texto do <label class="infraEventoDescricao"> normalizado
+  //   descNorm = textContent inteiro de cells[3] normalizado (inclui sufixo fora do label)
+  //   parsed   = objeto retornado por parsearLinha (ehComplementar, eventoComplementadoNum, etc.)
   const CATEGORIAS = [
     {
       key: 'intimacao_expedida',
       label: 'Intimações expedidas',
-      teste: s => s.includes('expedida') && s.includes('intimacao'),
+      teste: (tipoNorm) => tipoNorm.includes('expedida') && tipoNorm.includes('intimacao'),
     },
     {
       key: 'intimacao_confirmada',
       label: 'Confirmações de intimação',
-      teste: s => s.includes('confirmada') && s.includes('intimacao'),
+      teste: (tipoNorm) => tipoNorm.includes('confirmada') && tipoNorm.includes('intimacao'),
     },
     {
       key: 'publicacao_djen',
       label: 'Publicações no DJEN',
-      teste: s => s.includes('publicado no djen') || s.includes('disponibilizado no djen') || (s.includes('disponibilizado') && (s.includes('djen') || s.includes('diario'))),
+      teste: (tipoNorm) => tipoNorm.includes('publicado no djen')
+        || tipoNorm.includes('disponibilizado no djen')
+        || (tipoNorm.includes('disponibilizado') && (tipoNorm.includes('djen') || tipoNorm.includes('diario'))),
     },
     {
-  key: 'complementar',
-  label: 'Complementares a evento',
-  teste: s => s.includes('complementar ao evento'),
-},
+      key: 'complementar',
+      label: 'Complementares a evento',
+      // O sufixo "Complementar ao evento nº N" fica FORA do <label> (texto irmão na <td>),
+      // então precisa ser detectado contra a descrição inteira da célula, não só tipoNorm.
+      teste: (_tipoNorm, _descNorm, parsed) => !!parsed?.ehComplementar,
+    },
   ];
 
   // ─── Padrões de etapa de cadeia de intimação ────────────────────
@@ -73,6 +81,46 @@
       .normalize('NFD').replace(/[̀-ͯ]/g, '');
   }
 
+  // ─── Extrair descrição estruturada da cell[3] ───────────────────
+  // Em eventos complementares o template do Eproc renderiza:
+  //   <label class="infraEventoDescricao">Proferido despacho ...</label> - Complementar ao evento nº 20
+  // ou seja, " - Complementar ao evento nº N" é nó-texto IRMÃO do <label>.
+  // Esta função expõe tanto o texto de dentro do label (tipoLabel) quanto
+  // o texto fora dele (sufixoComplemento) e a descrição completa da célula.
+  function extrairDescricao(td) {
+    if (!td) return { descCompleta: '', descNorm: '', tipoLabel: '', tipoNorm: '',
+                      sufixoComplemento: '', ehComplementar: false, eventoComplementadoNum: null };
+
+    const labelEl   = td.querySelector('label');
+    const tipoLabel = (labelEl?.textContent || '').replace(/\s+/g, ' ').trim();
+    const tipoNorm  = norm(tipoLabel);
+
+    const descCompleta = (td.textContent || '').replace(/\s+/g, ' ').trim();
+    const descNorm     = norm(descCompleta);
+
+    // Concatenar texto dos nós irmãos do <label> na <td> (texto fora do label).
+    let sufixoParts = [];
+    if (labelEl) {
+      for (const node of td.childNodes) {
+        if (node === labelEl) continue;
+        const t = node.textContent;
+        if (t) sufixoParts.push(t);
+      }
+    }
+    const sufixoComplemento = sufixoParts.join(' ').replace(/\s+/g, ' ')
+      .replace(/^[\s\-–—]+/, '').trim();
+
+    const ehComplementar = descNorm.includes('complementar ao evento');
+    let eventoComplementadoNum = null;
+    if (ehComplementar) {
+      const m = /complementar\s+ao\s+evento\s+n[º°o]?\.?\s*(\d+)/i.exec(descCompleta);
+      if (m) eventoComplementadoNum = Number(m[1]);
+    }
+
+    return { descCompleta, descNorm, tipoLabel, tipoNorm, sufixoComplemento,
+             ehComplementar, eventoComplementadoNum };
+  }
+
   // ─── Parsear linha da tabela de eventos ─────────────────────────
   function parsearLinha(tr) {
     const cells = tr.cells;
@@ -82,18 +130,17 @@
     if (isNaN(numero)) return null;
 
     const dataHoraText = cells[2]?.textContent?.trim() || '';
-    const labelEl      = cells[3]?.querySelector('label');
-    const tipoLabel    = labelEl?.textContent?.trim() || cells[3]?.textContent?.trim() || '';
-    const tipoNorm     = norm(tipoLabel);
+    const desc = extrairDescricao(cells[3]);
+    const { descCompleta, descNorm, tipoLabel, tipoNorm,
+            sufixoComplemento, ehComplementar, eventoComplementadoNum } = desc;
 
     const usuarioText = cells[4]?.textContent?.trim() || '';
     const ehSistema   = /sistema|automatiza/i.test(usuarioText);
 
     const dataParte = (tr.dataset.parte || '').toUpperCase().trim();
 
-    // Parsear "Refer. ao(s) Evento(s): N, M e P"
-    const descText  = (cells[3]?.textContent || '').replace(/\s+/g, ' ');
-    const refsMatch = /Refer\.\s*ao(?:s)?\s*Evento(?:s)?\s*:?\s*([0-9 ,e]+)/i.exec(descText);
+    // Parsear "Refer. ao(s) Evento(s): N, M e P" — usa descCompleta da célula
+    const refsMatch = /Refer\.\s*ao(?:s)?\s*Evento(?:s)?\s*:?\s*([0-9 ,e]+)/i.exec(descCompleta);
     const refsEventos = refsMatch
       ? refsMatch[1].split(/[ ,e]+/).filter(Boolean).map(Number)
       : [];
@@ -102,10 +149,17 @@
     const dm = dataHoraText.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
     const dataParsed = dm ? new Date(+dm[3], +dm[2] - 1, +dm[1]) : null;
 
-    const cat = CATEGORIAS.find(c => c.teste(tipoNorm));
-    const categoria = cat ? cat.key : 'outros';
+    const parsedBase = {
+      numero, dataHoraText, dataParsed, tipoLabel, tipoNorm,
+      descCompleta, descNorm, sufixoComplemento,
+      ehComplementar, eventoComplementadoNum,
+      dataParte, ehSistema, refsEventos, tr,
+    };
 
-    return { numero, dataHoraText, dataParsed, tipoLabel, tipoNorm, categoria, dataParte, ehSistema, refsEventos, tr };
+    const cat = CATEGORIAS.find(c => c.teste(tipoNorm, descNorm, parsedBase));
+    parsedBase.categoria = cat ? cat.key : 'outros';
+
+    return parsedBase;
   }
 
   function lerEventos() {
@@ -125,13 +179,17 @@
       const m = /^trEvento(\d+)$/.exec(tr.id);
       if (!m) continue;
       const numero = Number(m[1]);
-      const label  = (tr.cells[3]?.querySelector('label')?.textContent
-                   || tr.cells[3]?.textContent
-                   || '').trim();
-      const desc   = (tr.cells[3]?.textContent || '').replace(/\s+/g, ' ');
-      const rm     = /Refer\.\s*ao(?:s)?\s*Evento(?:s)?\s*:?\s*([0-9 ,e]+)/i.exec(desc);
-      const refs   = rm ? rm[1].split(/[ ,e]+/).filter(Boolean).map(Number) : [];
-      idx.set(numero, { numero, tr, label, refs, isStep: STEP_PATTERNS.some(re => re.test(label)) });
+      const d = extrairDescricao(tr.cells[3]);
+      // label = texto do <label> (cai para descCompleta se não houver label)
+      const label = d.tipoLabel || d.descCompleta;
+      const rm    = /Refer\.\s*ao(?:s)?\s*Evento(?:s)?\s*:?\s*([0-9 ,e]+)/i.exec(d.descCompleta);
+      const refs  = rm ? rm[1].split(/[ ,e]+/).filter(Boolean).map(Number) : [];
+      idx.set(numero, {
+        numero, tr, label, refs,
+        isStep: STEP_PATTERNS.some(re => re.test(label)),
+        ehComplementar: d.ehComplementar,
+        eventoComplementadoNum: d.eventoComplementadoNum,
+      });
     }
     return idx;
   }
@@ -169,6 +227,16 @@
   }
 
   // Marcar DOM e inserir linha-toggle ACIMA do primeiro membro (menor rowIndex).
+  //
+  // INVARIANT: apenas STEPS (eventos cuja label casa STEP_PATTERNS) recebem a classe
+  // .fe-cadeia-membro e o atributo data-fe-cadeia-root. Eventos não-step que estiverem
+  // fisicamente intercalados entre dois steps na tabela (ex.: petição do advogado entre
+  // "Expedida a intimação" e "Confirmada a intimação") NÃO são marcados aqui — só os
+  // membros de g.members é que são, e g.members vem de construirGrupos, que filtra por
+  // isStep. Como o handler de toggle só altera display de tr.fe-cadeia-membro, eventos
+  // intercalados ficam imunes ao colapso/expansão da cadeia, mantendo posição e
+  // visibilidade originais. O contador de etapas (membrosVisiveis.length) também conta
+  // somente steps, então petições intercaladas não inflam o "N etapas" do botão.
   function aplicarGrupos(grupos) {
     for (const [rootNum, g] of grupos) {
       const membrosVisiveis = g.members.filter(m => !m.tr.classList.contains('fe-filtrado'));
@@ -314,6 +382,9 @@
       estadoCadeias.set(rootNum, !novoEstado);       // persiste: colapsado = !expandido
       const tbl = tr.closest('table') || tabela;
       if (tbl) {
+        // Seletor restrito a tr.fe-cadeia-membro: só alcança steps da cadeia.
+        // Eventos não-step intercalados não têm essa classe e portanto preservam
+        // seu display original ao colapsar/expandir.
         tbl.querySelectorAll(`tr.fe-cadeia-membro[data-fe-cadeia-root="${CSS.escape(String(rootNum))}"]`)
           .forEach(mTr => { mTr.style.display = novoEstado ? '' : 'none'; });
       }
