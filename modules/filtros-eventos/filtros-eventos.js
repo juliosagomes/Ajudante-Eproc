@@ -58,6 +58,19 @@
     },
   ];
 
+  // ─── Padrões de etapa de cadeia de intimação ────────────────────
+  // Tudo que casar é uma ETAPA (step), não uma raiz decisória.
+  const STEP_PATTERNS = [
+    /^Expedida\/certificada a intima/i,
+    /^Confirmada a intima/i,
+    /^Disponibilizado no DJEN/i,
+    /^Disponibilizado no Di[áa]rio Eletr[ôo]nico/i,
+    /^Publicado no DJEN/i,
+    /^Publicado no Di[áa]rio Eletr[ôo]nico/i,
+    /^Decorrido o prazo/i,
+    /^Certid[ãa]o de decurso de prazo/i,
+  ];
+
   const FILTROS_PADRAO = {
     categoriasOcultas: [],
     ocultarSistema:    false,
@@ -100,11 +113,11 @@
 
     const dataParte = (tr.dataset.parte || '').toUpperCase().trim();
 
-    // Parsear "Refer. ao Evento N" / "Refer. aos Eventos N, M e P"
-    const descText  = cells[3]?.textContent || '';
-    const refsMatch = descText.match(/Refer\.\s+ao[s]?\s+Evento[s]?\s*[:\s]+([\d][^\n]{0,50})/i);
+    // Parsear "Refer. ao(s) Evento(s): N, M e P"
+    const descText  = (cells[3]?.textContent || '').replace(/\s+/g, ' ');
+    const refsMatch = /Refer\.\s*ao(?:s)?\s*Evento(?:s)?\s*:?\s*([0-9 ,e]+)/i.exec(descText);
     const refsEventos = refsMatch
-      ? (refsMatch[1].match(/\d+/g) || []).map(Number)
+      ? refsMatch[1].split(/[ ,e]+/).filter(Boolean).map(Number)
       : [];
 
     // Parsear data dd/mm/aaaa
@@ -123,49 +136,97 @@
       .map(parsearLinha).filter(Boolean);
   }
 
-  // ─── Detecção de cadeias de intimação ───────────────────────────
-  function isExpedidaIntimacao(e) {
-    return e.tipoNorm.includes('expedida') && e.tipoNorm.includes('intimacao');
+  // ─── Detecção e agrupamento de cadeias de intimação ────────────
+
+  // Indexar todos os eventos da tabela pelo número (id + label + refs + isStep).
+  // Independente de parsearLinha para usar o mesmo índice na resolução de raiz.
+  function indexarEventos() {
+    const idx = new Map();
+    if (!tabela) return idx;
+    for (const tr of tabela.querySelectorAll('tr[id^="trEvento"]')) {
+      const m = /^trEvento(\d+)$/.exec(tr.id);
+      if (!m) continue;
+      const numero = Number(m[1]);
+      const label  = (tr.cells[3]?.querySelector('label')?.textContent
+                   || tr.cells[3]?.textContent
+                   || '').trim();
+      const desc   = (tr.cells[3]?.textContent || '').replace(/\s+/g, ' ');
+      const rm     = /Refer\.\s*ao(?:s)?\s*Evento(?:s)?\s*:?\s*([0-9 ,e]+)/i.exec(desc);
+      const refs   = rm ? rm[1].split(/[ ,e]+/).filter(Boolean).map(Number) : [];
+      idx.set(numero, { numero, tr, label, refs, isStep: STEP_PATTERNS.some(re => re.test(label)) });
+    }
+    return idx;
   }
-  function isMembroCadeia(e) {
-    return (e.tipoNorm.includes('confirmada') && e.tipoNorm.includes('intimacao'))
-        || e.tipoNorm.includes('publicado no djen')
-        || (e.tipoNorm.includes('disponibilizado') && (e.tipoNorm.includes('djen') || e.tipoNorm.includes('diario')));
+
+  // Subir pelos refs enquanto o candidato for step — para no ato decisório original.
+  function rootOf(num, idx, seen = new Set()) {
+    if (seen.has(num)) return num;               // proteção contra ciclos
+    seen.add(num);
+    const ev = idx.get(num);
+    if (!ev || !ev.isStep || ev.refs.length === 0) return num;
+    // Usar o primeiro ref que exista no índice; se nenhum, usar o primeiro mesmo assim
+    const candidate = ev.refs.find(n => idx.has(n)) ?? ev.refs[0];
+    return rootOf(candidate, idx, seen);
   }
 
-  function detectarCadeias(eventos) {
-    const jaEmCadeia = new Set();
-    const cadeias    = [];
-
-    eventos.forEach(ev => {
-      if (!isExpedidaIntimacao(ev) || jaEmCadeia.has(ev.numero)) return;
-
-      const membros = eventos.filter(m =>
-        !jaEmCadeia.has(m.numero) &&
-        m.numero !== ev.numero &&
-        m.refsEventos.includes(ev.numero) &&
-        isMembroCadeia(m)
-      );
-
-      if (membros.length > 0) {
-        cadeias.push({ raiz: ev, membros });
-        jaEmCadeia.add(ev.numero);
-        membros.forEach(m => jaEmCadeia.add(m.numero));
+  // Agrupar todos os steps por raiz → Map<rootNum, { rootLabel, rootInIdx, rootTr, members[] }>
+  function construirGrupos(idx) {
+    const grupos = new Map();
+    for (const ev of idx.values()) {
+      if (!ev.isStep) continue;
+      const rootNum = rootOf(ev.numero, idx);
+      const rootEv  = idx.get(rootNum);
+      if (!grupos.has(rootNum)) {
+        grupos.set(rootNum, {
+          rootNum,
+          rootLabel: rootEv?.label || `Evento ${rootNum}`,
+          rootInIdx: !!rootEv,
+          rootTr:    rootEv?.tr || null,
+          members:   [],
+        });
       }
-    });
+      grupos.get(rootNum).members.push(ev);
+    }
+    return grupos;
+  }
 
-    return cadeias;
+  // Marcar DOM e inserir linha-toggle ACIMA do primeiro membro (menor rowIndex).
+  function aplicarGrupos(grupos) {
+    for (const [rootNum, g] of grupos) {
+      const membrosVisiveis = g.members.filter(m => !m.tr.classList.contains('fe-filtrado'));
+      if (membrosVisiveis.length === 0) continue;
+
+      membrosVisiveis.forEach(m => {
+        m.tr.classList.add('fe-cadeia-membro');
+        m.tr.dataset.feCadeiaRoot = String(rootNum);
+      });
+
+      if (g.rootInIdx && g.rootTr && !g.rootTr.classList.contains('fe-filtrado')) {
+        g.rootTr.classList.add('fe-cadeia-raiz');
+        g.rootTr.dataset.feCadeiaRoot = String(rootNum);
+      }
+
+      // Ordenar por rowIndex para encontrar o topo do grupo no DOM
+      const sorted = membrosVisiveis.map(m => m.tr).sort((a, b) => a.rowIndex - b.rowIndex);
+      const primeiroMembro = sorted[0];
+      const toggleRow = criarToggleCadeia(rootNum, g.rootInIdx, membrosVisiveis.length);
+      primeiroMembro.parentNode.insertBefore(toggleRow, primeiroMembro);
+    }
   }
 
   // ─── Aplicar filtros (função interna, sem guard) ─────────────────
   function _aplicarFiltros() {
     const eventos = lerEventos();
 
-    // Remover UI de cadeias anteriores
+    // Remover UI de cadeias anteriores — incluindo style.display inline do colapso
     document.querySelectorAll('.fe-cadeia-toggle-row').forEach(el => el.remove());
-    eventos.forEach(ev => {
-      ev.tr.classList.remove('fe-cadeia-membro', 'fe-cadeia-raiz', 'fe-cadeia-colapsado');
-    });
+    if (tabela) {
+      tabela.querySelectorAll('[data-fe-cadeia-root]').forEach(tr => {
+        tr.classList.remove('fe-cadeia-membro', 'fe-cadeia-raiz');
+        tr.style.removeProperty('display');
+        delete tr.dataset.feCadeiaRoot;
+      });
+    }
 
     // Construir filtros de data
     let dataInicio = null, dataFim = null;
@@ -194,18 +255,7 @@
 
     // Agrupamento de cadeias de intimação
     if (filtros.agruparIntimacoes) {
-      detectarCadeias(eventos).forEach(({ raiz, membros }) => {
-        if (raiz.tr.classList.contains('fe-filtrado')) return;
-
-        const membrosVisiveis = membros.filter(m => !m.tr.classList.contains('fe-filtrado'));
-        if (membrosVisiveis.length === 0) return;
-
-        raiz.tr.classList.add('fe-cadeia-raiz');
-        membrosVisiveis.forEach(m => m.tr.classList.add('fe-cadeia-membro'));
-
-        // Toggle row inserido ANTES da linha-raiz (que aparece por último no DOM desc.)
-        raiz.tr.insertAdjacentElement('beforebegin', criarToggleCadeia(raiz, membrosVisiveis));
-      });
+      aplicarGrupos(construirGrupos(indexarEventos()));
     }
 
     atualizarContador(eventos);
@@ -227,13 +277,11 @@
   }
 
   // ─── Construir linha-toggle da cadeia ───────────────────────────
-  function criarToggleCadeia(raiz, membros) {
-    const membrosTr = membros.map(m => m.tr);
-    const n = membrosTr.length;
-
+  // rootInIdx: se false, raiz não está na página (paginação/filtro nativo)
+  function criarToggleCadeia(rootNum, rootInIdx, count) {
     const tr = document.createElement('tr');
     tr.className = 'fe-cadeia-toggle-row';
-    tr.dataset.feRaiz = raiz.numero;
+    tr.dataset.feCadeiaRoot = String(rootNum);
 
     const td = document.createElement('td');
     td.colSpan = 6;
@@ -244,10 +292,13 @@
     btn.className = 'fe-cadeia-btn';
     btn.setAttribute('aria-expanded', 'true');
 
-    const renderLabel = (expandido) =>
-      expandido
-        ? `Cadeia de intimação — ocultar ${n} etapa${n !== 1 ? 's' : ''}`
-        : `Cadeia de intimação — mostrar ${n} etapa${n !== 1 ? 's' : ''}`;
+    const prefixo = rootInIdx
+      ? `Cadeia de intimação (ato: ${rootNum})`
+      : `Etapas de intimação`;
+
+    const renderLabel = (expandido) => expandido
+      ? `${prefixo} — ocultar ${count} etapa${count !== 1 ? 's' : ''}`
+      : `${prefixo} — mostrar ${count} etapa${count !== 1 ? 's' : ''}`;
 
     btn.innerHTML = `
       <svg class="fe-cadeia-btn__icon" viewBox="0 0 16 16" fill="none" width="11" height="11" aria-hidden="true">
@@ -264,7 +315,12 @@
       btn.setAttribute('aria-expanded', String(novoEstado));
       btn.querySelector('.fe-cadeia-btn__icon').style.transform = novoEstado ? '' : 'rotate(-90deg)';
       btn.querySelector('.fe-cadeia-btn__label').textContent = renderLabel(novoEstado);
-      membrosTr.forEach(mTr => mTr.classList.toggle('fe-cadeia-colapsado', !novoEstado));
+      // Buscar membros pelo data-attribute — robusto mesmo após re-renders
+      const tbl = tr.closest('table') || tabela;
+      if (tbl) {
+        tbl.querySelectorAll(`tr.fe-cadeia-membro[data-fe-cadeia-root="${rootNum}"]`)
+          .forEach(mTr => { mTr.style.display = novoEstado ? '' : 'none'; });
+      }
     });
 
     td.appendChild(btn);
@@ -452,7 +508,9 @@
     if (toolbarEl) { toolbarEl.remove(); toolbarEl = null; }
     document.querySelectorAll('.fe-cadeia-toggle-row').forEach(el => el.remove());
     document.querySelectorAll('tr[id^="trEvento"]').forEach(tr => {
-      tr.classList.remove('fe-filtrado', 'fe-cadeia-membro', 'fe-cadeia-raiz', 'fe-cadeia-colapsado');
+      tr.classList.remove('fe-filtrado', 'fe-cadeia-membro', 'fe-cadeia-raiz');
+      tr.style.removeProperty('display');
+      delete tr.dataset.feCadeiaRoot;
     });
     tabela = null;
   }
