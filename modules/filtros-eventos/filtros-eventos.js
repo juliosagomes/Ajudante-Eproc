@@ -447,7 +447,7 @@ function aplicarGrupos(grupos) {
     btn.setAttribute('aria-expanded', String(!inicialmenteColapsado));
 
     const prefixo = rootInIdx
-      ? `Cadeia de intimação (ato: ${rootNum})`
+      ? `📢 Intimação (ato: ${rootNum})`
       : `Etapas de intimação`;
     const etapas    = count === 1 ? '1 etapa' : `${count} etapas`;
     const polosHtml = renderPolosHtml(polos);
