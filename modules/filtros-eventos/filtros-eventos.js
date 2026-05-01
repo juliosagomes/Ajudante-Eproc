@@ -314,49 +314,57 @@
       .join(', ');
   }
 
-  // Marcar DOM e inserir linha-toggle ACIMA do primeiro membro (menor rowIndex).
-  //
-  // INVARIANT: apenas STEPS (eventos cuja label casa STEP_PATTERNS) recebem a classe
-  // .fe-cadeia-membro e o atributo data-fe-cadeia-root. Eventos não-step que estiverem
-  // fisicamente intercalados entre dois steps na tabela (ex.: petição do advogado entre
-  // "Expedida a intimação" e "Confirmada a intimação") NÃO são marcados aqui — só os
-  // membros de g.members é que são, e g.members vem de construirGrupos, que filtra por
-  // isStep. Como o handler de toggle só altera display de tr.fe-cadeia-membro, eventos
-  // intercalados ficam imunes ao colapso/expansão da cadeia, mantendo posição e
-  // visibilidade originais. O contador de etapas (membrosVisiveis.length) também conta
-  // somente steps, então petições intercaladas não inflam o "N etapas" do botão.
-  function aplicarGrupos(grupos) {
-    for (const [rootNum, g] of grupos) {
-      const membrosVisiveis = g.members.filter(m => !m.tr.classList.contains('fe-filtrado'));
-      if (membrosVisiveis.length === 0) continue;
+// Marcar DOM e inserir linha-toggle ACIMA do PRIMEIRO step da cadeia em ordem
+// cronológica. Como a tabela do Eproc lista eventos em ordem decrescente por
+// número (mais novos no topo), o "primeiro step cronológico" é o membro com
+// MAIOR rowIndex — aquele que aparece visualmente mais abaixo. Por isso
+// ancoramos no último elemento de `sorted` (ordenação ascendente por rowIndex).
+//
+// INVARIANT: apenas STEPS (eventos cuja label casa STEP_PATTERNS) recebem a classe
+// .fe-cadeia-membro e o atributo data-fe-cadeia-root. Eventos não-step que estiverem
+// fisicamente intercalados entre dois steps na tabela (ex.: petição do advogado entre
+// "Expedida a intimação" e "Confirmada a intimação") NÃO são marcados aqui — só os
+// membros de g.members é que são, e g.members vem de construirGrupos, que filtra por
+// isStep. Como o handler de toggle só altera display de tr.fe-cadeia-membro, eventos
+// intercalados ficam imunes ao colapso/expansão da cadeia, mantendo posição e
+// visibilidade originais. O contador de etapas (membrosVisiveis.length) também conta
+// somente steps, então petições intercaladas não inflam o "N etapas" do botão.
+function aplicarGrupos(grupos) {
+  for (const [rootNum, g] of grupos) {
+    const membrosVisiveis = g.members.filter(m => !m.tr.classList.contains('fe-filtrado'));
+    if (membrosVisiveis.length === 0) continue;
 
-      membrosVisiveis.forEach(m => {
-        m.tr.classList.add('fe-cadeia-membro');
-        m.tr.dataset.feCadeiaRoot = String(rootNum);
-      });
+    membrosVisiveis.forEach(m => {
+      m.tr.classList.add('fe-cadeia-membro');
+      m.tr.dataset.feCadeiaRoot = String(rootNum);
+    });
 
-      if (g.rootInIdx && g.rootTr && !g.rootTr.classList.contains('fe-filtrado')) {
-        g.rootTr.classList.add('fe-cadeia-raiz');
-        // data-fe-cadeia-root-self (distinto de data-fe-cadeia-root) garante que a raiz
-        // nunca caia no seletor tr.fe-cadeia-membro[data-fe-cadeia-root="N"] do toggle
-        g.rootTr.dataset.feCadeiaRootSelf = String(rootNum);
-      }
-
-      // Preservar estado de colapso entre re-renders
-      const estaColapsado = estadoCadeias.has(rootNum)
-        ? estadoCadeias.get(rootNum) === true
-        : !!filtros.colapsarIntimacoes;
-      if (estaColapsado) {
-        membrosVisiveis.forEach(m => { m.tr.style.display = 'none'; });
-      }
-
-      const sorted = membrosVisiveis.map(m => m.tr).sort((a, b) => a.rowIndex - b.rowIndex);
-      const primeiroMembro = sorted[0];
-      const polos = extrairPolosDaCadeia(membrosVisiveis);
-      const toggleRow = criarToggleCadeia(rootNum, g.rootInIdx, membrosVisiveis.length, estaColapsado, polos);
-      primeiroMembro.parentNode.insertBefore(toggleRow, primeiroMembro);
+    if (g.rootInIdx && g.rootTr && !g.rootTr.classList.contains('fe-filtrado')) {
+      g.rootTr.classList.add('fe-cadeia-raiz');
+      // data-fe-cadeia-root-self (distinto de data-fe-cadeia-root) garante que a raiz
+      // nunca caia no seletor tr.fe-cadeia-membro[data-fe-cadeia-root="N"] do toggle
+      g.rootTr.dataset.feCadeiaRootSelf = String(rootNum);
     }
+
+    // Preservar estado de colapso entre re-renders
+    const estaColapsado = estadoCadeias.has(rootNum)
+      ? estadoCadeias.get(rootNum) === true
+      : !!filtros.colapsarIntimacoes;
+
+    if (estaColapsado) {
+      membrosVisiveis.forEach(m => { m.tr.style.display = 'none'; });
+    }
+
+    // Âncora = membro de MAIOR rowIndex (= primeiro step cronologicamente, que
+    // na ordem visual decrescente do Eproc fica mais abaixo na tabela).
+    const sorted = membrosVisiveis.map(m => m.tr).sort((a, b) => a.rowIndex - b.rowIndex);
+    const ancora = sorted[sorted.length - 1];
+
+    const polos = extrairPolosDaCadeia(membrosVisiveis);
+    const toggleRow = criarToggleCadeia(rootNum, g.rootInIdx, membrosVisiveis.length, estaColapsado, polos);
+    ancora.parentNode.insertBefore(toggleRow, ancora);
   }
+}
 
   // ─── Aplicar filtros (função interna, sem guard) ─────────────────
   function _aplicarFiltros() {
