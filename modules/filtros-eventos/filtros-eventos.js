@@ -68,6 +68,7 @@
     /^Publicado no Di[áa]rio Eletr[ôo]nico/i,
     /^Decorrido o prazo/i,
     /^Certid[ãa]o de decurso de prazo/i,
+    /\bDocumento encaminhado [àa] disponibiliza[çc][ãa]o\b/i,
   ];
 
   const FILTROS_PADRAO = {
