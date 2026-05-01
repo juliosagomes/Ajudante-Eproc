@@ -37,6 +37,11 @@
       label: 'Colorir Localizadores',
       descricao: 'Aplica cores personalizadas nos links de localizadores do Eproc.',
     },
+    {
+      id: 'filtrosEventos',
+      label: '+Filtros de Eventos',
+      descricao: 'Filtragem e agrupamento avançados na aba Eventos de cada processo.',
+    },
   ];
 
   // ─── Definição dos ajustes gerais (scripts globais) ─────────────
@@ -76,6 +81,8 @@
       renderListaLembretes();
       bindDadosLocalizadores();
       renderCoresLocalizadores();
+      bindPolosFiltrosEventos();
+      renderPolosFiltrosEventos();
     };
 
     if (typeof chrome !== 'undefined' && chrome.runtime) {
@@ -91,8 +98,9 @@
     if (typeof chrome !== 'undefined' && chrome.storage) {
       chrome.storage.onChanged.addListener((changes, area) => {
         if (area !== 'local') return;
-        if (changes.eprocLembretes)          renderListaLembretes();
-        if (changes.eprocCoresLocalizadores) renderCoresLocalizadores();
+        if (changes.eprocLembretes)            renderListaLembretes();
+        if (changes.eprocCoresLocalizadores)   renderCoresLocalizadores();
+        if (changes.eprocFiltrosEventosPolos)  renderPolosFiltrosEventos();
       });
     }
   }
@@ -212,6 +220,7 @@
     });
     if (panelId === 'lembretes')            renderListaLembretes();
     if (panelId === 'colorirLocalizadores') renderCoresLocalizadores();
+    if (panelId === 'filtrosEventos')       renderPolosFiltrosEventos();
   }
 
   // ─── Lista de lembretes salvos ────────────────────────────────────
@@ -536,6 +545,160 @@
         chrome.storage.local.set({ eprocCoresLocalizadores: {} }, () => {
           mostrarToast('✓ Todos os vínculos apagados');
           renderCoresLocalizadores();
+        });
+      });
+    }
+  }
+
+  // ─── +Filtros de Eventos — cores dos polos ────────────────────────
+  const POLOS_KEY = 'eprocFiltrosEventosPolos';
+  const POLOS_PADRAO = {
+    presets: { ativo: '#1e8a3c', passivo: '#c0382b', mp: '#6f42c1', outro: '#000000' },
+    customizados: [],
+  };
+
+  function lerPolosCfg(cb) {
+    if (typeof chrome === 'undefined' || !chrome.storage) return cb(POLOS_PADRAO);
+    chrome.storage.local.get(POLOS_KEY, (data) => {
+      const raw = data[POLOS_KEY];
+      const out = JSON.parse(JSON.stringify(POLOS_PADRAO));
+      if (raw && typeof raw === 'object') {
+        if (raw.presets) {
+          for (const k of Object.keys(out.presets)) {
+            if (typeof raw.presets[k] === 'string' && /^#[0-9a-fA-F]{6}$/.test(raw.presets[k])) {
+              out.presets[k] = raw.presets[k];
+            }
+          }
+        }
+        if (Array.isArray(raw.customizados)) {
+          out.customizados = raw.customizados
+            .filter(c => c && Array.isArray(c.termos))
+            .map(c => ({
+              id:     String(c.id || ''),
+              nome:   String(c.nome || ''),
+              termos: c.termos.map(String),
+              cor:    /^#[0-9a-fA-F]{6}$/.test(c.cor || '') ? c.cor : '#000000',
+            }));
+        }
+      }
+      cb(out);
+    });
+  }
+
+  function salvarPolosCfg(cfg, cb) {
+    if (typeof chrome === 'undefined' || !chrome.storage) return cb && cb();
+    chrome.storage.local.set({ [POLOS_KEY]: cfg }, () => cb && cb());
+  }
+
+  function renderPolosFiltrosEventos() {
+    lerPolosCfg((cfg) => {
+      const ids = ['fe-cor-ativo', 'fe-cor-passivo', 'fe-cor-mp', 'fe-cor-outro'];
+      const keys = ['ativo', 'passivo', 'mp', 'outro'];
+      ids.forEach((id, i) => {
+        const el = document.getElementById(id);
+        if (el) el.value = cfg.presets[keys[i]];
+      });
+
+      const lista = document.getElementById('fe-destaques-lista');
+      if (!lista) return;
+      lista.innerHTML = '';
+      if (cfg.customizados.length === 0) {
+        lista.innerHTML = `
+          <div class="card__empty">
+            <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/><path d="M8 12h8M12 8v8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <span>Nenhum destaque personalizado. Adicione termos para colorir polos específicos com cor própria.</span>
+          </div>`;
+        return;
+      }
+      for (const c of cfg.customizados) {
+        const item = document.createElement('div');
+        item.className = 'fe-destaque-item';
+        const termos = c.termos.join(', ');
+        item.innerHTML = `
+          <span class="fe-destaque-swatch" style="background:${escapeHtml(c.cor)}" title="${escapeHtml(c.cor)}"></span>
+          <div class="fe-destaque-info">
+            <span class="fe-destaque-nome" style="color:${escapeHtml(c.cor)};">${escapeHtml(c.nome || '(sem nome)')}</span>
+            <span class="fe-destaque-termos" title="${escapeHtml(termos)}">${escapeHtml(termos)}</span>
+          </div>
+          <button class="btn-danger-sm fe-destaque-remover" data-id="${escapeHtml(c.id)}" title="Remover destaque">
+            <svg viewBox="0 0 16 16" fill="none" width="12" height="12"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>`;
+        item.querySelector('.fe-destaque-remover').addEventListener('click', (e) => {
+          const idDel = e.currentTarget.dataset.id;
+          lerPolosCfg((cur) => {
+            cur.customizados = cur.customizados.filter(x => x.id !== idDel);
+            salvarPolosCfg(cur, () => {
+              mostrarToast('✓ Destaque removido');
+              renderPolosFiltrosEventos();
+            });
+          });
+        });
+        lista.appendChild(item);
+      }
+    });
+  }
+
+  function bindPolosFiltrosEventos() {
+    const presetIds = [
+      ['fe-cor-ativo',   'ativo'],
+      ['fe-cor-passivo', 'passivo'],
+      ['fe-cor-mp',      'mp'],
+      ['fe-cor-outro',   'outro'],
+    ];
+    presetIds.forEach(([id, key]) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('change', () => {
+        const novo = el.value;
+        if (!/^#[0-9a-fA-F]{6}$/.test(novo)) return;
+        lerPolosCfg((cur) => {
+          cur.presets[key] = novo.toLowerCase();
+          salvarPolosCfg(cur, () => mostrarToast('✓ Cor atualizada'));
+        });
+      });
+    });
+
+    const btnReset = document.getElementById('fe-cores-reset');
+    if (btnReset) {
+      btnReset.addEventListener('click', () => {
+        lerPolosCfg((cur) => {
+          cur.presets = { ...POLOS_PADRAO.presets };
+          salvarPolosCfg(cur, () => {
+            mostrarToast('✓ Cores padrão restauradas');
+            renderPolosFiltrosEventos();
+          });
+        });
+      });
+    }
+
+    const btnAdd     = document.getElementById('fe-destaque-add');
+    const inputNome  = document.getElementById('fe-destaque-nome');
+    const inputTerms = document.getElementById('fe-destaque-termos');
+    const inputCor   = document.getElementById('fe-destaque-cor');
+    if (btnAdd) {
+      btnAdd.addEventListener('click', () => {
+        const nome   = inputNome?.value.trim() || '';
+        const termos = (inputTerms?.value || '')
+          .split(',').map(s => s.trim()).filter(Boolean);
+        const cor    = inputCor?.value || '#0080a0';
+        if (termos.length === 0) {
+          mostrarToast('Informe ao menos um termo', true);
+          inputTerms?.focus();
+          return;
+        }
+        if (!/^#[0-9a-fA-F]{6}$/.test(cor)) {
+          mostrarToast('Cor inválida', true);
+          return;
+        }
+        lerPolosCfg((cur) => {
+          const id = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+          cur.customizados.push({ id, nome, termos, cor: cor.toLowerCase() });
+          salvarPolosCfg(cur, () => {
+            mostrarToast('✓ Destaque adicionado');
+            if (inputNome)  inputNome.value  = '';
+            if (inputTerms) inputTerms.value = '';
+            renderPolosFiltrosEventos();
+          });
         });
       });
     }

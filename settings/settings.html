@@ -53,6 +53,11 @@
           Colorir Localizadores
         </button>
 
+        <button class="sidebar-nav__item" data-panel="filtrosEventos">
+          <svg class="sidebar-nav__icon" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M5 9h10M8 13h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          +Filtros de Eventos
+        </button>
+
       </nav>
 
       <div class="sidebar-footer">
@@ -278,6 +283,137 @@
               </div>
               <button class="btn-danger-sm" id="btn-loc-limpar">Limpar tudo</button>
             </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Painel: +Filtros de Eventos -->
+      <section class="content-panel content-panel--hidden" id="panel-filtrosEventos" data-panel="filtrosEventos">
+        <div class="panel-header">
+          <div class="panel-header__icon">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M2 5h16M5 9h10M8 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <h1 class="panel-header__title">+Filtros de Eventos</h1>
+            <p class="panel-header__desc">Adiciona controles avançados de filtragem e agrupamento na aba Eventos de cada processo — filtragem por categoria, origem, autoria e período, além de agrupamento automático de cadeias de intimação.</p>
+          </div>
+        </div>
+
+        <div class="panel-body">
+
+          <!-- Card: status do módulo -->
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">Status do módulo</span>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">+Filtros de Eventos</span>
+                <span class="card__row-sub">Ativar ou desativar o módulo por completo.</span>
+              </div>
+              <div class="toggle-group">
+                <span class="toggle-label" id="lbl-mod-filtrosEventos">Ativo</span>
+                <label class="toggle" title="Ativar/desativar módulo +Filtros de Eventos">
+                  <input type="checkbox" class="toggle__input" id="toggle-mod-filtrosEventos" checked>
+                  <span class="toggle__slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: como usar -->
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">Como usar</span>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Barra "+Filtros de Eventos"</span>
+                <span class="card__row-sub">Na tela de qualquer processo, uma barra de filtros é injetada logo acima da tabela de eventos. Clique nela para expandir e configurar as opções de filtragem e agrupamento.</span>
+              </div>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Filtros disponíveis</span>
+                <span class="card__row-sub">Ocultar por categoria (decisões, despachos, intimações, publicações no DJEN, atos ordinatórios, certidões etc.), por origem (internos / externos / sistema), e por intervalo de datas.</span>
+              </div>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Cadeia de intimação</span>
+                <span class="card__row-sub">Quando ativado, os eventos de confirmação e publicação que referenciam uma intimação expedida são agrupados num bloco colapsável, reduzindo o ruído visual na timeline.</span>
+              </div>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Persistência</span>
+                <span class="card__row-sub">As preferências de filtro são salvas automaticamente e restauradas na próxima vez que a aba Eventos for aberta.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: cores dos polos built-in -->
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">Cores dos polos</span>
+              <span class="card__hint">Aparecem ao lado do rótulo de cada cadeia colapsada</span>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Polo ativo</span>
+                <span class="card__row-sub">REQUERENTE, AUTOR, EXEQUENTE, EMBARGANTE, AGRAVANTE, APELANTE, IMPETRANTE, RECLAMANTE.</span>
+              </div>
+              <input type="color" id="fe-cor-ativo" class="fe-cor-input" value="#1e8a3c" title="Cor do polo ativo">
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Polo passivo</span>
+                <span class="card__row-sub">REQUERIDO, RÉU, EXECUTADO, EMBARGADO, AGRAVADO, APELADO, IMPETRADO, RECLAMADO.</span>
+              </div>
+              <input type="color" id="fe-cor-passivo" class="fe-cor-input" value="#c0382b" title="Cor do polo passivo">
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Ministério Público</span>
+                <span class="card__row-sub">MP, MINISTÉRIO PÚBLICO, PROMOTOR, PROCURADOR DA REPÚBLICA.</span>
+              </div>
+              <input type="color" id="fe-cor-mp" class="fe-cor-input" value="#6f42c1" title="Cor do Ministério Público">
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Demais polos</span>
+                <span class="card__row-sub">Qualquer rótulo que não case com os anteriores.</span>
+              </div>
+              <input type="color" id="fe-cor-outro" class="fe-cor-input" value="#000000" title="Cor padrão para demais polos">
+            </div>
+            <div class="card__row card__row--danger">
+              <div class="card__row-info">
+                <span class="card__row-label">Restaurar cores padrão</span>
+                <span class="card__row-sub">Volta as 4 cores acima aos valores originais (verde, vermelho, roxo, preto).</span>
+              </div>
+              <button class="btn-outline-sm" id="fe-cores-reset">Restaurar</button>
+            </div>
+          </div>
+
+          <!-- Card: destaques personalizados -->
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">Destaques personalizados</span>
+              <span class="card__hint">Casa por substring (ex.: termo "SINDICATO" → cor própria)</span>
+            </div>
+            <div class="card__row fe-destaque-add-row">
+              <div class="fe-destaque-add-fields">
+                <input type="text" id="fe-destaque-nome"   class="fe-destaque-input" placeholder="Nome (ex.: Sindicato)" autocomplete="off" spellcheck="false">
+                <input type="text" id="fe-destaque-termos" class="fe-destaque-input" placeholder="Termos separados por vírgula (ex.: SINDICATO, ASSOCIAÇÃO)" autocomplete="off" spellcheck="false">
+                <input type="color" id="fe-destaque-cor"   class="fe-cor-input" value="#0080a0" title="Cor do destaque">
+              </div>
+              <button class="btn-outline-sm" id="fe-destaque-add">
+                <svg viewBox="0 0 16 16" fill="none" width="13" height="13"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                Adicionar
+              </button>
+            </div>
+            <div id="fe-destaques-lista" class="fe-destaques-lista"></div>
           </div>
 
         </div>

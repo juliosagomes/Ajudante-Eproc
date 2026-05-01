@@ -106,6 +106,7 @@
     wrap.className = 'loc-btn-cor-wrap';
 
     const btn = document.createElement('button');
+    btn.type      = 'button';
     btn.className = 'loc-btn-cor';
     btn.title = 'Definir cor deste localizador';
     btn.setAttribute('aria-label', `Definir cor: ${nome}`);
@@ -189,22 +190,27 @@
     }
 
     const btnSalvar = document.createElement('button');
+    btnSalvar.type      = 'button';
     btnSalvar.className = 'loc-editor-cor__btn loc-editor-cor__btn--salvar';
     btnSalvar.textContent = 'Salvar';
-    btnSalvar.addEventListener('click', salvarCor);
+    btnSalvar.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); salvarCor(); });
 
     const btnCancelar = document.createElement('button');
+    btnCancelar.type      = 'button';
     btnCancelar.className = 'loc-editor-cor__btn loc-editor-cor__btn--cancelar';
     btnCancelar.textContent = 'Cancelar';
-    btnCancelar.addEventListener('click', () => editor.remove());
+    btnCancelar.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); editor.remove(); });
 
     botoes.appendChild(btnSalvar);
 
     if (temVinculo) {
       const btnRemover = document.createElement('button');
+      btnRemover.type      = 'button';
       btnRemover.className = 'loc-editor-cor__btn loc-editor-cor__btn--remover';
       btnRemover.textContent = 'Remover';
-      btnRemover.addEventListener('click', () => {
+      btnRemover.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         delete coresMap[nome];
         chrome.storage.local.set({ [STORAGE_KEY]: coresMap }, () => {
           editor.remove();

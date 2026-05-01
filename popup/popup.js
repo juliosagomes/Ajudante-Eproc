@@ -18,6 +18,13 @@
       carregarStat: carregarStatLocalizadores,
       renderPainel: renderPainelLocalizadores,
     },
+    {
+      id: 'filtrosEventos',
+      label: '+Filtros de Eventos',
+      iconeSvg: '<svg viewBox="0 0 20 20" fill="none" width="14" height="14"><path d="M2 5h16M5 9h10M8 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+      carregarStat: carregarStatFiltrosEventos,
+      renderPainel: renderPainelFiltrosEventos,
+    },
   ];
 
   let settings = { modules: {} };
@@ -239,6 +246,75 @@
         // atualiza stat no header também
         const statEl = document.getElementById('stat-colorirLocalizadores');
         if (statEl) statEl.textContent = `${total} cor${total !== 1 ? 'es' : ''}`;
+      }
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // PAINEL DO MÓDULO +FILTROS DE EVENTOS
+  // ═══════════════════════════════════════════════════════════════
+
+  function contarFiltrosAtivos(f) {
+    if (!f) return 0;
+    return (f.categoriasOcultas || []).length
+      + (f.ocultarSistema  ? 1 : 0)
+      + (f.ocultarInterno  ? 1 : 0)
+      + (f.ocultarExterno  ? 1 : 0)
+      + (f.dataInicio      ? 1 : 0)
+      + (f.dataFim         ? 1 : 0);
+  }
+
+  function carregarStatFiltrosEventos(cb) {
+    chrome.storage.local.get('eprocFiltrosEventos', (data) => {
+      const n = contarFiltrosAtivos(data.eprocFiltrosEventos);
+      cb(n > 0 ? `${n} filtro${n !== 1 ? 's' : ''} ativo${n !== 1 ? 's' : ''}` : 'sem filtros ativos');
+    });
+  }
+
+  function renderPainelFiltrosEventos(panel) {
+    panel.innerHTML = `
+      <div class="mod-panel">
+        <div class="mod-stat" id="fe-stat-box">
+          <span class="mod-stat__count" id="fe-count">…</span>
+          <span class="mod-stat__label">filtros ativos</span>
+        </div>
+
+        <div class="loc-info-box">
+          <svg viewBox="0 0 16 16" fill="none" width="13" height="13" aria-hidden="true" style="flex-shrink:0;margin-top:1px">
+            <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3" opacity=".6"/>
+            <path d="M8 7v4M8 5.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>Os filtros são configurados diretamente na barra <strong>+Filtros de Eventos</strong>, na aba Eventos de cada processo.</span>
+        </div>
+
+        <button class="popup-btn popup-btn--secondary" id="btn-fe-settings">
+          ⚙️ Configurações do módulo
+        </button>
+      </div>
+    `;
+
+    chrome.storage.local.get('eprocFiltrosEventos', (data) => {
+      const n  = contarFiltrosAtivos(data.eprocFiltrosEventos);
+      const el = panel.querySelector('#fe-count');
+      if (el) el.textContent = n;
+    });
+
+    panel.querySelector('#btn-fe-settings').addEventListener('click', () => {
+      chrome.tabs.create({
+        url: chrome.runtime.getURL('settings/settings.html') + '#filtrosEventos',
+      });
+      window.close();
+    });
+
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area === 'local' && changes.eprocFiltrosEventos) {
+        const n     = contarFiltrosAtivos(changes.eprocFiltrosEventos.newValue);
+        const count = panel.querySelector('#fe-count');
+        if (count) count.textContent = n;
+        const stat  = document.getElementById('stat-filtrosEventos');
+        if (stat)  stat.textContent = n > 0
+          ? `${n} filtro${n !== 1 ? 's' : ''} ativo${n !== 1 ? 's' : ''}`
+          : 'sem filtros ativos';
       }
     });
   }
