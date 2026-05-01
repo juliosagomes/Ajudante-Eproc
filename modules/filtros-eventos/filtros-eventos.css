@@ -220,3 +220,13 @@ tr.fe-cadeia-membro {
   transition: transform 0.18s ease;
   flex-shrink: 0;
 }
+
+/* Tags de polo no rótulo da cadeia colapsada */
+.fe-cadeia-btn .fe-polo {
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+.fe-cadeia-btn .fe-polo--ativo   { color: #1e8a3c; } /* requerente / autor — verde */
+.fe-cadeia-btn .fe-polo--passivo { color: #c0382b; } /* requerido / réu — vermelho */
+.fe-cadeia-btn .fe-polo--mp      { color: #6f42c1; } /* Ministério Público — roxo */
+.fe-cadeia-btn .fe-polo--outro   { color: #000;   } /* demais — preto negrito */

@@ -353,6 +353,69 @@
             </div>
           </div>
 
+          <!-- Card: cores dos polos built-in -->
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">Cores dos polos</span>
+              <span class="card__hint">Aparecem ao lado do rótulo de cada cadeia colapsada</span>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Polo ativo</span>
+                <span class="card__row-sub">REQUERENTE, AUTOR, EXEQUENTE, EMBARGANTE, AGRAVANTE, APELANTE, IMPETRANTE, RECLAMANTE.</span>
+              </div>
+              <input type="color" id="fe-cor-ativo" class="fe-cor-input" value="#1e8a3c" title="Cor do polo ativo">
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Polo passivo</span>
+                <span class="card__row-sub">REQUERIDO, RÉU, EXECUTADO, EMBARGADO, AGRAVADO, APELADO, IMPETRADO, RECLAMADO.</span>
+              </div>
+              <input type="color" id="fe-cor-passivo" class="fe-cor-input" value="#c0382b" title="Cor do polo passivo">
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Ministério Público</span>
+                <span class="card__row-sub">MP, MINISTÉRIO PÚBLICO, PROMOTOR, PROCURADOR DA REPÚBLICA.</span>
+              </div>
+              <input type="color" id="fe-cor-mp" class="fe-cor-input" value="#6f42c1" title="Cor do Ministério Público">
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Demais polos</span>
+                <span class="card__row-sub">Qualquer rótulo que não case com os anteriores.</span>
+              </div>
+              <input type="color" id="fe-cor-outro" class="fe-cor-input" value="#000000" title="Cor padrão para demais polos">
+            </div>
+            <div class="card__row card__row--danger">
+              <div class="card__row-info">
+                <span class="card__row-label">Restaurar cores padrão</span>
+                <span class="card__row-sub">Volta as 4 cores acima aos valores originais (verde, vermelho, roxo, preto).</span>
+              </div>
+              <button class="btn-outline-sm" id="fe-cores-reset">Restaurar</button>
+            </div>
+          </div>
+
+          <!-- Card: destaques personalizados -->
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">Destaques personalizados</span>
+              <span class="card__hint">Casa por substring (ex.: termo "SINDICATO" → cor própria)</span>
+            </div>
+            <div class="card__row fe-destaque-add-row">
+              <div class="fe-destaque-add-fields">
+                <input type="text" id="fe-destaque-nome"   class="fe-destaque-input" placeholder="Nome (ex.: Sindicato)" autocomplete="off" spellcheck="false">
+                <input type="text" id="fe-destaque-termos" class="fe-destaque-input" placeholder="Termos separados por vírgula (ex.: SINDICATO, ASSOCIAÇÃO)" autocomplete="off" spellcheck="false">
+                <input type="color" id="fe-destaque-cor"   class="fe-cor-input" value="#0080a0" title="Cor do destaque">
+              </div>
+              <button class="btn-outline-sm" id="fe-destaque-add">
+                <svg viewBox="0 0 16 16" fill="none" width="13" height="13"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                Adicionar
+              </button>
+            </div>
+            <div id="fe-destaques-lista" class="fe-destaques-lista"></div>
+          </div>
+
         </div>
       </section>
 

@@ -7,7 +7,23 @@
 
   const SETTINGS_KEY = 'eprocSettings';
   const STORAGE_KEY  = 'eprocFiltrosEventos';
+  const POLOS_KEY    = 'eprocFiltrosEventosPolos';
   const MODULE_NAME  = 'filtrosEventos';
+
+  // ─── Configuração de cores dos polos ────────────────────────────
+  // Editável pelo usuário via página de opções (painel +Filtros de Eventos).
+  // presets: cores das 4 categorias built-in
+  // customizados: regras adicionais com termos (substring, normalizado) → cor
+  const POLOS_CFG_PADRAO = {
+    presets: {
+      ativo:   '#1e8a3c',
+      passivo: '#c0382b',
+      mp:      '#6f42c1',
+      outro:   '#000000',
+    },
+    customizados: [],
+  };
+  let polosCfg = JSON.parse(JSON.stringify(POLOS_CFG_PADRAO));
 
   // ─── Categorias de evento ────────────────────────────────────────
   // teste(tipoNorm, descNorm, parsed) — cada categoria escolhe o que olhar:
@@ -226,6 +242,75 @@
     return grupos;
   }
 
+  // ─── Polos destinatários da cadeia (a partir das etapas "Expedida/certificada") ──
+  // Usa o texto visível de <span class="infraEventoPrazoParte"> (REQUERENTE,
+  // REQUERIDO, MINISTÉRIO PÚBLICO, etc.), normalizado a maiúsculas. Dedup por
+  // primeira aparição.
+  function extrairPolosDaCadeia(membros) {
+    const vistos = new Set();
+    const ordem  = [];
+    for (const m of membros) {
+      const td = m.tr?.cells?.[3];
+      if (!td) continue;
+      const spans = td.querySelectorAll('span.infraEventoPrazoParte');
+      for (const sp of spans) {
+        const polo = (sp.textContent || '').replace(/\s+/g, ' ').trim().toUpperCase();
+        if (!polo) continue;
+        if (!vistos.has(polo)) { vistos.add(polo); ordem.push(polo); }
+      }
+    }
+    return ordem;
+  }
+
+  // Categoria built-in do polo (sem considerar regras customizadas do usuário).
+  function categoriaPolo(polo) {
+    const p = norm(polo);
+    if (p.includes('requerente') || p.includes('autor') || p.includes('exequente') ||
+        p.includes('embargante') || p.includes('agravante') || p.includes('apelante') ||
+        p.includes('impetrante') || p.includes('reclamante')) return 'ativo';
+    if (p.includes('requerido') || p.includes('reu') || p.includes('executado') ||
+        p.includes('embargado') || p.includes('agravado') || p.includes('apelado') ||
+        p.includes('impetrado') || p.includes('reclamado')) return 'passivo';
+    if (p.includes('ministerio publico') || p === 'mp' || p.startsWith('mp ') ||
+        p.includes('promotor') || p.includes('procurador da republica')) return 'mp';
+    return 'outro';
+  }
+
+  function classePolo(polo) {
+    return 'fe-polo--' + categoriaPolo(polo);
+  }
+
+  // Cor efetiva: regras customizadas têm prioridade; depois, preset built-in
+  // (sobrescrito pelo usuário se polosCfg.presets[cat] existir).
+  function corDoPolo(polo) {
+    const p = norm(polo);
+    for (const c of polosCfg.customizados || []) {
+      const termos = c?.termos || [];
+      for (const termo of termos) {
+        if (termo && p.includes(norm(termo))) return c.cor || null;
+      }
+    }
+    const cat = categoriaPolo(polo);
+    return polosCfg.presets?.[cat] || POLOS_CFG_PADRAO.presets[cat] || null;
+  }
+
+  function escHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function renderPolosHtml(polos) {
+    if (!polos || polos.length === 0) return '';
+    return polos
+      .map(p => {
+        const cor       = corDoPolo(p);
+        const styleAttr = cor ? ` style="color:${escHtml(cor)}"` : '';
+        return `<span class="fe-polo ${classePolo(p)}"${styleAttr}>${escHtml(p)}</span>`;
+      })
+      .join(', ');
+  }
+
   // Marcar DOM e inserir linha-toggle ACIMA do primeiro membro (menor rowIndex).
   //
   // INVARIANT: apenas STEPS (eventos cuja label casa STEP_PATTERNS) recebem a classe
@@ -264,7 +349,8 @@
 
       const sorted = membrosVisiveis.map(m => m.tr).sort((a, b) => a.rowIndex - b.rowIndex);
       const primeiroMembro = sorted[0];
-      const toggleRow = criarToggleCadeia(rootNum, g.rootInIdx, membrosVisiveis.length, estaColapsado);
+      const polos = extrairPolosDaCadeia(membrosVisiveis);
+      const toggleRow = criarToggleCadeia(rootNum, g.rootInIdx, membrosVisiveis.length, estaColapsado, polos);
       primeiroMembro.parentNode.insertBefore(toggleRow, primeiroMembro);
     }
   }
@@ -335,7 +421,7 @@
   // ─── Construir linha-toggle da cadeia ───────────────────────────
   // rootInIdx: se false, raiz não está na página (paginação/filtro nativo)
   // inicialmenteColapsado: restaura estado salvo em estadoCadeias
-  function criarToggleCadeia(rootNum, rootInIdx, count, inicialmenteColapsado) {
+  function criarToggleCadeia(rootNum, rootInIdx, count, inicialmenteColapsado, polos) {
     const tr = document.createElement('tr');
     tr.className = 'fe-cadeia-toggle-row';
     tr.dataset.feCadeiaToggle = String(rootNum);
@@ -352,20 +438,24 @@
     const prefixo = rootInIdx
       ? `Cadeia de intimação (ato: ${rootNum})`
       : `Etapas de intimação`;
+    const etapas    = count === 1 ? '1 etapa' : `${count} etapas`;
+    const polosHtml = renderPolosHtml(polos);
 
-    const etapas = count === 1 ? '1 etapa' : `${count} etapas`;
-
-    const renderLabel = (expandido) => expandido
-      ? `${prefixo} — ocultar ${etapas}`
-      : `${prefixo} — exibir ${etapas}`;
+    // Quando colapsado: mostra polos ao lado de "exibir N etapas".
+    // Quando expandido: omitimos polos (a info já está visível nas linhas).
+    const renderLabelHtml = (expandido) => {
+      if (expandido) return `${escHtml(prefixo)} — ocultar ${escHtml(etapas)}`;
+      return polosHtml
+        ? `${escHtml(prefixo)} — exibir ${escHtml(etapas)} · ${polosHtml}`
+        : `${escHtml(prefixo)} — exibir ${escHtml(etapas)}`;
+    };
 
     btn.innerHTML = `
       <svg class="fe-cadeia-btn__icon" viewBox="0 0 16 16" fill="none" width="11" height="11" aria-hidden="true">
         <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      <span class="fe-cadeia-btn__label">${renderLabel(!inicialmenteColapsado)}</span>
+      <span class="fe-cadeia-btn__label">${renderLabelHtml(!inicialmenteColapsado)}</span>
     `;
-
     if (inicialmenteColapsado) {
       btn.querySelector('.fe-cadeia-btn__icon').style.transform = 'rotate(-90deg)';
     }
@@ -373,13 +463,18 @@
     btn.addEventListener('click', (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
-      const btnEl     = ev.currentTarget;           // robusto: ignora cliques em filhos (span, svg)
+      const btnEl     = ev.currentTarget;
       const expandido = btnEl.getAttribute('aria-expanded') === 'true';
       const novoEstado = !expandido;
       btnEl.setAttribute('aria-expanded', String(novoEstado));
       btnEl.querySelector('.fe-cadeia-btn__icon').style.transform = novoEstado ? '' : 'rotate(-90deg)';
-      btnEl.querySelector('.fe-cadeia-btn__label').textContent = renderLabel(novoEstado);
-      estadoCadeias.set(rootNum, !novoEstado);       // persiste: colapsado = !expandido
+      // innerHTML aqui é seguro: prefixo/etapas vêm de constantes do módulo
+      // (escapadas por escHtml) e polosHtml é montado com texto escapado +
+      // classes CSS fixas (fe-polo--ativo|passivo|mp|outro). Cores customizadas
+      // entram via style="color:#xxx" — o valor também passa por escHtml.
+      btnEl.querySelector('.fe-cadeia-btn__label').innerHTML = renderLabelHtml(novoEstado);
+      estadoCadeias.set(rootNum, !novoEstado);
+
       const tbl = tr.closest('table') || tabela;
       if (tbl) {
         // Seletor restrito a tr.fe-cadeia-membro: só alcança steps da cadeia.
@@ -607,14 +702,40 @@
     if (moduloAtivo) return;
     moduloAtivo = true;
 
-    chrome.storage.local.get(STORAGE_KEY, (data) => {
+    chrome.storage.local.get([STORAGE_KEY, POLOS_KEY], (data) => {
       if (data[STORAGE_KEY]) filtros = { ...FILTROS_PADRAO, ...data[STORAGE_KEY] };
+      if (data[POLOS_KEY])   polosCfg = mesclarPolosCfg(data[POLOS_KEY]);
 
       injetarToolbar();
 
       observer = new MutationObserver(escanearDebounced);
       observer.observe(document.body, { childList: true, subtree: true });
     });
+  }
+
+  // Mescla config persistida com defaults (resiliente a chaves faltantes).
+  function mesclarPolosCfg(raw) {
+    const out = JSON.parse(JSON.stringify(POLOS_CFG_PADRAO));
+    if (raw && typeof raw === 'object') {
+      if (raw.presets && typeof raw.presets === 'object') {
+        for (const k of Object.keys(out.presets)) {
+          if (typeof raw.presets[k] === 'string' && /^#[0-9a-fA-F]{6}$/.test(raw.presets[k])) {
+            out.presets[k] = raw.presets[k];
+          }
+        }
+      }
+      if (Array.isArray(raw.customizados)) {
+        out.customizados = raw.customizados
+          .filter(c => c && typeof c === 'object' && Array.isArray(c.termos))
+          .map(c => ({
+            id:     String(c.id || ''),
+            nome:   String(c.nome || ''),
+            termos: c.termos.map(String),
+            cor:    /^#[0-9a-fA-F]{6}$/.test(c.cor || '') ? c.cor : '#000000',
+          }));
+      }
+    }
+    return out;
   }
 
   function desativarModulo() {
@@ -632,6 +753,10 @@
       const enabled = changes[SETTINGS_KEY].newValue?.modules?.[MODULE_NAME]?.enabled ?? true;
       if (enabled  && !moduloAtivo) ativarModulo();
       if (!enabled &&  moduloAtivo) desativarModulo();
+    }
+    if (changes[POLOS_KEY]) {
+      polosCfg = mesclarPolosCfg(changes[POLOS_KEY].newValue);
+      if (moduloAtivo) aplicarFiltros();
     }
   });
 
