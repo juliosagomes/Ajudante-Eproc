@@ -69,6 +69,8 @@
     /^Decorrido o prazo/i,
     /^Certid[ãa]o de decurso de prazo/i,
     /\bDocumento encaminhado [àa] disponibiliza[çc][ãa]o\b/i,
+      /\bDocumento encaminhado [àa] disponibiliza[çc][ãa]o no Di[áa]rio Eletr[ôo]nico\b/i,
+  /\bDocumento encaminhado [àa] disponibiliza[çc][ãa]o no DJEN\b/i,
   ];
 
   const FILTROS_PADRAO = {
