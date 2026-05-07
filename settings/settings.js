@@ -42,6 +42,11 @@
       label: '+Filtros de Eventos',
       descricao: 'Filtragem e agrupamento avançados na aba Eventos de cada processo.',
     },
+    {
+      id: 'expansorNumeroProcesso',
+      label: 'Expansor de nº de processo',
+      descricao: 'Expande formatos abreviados de número de processo no campo de busca rápida do Eproc.',
+    },
   ];
 
   // ─── Definição dos ajustes gerais (scripts globais) ─────────────
@@ -83,6 +88,7 @@
       renderCoresLocalizadores();
       bindPolosFiltrosEventos();
       renderPolosFiltrosEventos();
+      bindExpansorNumeroProcesso();
     };
 
     if (typeof chrome !== 'undefined' && chrome.runtime) {
@@ -702,6 +708,48 @@
         });
       });
     }
+  }
+
+  // ─── Expansor de nº de processo ──────────────────────────────────
+  function bindExpansorNumeroProcesso() {
+    const inpOOOO   = document.getElementById('expro-defaultOOOO');
+    const inpAnoMin = document.getElementById('expro-anoMin');
+    if (!inpOOOO || !inpAnoMin) return;
+
+    if (!settings.modules.expansorNumeroProcesso) {
+      settings.modules.expansorNumeroProcesso = { enabled: true };
+    }
+    const m = settings.modules.expansorNumeroProcesso;
+
+    inpOOOO.value   = typeof m.defaultOOOO === 'string' ? m.defaultOOOO : '';
+    inpAnoMin.value = Number.isFinite(m.anoMin) ? m.anoMin : 2010;
+
+    inpOOOO.addEventListener('input', () => {
+      // Aceita apenas dígitos, máx 4
+      inpOOOO.value = inpOOOO.value.replace(/\D/g, '').slice(0, 4);
+    });
+
+    inpOOOO.addEventListener('change', () => {
+      const v = inpOOOO.value.trim();
+      if (v && !/^\d{4}$/.test(v)) {
+        mostrarToast('Código do órgão deve ter 4 dígitos', true);
+        return;
+      }
+      settings.modules.expansorNumeroProcesso.defaultOOOO = v;
+      salvar();
+    });
+
+    inpAnoMin.addEventListener('change', () => {
+      const v = parseInt(inpAnoMin.value, 10);
+      const anoAtualMax = new Date().getFullYear() + 1;
+      if (!Number.isFinite(v) || v < 2000 || v > anoAtualMax) {
+        mostrarToast(`Ano mínimo deve estar entre 2000 e ${anoAtualMax}`, true);
+        inpAnoMin.value = settings.modules.expansorNumeroProcesso.anoMin || 2010;
+        return;
+      }
+      settings.modules.expansorNumeroProcesso.anoMin = v;
+      salvar();
+    });
   }
 
   // ─── Salvar ───────────────────────────────────────────────────────

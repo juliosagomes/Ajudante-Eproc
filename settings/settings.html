@@ -58,6 +58,11 @@
           +Filtros de Eventos
         </button>
 
+        <button class="sidebar-nav__item" data-panel="expansorNumeroProcesso">
+          <svg class="sidebar-nav__icon" viewBox="0 0 20 20" fill="none"><path d="M3 6h14M3 10h14M3 14h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M14 14l2 2 3-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Expansor de nº de processo
+        </button>
+
       </nav>
 
       <div class="sidebar-footer">
@@ -414,6 +419,112 @@
               </button>
             </div>
             <div id="fe-destaques-lista" class="fe-destaques-lista"></div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Painel: Expansor de nº de processo -->
+      <section class="content-panel content-panel--hidden" id="panel-expansorNumeroProcesso" data-panel="expansorNumeroProcesso">
+        <div class="panel-header">
+          <div class="panel-header__icon">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M3 6h14M3 10h14M3 14h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M14 14l2 2 3-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <h1 class="panel-header__title">Expansor de nº de processo</h1>
+            <p class="panel-header__desc">Expande formatos abreviados (ex.: <code>43325</code>, <code>433-07</code>) para o número CNJ completo de 20 dígitos no campo de busca rápida do Eproc, calculando o dígito verificador automaticamente.</p>
+          </div>
+        </div>
+
+        <div class="panel-body">
+
+          <!-- Card: status do módulo -->
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">Status do módulo</span>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Expansor de nº de processo</span>
+                <span class="card__row-sub">Ativar ou desativar o módulo por completo.</span>
+              </div>
+              <div class="toggle-group">
+                <span class="toggle-label" id="lbl-mod-expansorNumeroProcesso">Ativo</span>
+                <label class="toggle" title="Ativar/desativar módulo Expansor de nº de processo">
+                  <input type="checkbox" class="toggle__input" id="toggle-mod-expansorNumeroProcesso" checked>
+                  <span class="toggle__slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: configuração -->
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">Configuração</span>
+              <span class="card__hint">Necessária para que a expansão funcione</span>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Código do órgão padrão (OOOO)</span>
+                <span class="card__row-sub">4 dígitos. Usado quando o input não traz override (ex.: <code>43325.0850</code>).</span>
+              </div>
+              <input
+                type="text"
+                id="expro-defaultOOOO"
+                class="loc-input-nome"
+                pattern="\d{4}"
+                inputmode="numeric"
+                maxlength="4"
+                placeholder="0702"
+                style="max-width:120px;text-align:center;letter-spacing:.1em;font-variant-numeric:tabular-nums;">
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Ano mínimo para dedução (anoMin)</span>
+                <span class="card__row-sub">Limite inferior usado ao deduzir o ano no modo <code>N-DD</code>. Padrão: 2010.</span>
+              </div>
+              <input
+                type="number"
+                id="expro-anoMin"
+                class="loc-input-nome"
+                min="2000"
+                max="2100"
+                step="1"
+                placeholder="2010"
+                style="max-width:120px;text-align:center;font-variant-numeric:tabular-nums;">
+            </div>
+          </div>
+
+          <!-- Card: como usar -->
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">Formatos suportados</span>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label"><code>43325</code> → N + ano (últimos 2 dígitos)</span>
+                <span class="card__row-sub">Usa o órgão padrão configurado acima.</span>
+              </div>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label"><code>433-07</code> → N + DD</span>
+                <span class="card__row-sub">Deduz o ano automaticamente. Útil para processos redistribuídos.</span>
+              </div>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label"><code>43325.0850</code> ou <code>433-07.0850</code></span>
+                <span class="card__row-sub">Sufixo <code>.OOOO</code> sobrescreve o órgão padrão.</span>
+              </div>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Número completo (20 dígitos ou canônico)</span>
+                <span class="card__row-sub">Validado contra o algoritmo CNJ Mod 97 e passado direto.</span>
+              </div>
+            </div>
           </div>
 
         </div>
