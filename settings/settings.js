@@ -61,6 +61,11 @@
       label: 'Ajustes Visuais',
       descricao: 'Moderniza o visual dos painéis de Ações e Preferências com paleta neutra e cores temáticas por seção.',
     },
+    {
+      id: 'informacoesAdicionais',
+      label: 'Informações Adicionais',
+      descricao: 'Moderniza visualmente a seção Informações Adicionais com cards em grid, cores temáticas por campo e badge de prevenção.',
+    },
   ];
 
   let settings = { modules: {}, scripts: {} };
