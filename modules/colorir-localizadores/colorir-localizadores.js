@@ -50,6 +50,17 @@
     return cls ? cls.replace('memoLocalizadorOrgao', '') : null;
   }
 
+  // ─── Aplicar estilos comuns de badge colorido ───────────────────
+  function aplicarEstiloBadge(el, bgHex, fg, { isLink = false } = {}) {
+    el.style.setProperty('background-color', bgHex, 'important');
+    el.style.setProperty('color', fg, 'important');
+    el.style.setProperty('border-radius', '3px', 'important');
+    el.style.setProperty('padding', '1px 6px', 'important');
+    el.style.setProperty('font-weight', '600', 'important');
+    el.style.setProperty('display', 'inline-block', 'important');
+    if (isLink) el.style.setProperty('text-decoration', 'none', 'important');
+  }
+
   // ─── Aplicar cor a um link de localizador ───────────────────────
   // Só colore se houver vínculo configurado — sem fallback automático.
   function colorirLink(link) {
@@ -63,18 +74,54 @@
     const bgHex = coresMap[nome];
     const fg    = textoContraste(bgHex);
 
-    link.style.setProperty('background-color', bgHex, 'important');
-    link.style.setProperty('color', fg, 'important');
-    link.style.setProperty('border-radius', '3px', 'important');
-    link.style.setProperty('padding', '1px 6px', 'important');
-    link.style.setProperty('text-decoration', 'none', 'important');
-    link.style.setProperty('font-weight', '600', 'important');
-    link.style.setProperty('display', 'inline-block', 'important');
+    aplicarEstiloBadge(link, bgHex, fg, { isLink: true });
 
     link.dataset.localizadorColorido = '1';
     link.dataset.localizadorNome     = nome;
     const idLoc = extrairId(link);
     if (idLoc) link.dataset.localizadorId = idLoc;
+  }
+
+  // ─── Colorir nós de texto de localizadores em tabelas de listagem ────
+  // Padrão: nó de texto "• Nome (Sufixo)" imediatamente antes de um
+  // <a class="memoLocalizadorOrgao...">. Envolve em wrapper invisível
+  // contendo um <span> badge colorido, preservando prefixo "• " e sufixo.
+  function colorirNosTextoTabela() {
+    document.querySelectorAll('table a[class*="memoLocalizadorOrgao"]').forEach((linkMemo) => {
+      if (linkMemo.dataset.locColoridoTabela) return;
+
+      const prev = linkMemo.previousSibling;
+      if (!prev || prev.nodeType !== 3) return;
+
+      const raw  = prev.textContent;
+      const nome = raw.trim().replace(/^[•\s]+/, '').replace(/\s*\([^)]+\)\s*$/, '').trim();
+      if (!nome || !coresMap[nome]) return;
+
+      const bgHex = coresMap[nome];
+      const fg    = textoContraste(bgHex);
+
+      const prefMatch = raw.match(/^(\s*[•\s]+)/);
+      const sufMatch  = raw.match(/(\s*\([^)]+\)\s*)$/);
+      const prefixo   = prefMatch ? prefMatch[1] : '';
+      const sufixo    = sufMatch  ? sufMatch[1]  : '';
+
+      const wrapper = document.createElement('span');
+      wrapper.dataset.locColoridoTabela = '1';
+      wrapper.dataset.localizadorNome   = nome;
+      wrapper.dataset.textoOriginal     = raw;
+      wrapper.style.setProperty('display', 'contents', 'important');
+
+      const badge = document.createElement('span');
+      badge.textContent = nome;
+      aplicarEstiloBadge(badge, bgHex, fg);
+
+      if (prefixo) wrapper.appendChild(document.createTextNode(prefixo));
+      wrapper.appendChild(badge);
+      if (sufixo)  wrapper.appendChild(document.createTextNode(sufixo));
+
+      prev.parentNode.replaceChild(wrapper, prev);
+      linkMemo.dataset.locColoridoTabela = '1';
+    });
   }
 
   // ─── Remover cores de todos os links já coloridos ────────────────
@@ -91,6 +138,16 @@
       delete el.dataset.localizadorNome;
       delete el.dataset.localizadorId;
     });
+
+    // Reverter wrappers de nós de texto em tabelas de listagem
+    document.querySelectorAll('span[data-loc-colorido-tabela]').forEach((wrapper) => {
+      const textoOriginal = wrapper.dataset.textoOriginal || '';
+      wrapper.parentNode.replaceChild(document.createTextNode(textoOriginal), wrapper);
+    });
+    document.querySelectorAll('a[data-loc-colorido-tabela]').forEach((a) => {
+      delete a.dataset.locColoridoTabela;
+    });
+
     document.querySelectorAll('.loc-btn-cor-wrap').forEach(el => el.remove());
     document.querySelectorAll('.loc-editor-cor').forEach(el => el.remove());
   }
@@ -260,6 +317,9 @@
 
     // (b) Dentro de tabelas de listagem — só colorir, sem botão
     document.querySelectorAll('table ' + SELETOR_LOC).forEach(colorirLink);
+
+    // (c) Nós de texto de localizadores em tabelas de listagem (relatórios)
+    colorirNosTextoTabela();
   }
 
   function escanearDebounced() {
