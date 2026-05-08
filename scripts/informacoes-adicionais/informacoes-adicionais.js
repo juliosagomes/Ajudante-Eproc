@@ -5,9 +5,10 @@
 
   if (!window.location.hostname.includes('eproc')) return;
 
-  const SETTINGS_KEY = 'eprocSettings';
-  const SCRIPT_ID    = 'informacoesAdicionais';
-  const STYLE_ID     = 'modernInfoAdicional';
+  const SETTINGS_KEY  = 'eprocSettings';
+  const SCRIPT_ID     = 'informacoesAdicionais';
+  const STYLE_ID      = 'modernInfoAdicional';
+  const IA_STORAGE_KEY = 'eproc_ia_prefs';
 
   // ─── CSS ────────────────────────────────────────────────────────────
   const CSS = `
@@ -182,6 +183,75 @@
 
     .bootstrap-styles #fldInformacoesAdicionais label { margin-bottom: 0; }
     .bootstrap-styles.theme-contrast #fldInformacoesAdicionais label { margin-bottom: 0; }
+
+    /* ── Botão Personalizar ── */
+    #ia-btn-personalizar {
+      margin-left: auto !important;
+      background: rgba(255,255,255,0.15) !important;
+      border: 1px solid rgba(255,255,255,0.4) !important;
+      border-radius: 20px !important;
+      color: #fff !important;
+      font-size: 11.5px !important;
+      font-weight: 600 !important;
+      padding: 3px 12px !important;
+      cursor: pointer !important;
+      transition: background 0.2s !important;
+      white-space: nowrap !important;
+      letter-spacing: 0.2px !important;
+      line-height: 1.5 !important;
+    }
+    #ia-btn-personalizar:hover { background: rgba(255,255,255,0.28) !important; }
+    #ia-btn-personalizar.ativo {
+      background: rgba(255,255,255,0.35) !important;
+      border-color: rgba(255,255,255,0.7) !important;
+    }
+
+    /* ── Toolbar de cada card no modo personalizar ── */
+    .ia-card-toolbar {
+      position: absolute !important;
+      top: 4px !important;
+      right: 4px !important;
+      display: flex !important;
+      gap: 4px !important;
+      z-index: 10 !important;
+      opacity: 0 !important;
+      transition: opacity 0.15s !important;
+      pointer-events: none !important;
+    }
+    /* Toolbar visível ao hover, e sempre visível em cards ocultos */
+    .ia-edit-mode .col-md-4:hover .ia-card-toolbar,
+    .ia-card-oculto .ia-card-toolbar {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+    .ia-card-toolbar button {
+      width: 22px !important;
+      height: 22px !important;
+      border-radius: 4px !important;
+      border: 1px solid rgba(0,0,0,0.15) !important;
+      background: #fff !important;
+      cursor: pointer !important;
+      font-size: 12px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 0 !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15) !important;
+      line-height: 1 !important;
+    }
+    .ia-card-toolbar button:hover { background: #f0f4ff !important; }
+    .ia-card-toolbar input[type=color] {
+      width: 22px !important;
+      height: 22px !important;
+      border-radius: 4px !important;
+      border: 1px solid rgba(0,0,0,0.15) !important;
+      cursor: pointer !important;
+      padding: 1px !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15) !important;
+    }
+
+    /* Card oculto: visível mas com opacidade baixa no modo personalizar */
+    .ia-card-oculto { opacity: 0.3 !important; }
   `;
 
   // ─── Regras de borda colorida por label ─────────────────────────────
@@ -196,9 +266,134 @@
     { termos: ['valor da causa'],          cor: 'rgb(26, 86, 160)'   },
   ];
 
+  // ─── Utilitários de personalização ──────────────────────────────────
+  function iaCarregarPrefs() {
+    try { return JSON.parse(localStorage.getItem(IA_STORAGE_KEY) || '{}'); }
+    catch { return {}; }
+  }
+
+  function iaSalvarPrefs(p) {
+    localStorage.setItem(IA_STORAGE_KEY, JSON.stringify(p));
+  }
+
+  function iaChaveCard(card) {
+    const l = card.querySelector('span.col:first-child, span.text-right');
+    return l?.textContent?.trim().toLowerCase().replace(/[^a-z0-9]/g, '_') || '';
+  }
+
+  function iaRgbParaHex(rgb) {
+    const m = rgb.match(/\d+/g);
+    if (!m || m.length < 3) return '#d1dff5';
+    return '#' + m.slice(0, 3).map(n => parseInt(n).toString(16).padStart(2, '0')).join('');
+  }
+
+  // ─── Aplicar preferências salvas ────────────────────────────────────
+  // Chamada após os estilos automáticos para que customizações do usuário
+  // tenham prioridade. Ignorada enquanto o modo edição está ativo para não
+  // sobrescrever o display temporário dos cards ocultos.
+  function iaAplicarPrefsStorage() {
+    if (iaModoAtivo) return;
+    const prefs = iaCarregarPrefs();
+    const gridRow = document.querySelector('#fldInformacoesAdicionais_content .row.pl-5');
+    if (!gridRow) return;
+    Array.from(gridRow.children).forEach((card) => {
+      const pref = prefs[iaChaveCard(card)];
+      if (!pref) return;
+      if (pref.oculto) {
+        card.style.setProperty('display', 'none', 'important');
+      }
+      if (pref.corBorda) {
+        card.style.setProperty('border-left', `3px solid ${pref.corBorda}`, 'important');
+        card.style.setProperty('padding-left', '11px', 'important');
+      } else if (pref.corBorda === null) {
+        card.style.removeProperty('border-left');
+        card.style.removeProperty('padding-left');
+      }
+    });
+  }
+
+  // ─── Toolbar de edição por card ──────────────────────────────────────
+  function iaCriarToolbar(card) {
+    if (card.querySelector('.ia-card-toolbar')) return;
+    const prefs = iaCarregarPrefs();
+    const chave = iaChaveCard(card);
+    const pref  = prefs[chave] || {};
+
+    const toolbar = document.createElement('div');
+    toolbar.className = 'ia-card-toolbar';
+
+    // Botão ocultar / mostrar
+    const btnOcultar = document.createElement('button');
+    btnOcultar.type      = 'button';
+    btnOcultar.textContent = pref.oculto ? '👁️' : '🚫';
+    btnOcultar.title     = pref.oculto ? 'Mostrar card' : 'Ocultar card';
+    if (pref.oculto) card.classList.add('ia-card-oculto');
+
+    btnOcultar.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const p  = iaCarregarPrefs();
+      const cp = p[chave] || {};
+      cp.oculto = !cp.oculto;
+      p[chave]  = cp;
+      iaSalvarPrefs(p);
+      card.classList.toggle('ia-card-oculto', cp.oculto);
+      btnOcultar.textContent = cp.oculto ? '👁️' : '🚫';
+      btnOcultar.title       = cp.oculto ? 'Mostrar card' : 'Ocultar card';
+    });
+
+    // Input de cor da borda
+    const inputCor = document.createElement('input');
+    inputCor.type  = 'color';
+    inputCor.title = 'Alterar cor de destaque';
+    const corAtual = card.style.borderLeftColor;
+    inputCor.value = (corAtual && corAtual !== '' &&
+                      corAtual !== 'rgb(209, 223, 245)' &&
+                      corAtual !== 'rgba(0, 0, 0, 0)')
+      ? iaRgbParaHex(corAtual) : '#d1dff5';
+
+    inputCor.addEventListener('input', (e) => {
+      e.stopPropagation();
+      card.style.setProperty('border-left', `3px solid ${inputCor.value}`, 'important');
+      card.style.setProperty('padding-left', '11px', 'important');
+    });
+    inputCor.addEventListener('change', (e) => {
+      e.stopPropagation();
+      const p  = iaCarregarPrefs();
+      const cp = p[chave] || {};
+      cp.corBorda = inputCor.value;
+      p[chave]    = cp;
+      iaSalvarPrefs(p);
+    });
+
+    // Botão remover borda
+    const btnSem = document.createElement('button');
+    btnSem.type        = 'button';
+    btnSem.title       = 'Remover borda de destaque';
+    btnSem.textContent = '✕';
+    btnSem.style.cssText = 'font-size:10px!important';
+    btnSem.addEventListener('click', (e) => {
+      e.stopPropagation();
+      card.style.removeProperty('border-left');
+      card.style.removeProperty('padding-left');
+      inputCor.value = '#d1dff5';
+      const p  = iaCarregarPrefs();
+      const cp = p[chave] || {};
+      cp.corBorda = null;
+      p[chave]    = cp;
+      iaSalvarPrefs(p);
+    });
+
+    toolbar.appendChild(btnOcultar);
+    toolbar.appendChild(inputCor);
+    toolbar.appendChild(btnSem);
+    card.appendChild(toolbar);
+  }
+
+  // ─── Estado do módulo ────────────────────────────────────────────────
   let scriptAtivo = false;
   let observer    = null;
   let scanTimer   = null;
+  let iaModoAtivo = false; // módulo-level: evita iaAplicarPrefsStorage() no modo edição
 
   // ─── Injetar / remover a tag <style> ────────────────────────────────
   function injetarEstilo() {
@@ -214,7 +409,7 @@
     if (el) el.remove();
   }
 
-  // ─── Aplicar estilos dinâmicos ───────────────────────────────────────
+  // ─── Aplicar estilos ────────────────────────────────────────────────
   function aplicarEstiloInformacoesAdicionais() {
     injetarEstilo();
 
@@ -225,7 +420,7 @@
       legSpan.dataset.iaBadge = '1';
     }
 
-    // Percorre os cards
+    // Percorre os cards aplicando estilos automáticos
     const cards = document.querySelectorAll(
       '#fldInformacoesAdicionais_content .row.pl-5 .col-md-4'
     );
@@ -241,11 +436,11 @@
 
       if (!labelSpan || !valueSpan) return;
 
-      const labelNorm = labelSpan.textContent.trim().toLowerCase().replace(/:$/, '');
-      const valueText = valueSpan.textContent.trim();
+      const labelNorm  = labelSpan.textContent.trim().toLowerCase().replace(/:$/, '');
+      const valueText  = valueSpan.textContent.trim();
       const valueLower = valueText.toLowerCase();
 
-      // Borda colorida
+      // Borda colorida automática
       for (const regra of REGRAS_BORDA) {
         if (regra.termos.some((t) => labelNorm.includes(t))) {
           card.style.setProperty('border-left', `3px solid ${regra.cor}`, 'important');
@@ -254,8 +449,8 @@
         }
       }
 
-      // Verificar se o valor contém <a style="color:..."> definido pelo próprio eProc
-      const linkComCor = valueSpan.querySelector('a[style]');
+      // Não sobrescrever cores inline definidas pelo próprio eProc
+      const linkComCor  = valueSpan.querySelector('a[style]');
       const temCorInline = linkComCor &&
         /color/i.test(linkComCor.getAttribute('style') || '');
       if (temCorInline) return;
@@ -290,11 +485,75 @@
         valueSpan.dataset.iaValorEstilizado = '1';
       }
     });
+
+    // Aplicar preferências salvas pelo usuário (após estilos automáticos)
+    iaAplicarPrefsStorage();
+
+    // Botão Personalizar — criado uma única vez no legend
+    if (document.getElementById('ia-btn-personalizar')) return;
+    const leg = document.getElementById('legInfAdicional');
+    if (!leg) return;
+
+    const btn  = document.createElement('button');
+    btn.id     = 'ia-btn-personalizar';
+    btn.type   = 'button'; // evita submit do formulário da página
+    btn.textContent = '🎨 Personalizar';
+    leg.appendChild(btn);
+
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      iaModoAtivo = !iaModoAtivo;
+      const gridRow = document.querySelector('#fldInformacoesAdicionais_content .row.pl-5');
+      if (!gridRow) return;
+
+      if (iaModoAtivo) {
+        btn.classList.add('ativo');
+        btn.textContent = '✅ Concluir';
+        gridRow.classList.add('ia-edit-mode');
+        // Mostrar todos os cards (incluindo ocultos) para permitir restauração
+        Array.from(gridRow.children).forEach((card) => {
+          card.style.removeProperty('display');
+          iaCriarToolbar(card);
+        });
+      } else {
+        btn.classList.remove('ativo');
+        btn.textContent = '🎨 Personalizar';
+        gridRow.classList.remove('ia-edit-mode');
+        // Remover toolbars e classes de edição
+        gridRow.querySelectorAll('.ia-card-toolbar').forEach((t) => t.remove());
+        gridRow.querySelectorAll('.ia-card-oculto').forEach((c) => c.classList.remove('ia-card-oculto'));
+        // Restaurar display:none nos cards marcados como ocultos
+        const prefs = iaCarregarPrefs();
+        Array.from(gridRow.children).forEach((card) => {
+          if (prefs[iaChaveCard(card)]?.oculto) {
+            card.style.setProperty('display', 'none', 'important');
+          }
+        });
+      }
+    });
   }
 
   // ─── Remover estilos dinâmicos ───────────────────────────────────────
   function removerEstiloInformacoesAdicionais() {
     removerEstiloTag();
+
+    // Garantir que o modo edição seja encerrado limpo
+    iaModoAtivo = false;
+
+    // Remove botão Personalizar
+    const btnPersonalizar = document.getElementById('ia-btn-personalizar');
+    if (btnPersonalizar) btnPersonalizar.remove();
+
+    // Remove toolbars e classes de edição
+    document.querySelectorAll('.ia-card-toolbar').forEach((t) => t.remove());
+    document.querySelectorAll('.ia-card-oculto').forEach((c) => c.classList.remove('ia-card-oculto'));
+    document.querySelectorAll('.ia-edit-mode').forEach((el) => el.classList.remove('ia-edit-mode'));
+
+    // Restaura display de todos os cards (remove o display:none injetado)
+    document.querySelectorAll(
+      '#fldInformacoesAdicionais_content .col-md-4'
+    ).forEach((card) => card.style.removeProperty('display'));
 
     // Remove .infoBadge do span do legend
     document.querySelectorAll('#legInfAdicional [data-ia-badge]').forEach((el) => {
