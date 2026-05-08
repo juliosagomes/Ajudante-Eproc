@@ -25,6 +25,13 @@
       carregarStat: carregarStatFiltrosEventos,
       renderPainel: renderPainelFiltrosEventos,
     },
+    {
+      id: 'expansorNumeroProcesso',
+      label: 'Expansor nº processo',
+      iconeSvg: '<svg viewBox="0 0 20 20" fill="none" width="14" height="14"><path d="M3 6h14M3 10h14M3 14h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M14 14l2 2 3-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      carregarStat: carregarStatExpansorNumeroProcesso,
+      renderPainel: renderPainelExpansorNumeroProcesso,
+    },
   ];
 
   let settings = { modules: {} };
@@ -315,6 +322,63 @@
         if (stat)  stat.textContent = n > 0
           ? `${n} filtro${n !== 1 ? 's' : ''} ativo${n !== 1 ? 's' : ''}`
           : 'sem filtros ativos';
+      }
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // PAINEL DO MÓDULO EXPANSOR DE Nº DE PROCESSO
+  // ═══════════════════════════════════════════════════════════════
+
+  function carregarStatExpansorNumeroProcesso(cb) {
+    chrome.storage.local.get('eprocSettings', (data) => {
+      const m = data.eprocSettings?.modules?.expansorNumeroProcesso || {};
+      cb(m.defaultOOOO ? `órgão ${m.defaultOOOO}` : 'configure o órgão');
+    });
+  }
+
+  function renderPainelExpansorNumeroProcesso(panel) {
+    panel.innerHTML = `
+      <div class="mod-panel">
+        <div class="mod-stat" id="expro-stat-box">
+          <span class="mod-stat__count" id="expro-orgao">…</span>
+          <span class="mod-stat__label">órgão padrão</span>
+        </div>
+
+        <div class="loc-info-box">
+          <svg viewBox="0 0 16 16" fill="none" width="13" height="13" aria-hidden="true" style="flex-shrink:0;margin-top:1px">
+            <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3" opacity=".6"/>
+            <path d="M8 7v4M8 5.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>Digite formatos como <strong>43325</strong>, <strong>433-07</strong> ou <strong>43325.0850</strong> no campo de busca rápida do Eproc e tecle Enter — o número será expandido automaticamente.</span>
+        </div>
+
+        <button class="popup-btn popup-btn--secondary" id="btn-expro-settings">
+          ⚙️ Configurar órgão padrão
+        </button>
+      </div>
+    `;
+
+    chrome.storage.local.get('eprocSettings', (data) => {
+      const m  = data.eprocSettings?.modules?.expansorNumeroProcesso || {};
+      const el = panel.querySelector('#expro-orgao');
+      if (el) el.textContent = m.defaultOOOO || '—';
+    });
+
+    panel.querySelector('#btn-expro-settings').addEventListener('click', () => {
+      chrome.tabs.create({
+        url: chrome.runtime.getURL('settings/settings.html') + '#expansorNumeroProcesso',
+      });
+      window.close();
+    });
+
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area === 'local' && changes.eprocSettings) {
+        const m = changes.eprocSettings.newValue?.modules?.expansorNumeroProcesso || {};
+        const el = panel.querySelector('#expro-orgao');
+        if (el) el.textContent = m.defaultOOOO || '—';
+        const stat = document.getElementById('stat-expansorNumeroProcesso');
+        if (stat) stat.textContent = m.defaultOOOO ? `órgão ${m.defaultOOOO}` : 'configure o órgão';
       }
     });
   }

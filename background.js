@@ -2,9 +2,10 @@
 
 const DEFAULT_SETTINGS = {
   modules: {
-    lembretes:            { enabled: true },
-    colorirLocalizadores: { enabled: true },
-    filtrosEventos:       { enabled: true },
+    lembretes:               { enabled: true },
+    colorirLocalizadores:    { enabled: true },
+    filtrosEventos:          { enabled: true },
+    expansorNumeroProcesso:  { enabled: true, defaultOOOO: '', anoMin: 2010 },
   },
   scripts: {
     localizadorBusca: { enabled: true }
@@ -32,6 +33,11 @@ chrome.runtime.onInstalled.addListener(() => {
       if (!atual.modules?.filtrosEventos) {
         if (!atual.modules) atual.modules = {};
         atual.modules.filtrosEventos = DEFAULT_SETTINGS.modules.filtrosEventos;
+        dirty = true;
+      }
+      if (!atual.modules?.expansorNumeroProcesso) {
+        if (!atual.modules) atual.modules = {};
+        atual.modules.expansorNumeroProcesso = DEFAULT_SETTINGS.modules.expansorNumeroProcesso;
         dirty = true;
       }
       if (dirty) chrome.storage.local.set({ eprocSettings: atual });
