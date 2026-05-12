@@ -26,7 +26,6 @@
         "modules/filtros-eventos/filtros-eventos.js",
         "modules/expansor-numero-processo/expansor-numero-processo.js",
         "scripts/localizador-busca/localizador-busca.js",
-        "scripts/ajustes-visuais/ajustes-visuais.js",
         "scripts/informacoes-adicionais/informacoes-adicionais.js"
       ],
       "css": [
