@@ -30,25 +30,25 @@
     {
       id: 'lembretes',
       label: 'Lembretes',
-      descricao: 'Adiciona lembretes personalizados às preferências do Eproc.',
+      descricao: 'Adiciona possibilidade de inserir lembretes às preferências do Eproc.',
       icon: '<svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5a5.5 5.5 0 0 1 5.5 5.5c0 3.5 1.5 4.5 1.5 5H3c0-.5 1.5-1.5 1.5-5A5.5 5.5 0 0 1 10 2.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8.5 13v.5a1.5 1.5 0 0 0 3 0V13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
     },
     {
       id: 'colorirLocalizadores',
       label: 'Colorir Localizadores',
-      descricao: 'Aplica cores personalizadas nos links de localizadores do Eproc.',
+      descricao: 'Aplica cores personalizadas aos localizadores',
       icon: '<svg viewBox="0 0 20 20" fill="none"><circle cx="6.5" cy="6.5" r="2.5" stroke="currentColor" stroke-width="1.4"/><circle cx="13.5" cy="6.5" r="2.5" stroke="currentColor" stroke-width="1.4"/><circle cx="6.5" cy="13.5" r="2.5" stroke="currentColor" stroke-width="1.4"/><circle cx="13.5" cy="13.5" r="2.5" stroke="currentColor" stroke-width="1.4"/></svg>',
     },
     {
       id: 'filtrosEventos',
       label: '+Filtros de Eventos',
-      descricao: 'Filtragem e agrupamento avançados na aba Eventos de cada processo.',
+      descricao: 'Filtros avançados e agrupamento de cadeias de intimação',
       icon: '<svg viewBox="0 0 20 20" fill="none"><path d="M2 5h16M5 9h10M8 13h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
     },
     {
       id: 'expansorNumeroProcesso',
       label: 'Expansor de nº de processo',
-      descricao: 'Expande formatos abreviados de número de processo no campo de busca rápida do Eproc.',
+      descricao: 'Permite busca de processos por nº abreviado, sem digitar completamente.',
       icon: '<svg viewBox="0 0 20 20" fill="none"><path d="M3 6h14M3 10h14M3 14h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M14 14l2 2 3-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     },
   ];
@@ -58,12 +58,12 @@
     {
       id: 'localizadorBusca',
       label: 'Busca de localizador',
-      descricao: 'Adiciona campo de busca ao seletor de novo localizador no Eproc.',
+      descricao: 'Adiciona campo de busca ao campo de novo localizador no Eproc.',
     },
     {
       id: 'informacoesAdicionais',
       label: 'Informações Adicionais',
-      descricao: 'Moderniza visualmente a seção Informações Adicionais com cards em grid, cores temáticas por campo e badge de prevenção.',
+      descricao: 'Moderniza visualmente a seção Informações Adicionais e permite a personalização com cores de destaque ou ocultação de itens.',
     },
   ];
 
