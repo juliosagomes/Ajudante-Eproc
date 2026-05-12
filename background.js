@@ -63,7 +63,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       eprocTermosAceitos: true,
       eprocTermosAceitosEm: new Date().toISOString(),
     }, () => {
-      sendResponse({ ok: true });
+      chrome.runtime.openOptionsPage(() => {
+        sendResponse({ ok: true });
+      });
     });
     return true;
   }
