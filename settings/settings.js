@@ -55,7 +55,17 @@
       id: 'localizadorBusca',
       label: 'Busca de localizador',
       descricao: 'Adiciona campo de busca ao seletor de novo localizador no Eproc.',
-    }
+    },
+    {
+      id: 'ajustesVisuais',
+      label: 'Ajustes Visuais',
+      descricao: 'Moderniza o visual dos painéis de Ações e Preferências com paleta neutra e cores temáticas por seção.',
+    },
+    {
+      id: 'informacoesAdicionais',
+      label: 'Informações Adicionais',
+      descricao: 'Moderniza visualmente a seção Informações Adicionais com cards em grid, cores temáticas por campo e badge de prevenção.',
+    },
   ];
 
   let settings = { modules: {}, scripts: {} };
