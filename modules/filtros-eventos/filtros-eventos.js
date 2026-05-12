@@ -81,7 +81,7 @@
     dataInicio:        '',
     dataFim:           '',
     agruparIntimacoes: true,
-    colapsarIntimacoes: false,
+    colapsarIntimacoes: true,
   };
 
   let filtros      = { ...FILTROS_PADRAO };
