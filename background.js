@@ -12,7 +12,7 @@ const DEFAULT_SETTINGS = {
   }
 };
 
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener((details) => {
   console.log('[Ajudante Eproc] Extensão instalada.');
   chrome.storage.local.get('eprocSettings', (data) => {
     if (!data.eprocSettings) {
@@ -43,9 +43,40 @@ chrome.runtime.onInstalled.addListener(() => {
       if (dirty) chrome.storage.local.set({ eprocSettings: atual });
     }
   });
+
+  // Abre a página de Termos de Uso na primeira instalação,
+  // enquanto o usuário ainda não tiver aceitado.
+  if (details && details.reason === 'install') {
+    chrome.storage.local.get('eprocTermosAceitos', (data) => {
+      if (!data.eprocTermosAceitos) {
+        chrome.tabs.create({ url: chrome.runtime.getURL('termos/termos.html') });
+      }
+    });
+  }
 });
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+
+  // ─── Termos de Uso ──────────────────────────────────────────────
+  if (msg.tipo === 'aceitarTermos') {
+    chrome.storage.local.set({
+      eprocTermosAceitos: true,
+      eprocTermosAceitosEm: new Date().toISOString(),
+    }, () => {
+      sendResponse({ ok: true });
+    });
+    return true;
+  }
+
+  if (msg.tipo === 'obterStatusTermos') {
+    chrome.storage.local.get(['eprocTermosAceitos', 'eprocTermosAceitosEm'], (data) => {
+      sendResponse({
+        aceitos: !!data.eprocTermosAceitos,
+        em: data.eprocTermosAceitosEm || null,
+      });
+    });
+    return true;
+  }
 
   // ─── Settings ───────────────────────────────────────────────────
   if (msg.tipo === 'obterSettings') {

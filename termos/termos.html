@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ajudante Eproc — Termos de Uso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --sky:    #7ab3d8;
+  --mid:    #4a8fc4;
+  --deep:   #2d6fa8;
+  --navy:   #0f172a;
+
+  --blue-50:  #eff6ff;
+  --blue-100: #dbeafe;
+  --blue-600: #2563eb;
+  --blue-700: #1d4ed8;
+
+  --content-bg: #f1f5f9;
+  --card-bg:    #ffffff;
+  --border:     #e2e8f0;
+  --border-soft: #f1f5f9;
+
+  --text-primary:   #0f172a;
+  --text-secondary: #475569;
+  --text-muted:     #94a3b8;
+
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  --header-h: 76px;
+  --footer-h: 92px;
+}
+
+html, body { height: 100%; font-family: var(--font); color: var(--text-primary); background: var(--content-bg); -webkit-font-smoothing: antialiased; overflow: hidden; }
+
+/* ─── Subtle background glow ─── */
+body::before {
+  content: '';
+  position: fixed;
+  top: -180px; right: -180px;
+  width: 520px; height: 520px;
+  background: radial-gradient(circle, rgba(122,179,216,0.18), transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -200px; left: -200px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(45,111,168,0.10), transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── Header ─── */
+.header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--header-h);
+  background: var(--navy);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  display: flex;
+  align-items: center;
+  z-index: 20;
+  padding: 0 32px;
+}
+
+.header__inner {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand__logo {
+  width: 38px; height: 38px;
+  filter: drop-shadow(0 2px 6px rgba(74,143,196,0.4));
+}
+
+.brand__name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  display: block;
+}
+
+.brand__sub {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--sky);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: block;
+  margin-top: 3px;
+}
+
+.header__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.header__meta-dot {
+  width: 5px; height: 5px;
+  background: var(--sky);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(122,179,216,0.18);
+}
+
+/* ─── Viewport ─── */
+.viewport {
+  position: fixed;
+  top: var(--header-h);
+  bottom: var(--footer-h);
+  left: 0; right: 0;
+  overflow-y: auto;
+  padding: 40px 32px 60px;
+  z-index: 1;
+}
+
+.layout {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+/* ─── TOC sidebar ─── */
+.toc {
+  position: sticky;
+  top: 0;
+  padding-top: 8px;
+}
+
+.toc__label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.toc__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.toc__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  border-left: 2px solid transparent;
+  padding-left: 12px;
+}
+
+.toc__item:hover {
+  background: white;
+  color: var(--text-primary);
+}
+
+.toc__item.is-active {
+  color: var(--deep);
+  background: white;
+  border-left-color: var(--mid);
+  font-weight: 600;
+}
+
+.toc__num {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  min-width: 14px;
+}
+
+.toc__item.is-active .toc__num {
+  color: var(--mid);
+}
+
+/* ─── Content ─── */
+.content {
+  min-width: 0;
+}
+
+.hero {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 36px 40px 32px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sky), var(--mid), var(--deep));
+}
+
+.hero__eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--mid);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--blue-50);
+  border: 1px solid var(--blue-100);
+  padding: 5px 10px;
+  border-radius: 20px;
+}
+
+.hero__title {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  margin-bottom: 14px;
+}
+
+.hero__intro {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  text-wrap: pretty;
+}
+
+.hero__intro b { color: var(--text-primary); font-weight: 600; }
+.hero__intro strong { color: var(--deep); font-weight: 600; }
+
+/* ─── Section ─── */
+.section {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px 32px 24px;
+  margin-bottom: 14px;
+  scroll-margin-top: 12px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.section:hover {
+  border-color: #d4e0ee;
+  box-shadow: 0 4px 18px rgba(45,111,168,0.06);
+}
+
+.section__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.section__num {
+  width: 32px;
+  height: 32px;
+  background: var(--blue-50);
+  border: 1px solid var(--blue-100);
+  color: var(--deep);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.section__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  padding-top: 4px;
+}
+
+.section__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-left: 46px;
+}
+
+.section__item {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  position: relative;
+  padding-left: 18px;
+  text-wrap: pretty;
+}
+
+.section__item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 11px;
+  width: 5px; height: 5px;
+  background: var(--mid);
+  border-radius: 50%;
+  opacity: 0.7;
+}
+
+.section__item strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.section__item b {
+  color: var(--deep);
+  font-weight: 600;
+}
+
+/* ─── Final note ─── */
+.final-note {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(135deg, rgba(122,179,216,0.08), rgba(45,111,168,0.05));
+  border: 1px solid rgba(74,143,196,0.20);
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin: 24px 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.final-note__icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid rgba(74,143,196,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--mid);
+  flex-shrink: 0;
+}
+
+.final-note__icon svg { width: 18px; height: 18px; }
+
+/* ─── Credits ─── */
+.credits {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 28px;
+  margin-top: 14px;
+}
+
+.credits__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.credits__head svg { width: 16px; height: 16px; color: var(--mid); }
+
+.credits__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+
+.credits__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.credit-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.credit-row__name {
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 180px;
+  flex-shrink: 0;
+}
+
+.credit-row__role {
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+/* ─── Footer ─── */
+.footer {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--footer-h);
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+  box-shadow: 0 -8px 24px rgba(15,23,42,0.06);
+}
+
+.footer__inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.footer__note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+  max-width: 320px;
+  line-height: 1.5;
+}
+
+.footer__note svg { width: 14px; height: 14px; flex-shrink: 0; color: var(--mid); }
+
+.footer__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 200px;
+  padding: 12px 24px;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, color 0.18s, box-shadow 0.18s, transform 0.1s;
+}
+
+.btn:active { transform: translateY(1px); }
+
+.btn--accept {
+  color: white;
+  background: var(--blue-600);
+  border-color: var(--blue-600);
+  box-shadow: 0 4px 12px rgba(37,99,235,0.25), 0 0 0 0 rgba(37,99,235,0.3);
+}
+
+.btn--accept:hover {
+  background: var(--blue-700);
+  border-color: var(--blue-700);
+  box-shadow: 0 6px 16px rgba(37,99,235,0.35);
+}
+
+.btn--accept svg { width: 14px; height: 14px; }
+
+.btn--uninstall {
+  color: #b91c1c;
+  background: #fff1f2;
+  border-color: #fecaca;
+}
+
+.btn--uninstall:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #991b1b;
+}
+
+.btn--uninstall svg { width: 14px; height: 14px; }
+
+/* ─── Responsive ─── */
+@media (max-width: 920px) {
+  .layout { grid-template-columns: 1fr; gap: 20px; }
+  .toc { position: static; }
+  .toc__list { flex-direction: row; flex-wrap: wrap; gap: 6px; }
+  .toc__item { flex: 1; min-width: 140px; }
+  .hero { padding: 28px 24px 24px; }
+  .hero__title { font-size: 24px; }
+  .section { padding: 22px 22px 18px; }
+  .section__list { padding-left: 0; }
+  .footer__note { display: none; }
+  .footer__actions { width: 100%; }
+  .btn { flex: 1; min-width: 0; padding: 12px 16px; }
+  .viewport { padding: 24px 16px 40px; }
+  .header { padding: 0 18px; }
+  :root { --footer-h: 80px; }
+}
+
+/* scrollbar */
+.viewport::-webkit-scrollbar { width: 10px; }
+.viewport::-webkit-scrollbar-track { background: transparent; }
+.viewport::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; border: 2px solid var(--content-bg); }
+.viewport::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+</style>
+</head>
+<body>
+
+<!-- ─── Header ─── -->
+<header class="header">
+  <div class="header__inner">
+    <div class="brand">
+      <svg class="brand__logo" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="20" cy="20" r="16" fill="#7ab3d8" opacity="0.85"/>
+        <circle cx="32" cy="22" r="11" fill="#4a8fc4" opacity="0.75"/>
+        <circle cx="26" cy="33" r="9"  fill="#2d6fa8" opacity="0.80"/>
+        <path d="M14 20 L18.5 25 L27 15" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <span class="brand__name">Ajudante Eproc</span>
+        <span class="brand__sub">Termos de Uso</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ─── Viewport ─── -->
+<main class="viewport" tabindex="-1">
+  <div class="layout">
+
+    <!-- TOC -->
+    <aside class="toc" id="toc">
+      <div class="toc__label">Conteúdo</div>
+      <ul class="toc__list">
+        <li><a class="toc__item is-active" href="#sec-1"><span class="toc__num">01</span>Natureza e responsabilidade</a></li>
+        <li><a class="toc__item" href="#sec-2"><span class="toc__num">02</span>Suporte e disponibilidade</a></li>
+        <li><a class="toc__item" href="#sec-3"><span class="toc__num">03</span>Propriedade intelectual</a></li>
+        <li><a class="toc__item" href="#sec-4"><span class="toc__num">04</span>Alterações de uso</a></li>
+        <li><a class="toc__item" href="#sec-5"><span class="toc__num">05</span>Privacidade e segurança</a></li>
+        <li><a class="toc__item" href="#sec-creditos"><span class="toc__num">★</span>Créditos</a></li>
+      </ul>
+    </aside>
+
+    <!-- Content -->
+    <div class="content">
+
+      <!-- Hero -->
+      <section class="hero">
+        <div class="hero__eyebrow">
+          <svg viewBox="0 0 16 16" fill="none" width="11" height="11"><path d="M8 1.5 L13.5 4 v4 c0 3-2.5 5.5-5.5 6.5 C5 13.5 2.5 11 2.5 8 V4 L8 1.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          Termos de Uso e Propriedade Intelectual
+        </div>
+        <h1 class="hero__title">Termos de Uso e Propriedade Intelectual</h1>
+        <p class="hero__intro">
+          O <strong>Ajudante Eproc</strong> é uma extensão de navegador independente desenvolvida para otimizar a produtividade e a experiência do usuário no sistema judicial <strong>Eproc</strong>. <b>Ao utilizar esta ferramenta, você concorda com os seguintes termos:</b>
+        </p>
+      </section>
+
+      <!-- Sec 1 -->
+      <article class="section" id="sec-1">
+        <div class="section__head">
+          <div class="section__num">01</div>
+          <h2 class="section__title">Natureza da Ferramenta e Responsabilidade</h2>
+        </div>
+        <ul class="section__list">
+          <li class="section__item"><strong>Iniciativa Independente:</strong> O Ajudante Eproc é uma iniciativa tecnológica independente e colaborativa, com evolução contínua a partir de sugestões e demandas de magistrados, servidores e funcionários usuários do sistema.</li>
+          <li class="section__item"><strong>Uso "como está":</strong> A ferramenta é fornecida "as is". O usuário é o único responsável por conferir a fidedignidade de prazos, dados, lembretes e protocolos. O desenvolvedor não se responsabiliza por eventuais instabilidades nos sistemas oficiais.</li>
+          <li class="section__item"><strong>Falhas e Correções:</strong> Eventuais erros, indisponibilidades ou comportamentos inesperados podem ocorrer. O desenvolvedor atua com melhor esforço para análise e correção contínua, <b>sem garantia de funcionamento ininterrupto ou integralmente livre de falhas</b>.</li>
+          <li class="section__item"><strong>Resolução de Problemas:</strong> O usuário pode <strong>desinstalar a extensão a qualquer momento</strong> pelo gerenciador de extensões do navegador, sem prejuízo ao funcionamento do Eproc. Essa é a medida recomendada caso a ferramenta não atenda às suas expectativas ou interfira no fluxo de trabalho.</li>
+          <li class="section__item"><strong>Ambiente Institucional:</strong> A utilização do Ajudante Eproc é permitida e incentivada em ações formativas e contextos de trabalho relacionados ao Eproc.</li>
+        </ul>
+      </article>
+
+      <!-- Sec 2 -->
+      <article class="section" id="sec-2">
+        <div class="section__head">
+          <div class="section__num">02</div>
+          <h2 class="section__title">Escopo de Suporte e Disponibilidade</h2>
+        </div>
+        <ul class="section__list">
+          <li class="section__item"><strong>Suporte Técnico:</strong> Atualizações, correções de compatibilidade e atendimento a dúvidas são oferecidos em caráter de melhor esforço pelo desenvolvedor responsável.</li>
+          <li class="section__item"><strong>Compatibilidade:</strong> A extensão é desenvolvida e testada para o sistema Eproc em suas versões oficiais vigentes. Funcionamento em versões anteriores, ambientes customizados ou outras plataformas não é garantido.</li>
+          <li class="section__item"><strong>Sem garantia de continuidade:</strong> O desenvolvedor pode, a seu critério, suspender, descontinuar ou alterar funcionalidades a qualquer momento, comunicando os usuários quando viável.</li>
+        </ul>
+      </article>
+
+      <!-- Sec 3 -->
+      <article class="section" id="sec-3">
+        <div class="section__head">
+          <div class="section__num">03</div>
+          <h2 class="section__title">Propriedade Intelectual</h2>
+        </div>
+        <ul class="section__list">
+          <li class="section__item"><strong>Direitos Reservados:</strong> O código-fonte, design, interface e a marca <strong>Ajudante Eproc</strong> são propriedade intelectual do seu desenvolvedor.</li>
+          <li class="section__item"><strong>Proibições:</strong> É estritamente proibida a cópia, reprodução, redistribuição ou comercialização da extensão (ou de partes de seu código) sem autorização prévia e expressa do autor.</li>
+          <li class="section__item"><strong>Proteção Legal:</strong> Todo o conteúdo técnico e funcional da ferramenta é protegido pela <b>Lei nº 9.609/1998</b> (Lei do Software), que protege a propriedade intelectual de programas de computador no Brasil e os equipara, para fins autorais, às obras literárias.</li>
+          <li class="section__item"><strong>Marca e Identidade:</strong> O logotipo, paleta de cores e elementos gráficos do Ajudante Eproc compõem identidade visual própria e não podem ser utilizados em produtos ou comunicações de terceiros sem autorização.</li>
+        </ul>
+      </article>
+
+      <!-- Sec 4 -->
+      <article class="section" id="sec-4">
+        <div class="section__head">
+          <div class="section__num">04</div>
+          <h2 class="section__title">Alterações de Condições de Uso</h2>
+        </div>
+        <ul class="section__list">
+          <li class="section__item"><strong>Condições Dinâmicas:</strong> O desenvolvedor reserva-se o direito de, a qualquer momento e a seu exclusivo critério, alterar funcionalidades, condições de uso e critérios de disponibilização da ferramenta.</li>
+          <li class="section__item"><strong>Aceitação Implícita:</strong> A continuidade do uso da extensão após eventuais alterações implica na aceitação automática das novas condições.</li>
+          <li class="section__item"><strong>Uso Gratuito:</strong> A gratuidade atual é garantida em caráter de cortesia e pode ser revista a qualquer tempo, mediante comunicação prévia aos usuários quando aplicável.</li>
+        </ul>
+      </article>
+
+      <!-- Sec 5 -->
+      <article class="section" id="sec-5">
+        <div class="section__head">
+          <div class="section__num">05</div>
+          <h2 class="section__title">Privacidade e Segurança</h2>
+        </div>
+        <ul class="section__list">
+          <li class="section__item"><strong>Processamento Local:</strong> O Ajudante Eproc atua na camada de interface (front-end) e o processamento ocorre <b>localmente no navegador</b>. A extensão não coleta, armazena ou transmite senhas, dados sigilosos de processos ou informações sensíveis para servidores externos.</li>
+          <li class="section__item"><strong>Armazenamento Local:</strong> Configurações da extensão (módulos ativos, preferências e lembretes pessoais) são salvas exclusivamente no armazenamento local do navegador do usuário, podendo ser apagadas a qualquer momento pelo gerenciador de extensões.</li>
+          <li class="section__item"><strong>Sem Telemetria:</strong> Nenhum dado de uso, comportamento ou identificação é enviado a serviços externos. A extensão funciona de forma autônoma e offline em relação ao desenvolvedor.</li>
+        </ul>
+      </article>
+
+      <!-- Final note -->
+      <div class="final-note">
+        <div class="final-note__icon">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M10 1.5 L17 4.5 v5 c0 4-3 7-7 8.5 C7 16.5 4 13.5 4 9.5 V4.5 L10 1.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M7 10 L9 12 L13 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span>O uso continuado do Ajudante Eproc implica na aceitação automática destes termos.</span>
+      </div>
+
+      <!-- Credits -->
+      <section class="credits" id="sec-creditos">
+        <div class="credits__head">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M8 1.5 L9.85 5.65 L14.5 6.2 L11 9.35 L11.95 14 L8 11.65 L4.05 14 L5 9.35 L1.5 6.2 L6.15 5.65 L8 1.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          <span class="credits__title">Créditos</span>
+        </div>
+        <div class="credits__list">
+          <div class="credit-row">
+            <span class="credit-row__name">Júlio Henrique de Sá Gomes</span>
+            <span class="credit-row__role">Concepção, arquitetura, desenvolvimento e interface (UI/UX)</span>
+          </div>
+          <div class="credit-row">
+            <span class="credit-row__name">Comunidade Eproc (Você 😉)</span>
+            <span class="credit-row__role">Sugestões, testes e refinamento contínuo de funcionalidades.</span>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<!-- ─── Footer ─── -->
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__note">
+      <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v3.5M8 11v.01" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span>Ao clicar em "Aceito", você confirma a leitura e concordância integral destes termos.</span>
+    </div>
+    <div class="footer__actions">
+      <button id="btnDesinstalar" class="btn btn--uninstall" type="button">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M5 3.5V2.5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1M3 3.5l.5 8a1 1 0 0 0 1 .9h5a1 1 0 0 0 1-.9l.5-8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Quero desinstalar
+      </button>
+      <button id="btnAceitarTermos" class="btn btn--accept" type="button">
+        Aceito os termos de uso
+        <svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ─── Scroll-spy + smooth scroll ──────────────────────────
+  (function () {
+    const viewport = document.querySelector('.viewport');
+    const tocItems = document.querySelectorAll('.toc__item');
+    const sections = [];
+
+    tocItems.forEach((item) => {
+      const id = item.getAttribute('href').slice(1);
+      const el = document.getElementById(id);
+      if (el) sections.push({ item, el });
+
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (el) {
+          viewport.scrollTo({
+            top: el.offsetTop - 8,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    function updateActive() {
+      const scrollPos = viewport.scrollTop + 60;
+      let activeIdx = 0;
+      for (let i = 0; i < sections.length; i++) {
+        if (sections[i].el.offsetTop <= scrollPos) activeIdx = i;
+      }
+      tocItems.forEach((it) => it.classList.remove('is-active'));
+      if (sections[activeIdx]) sections[activeIdx].item.classList.add('is-active');
+    }
+
+    viewport.addEventListener('scroll', updateActive, { passive: true });
+    updateActive();
+  })();
+
+  // ─── Buttons ─────────────────────────────────────────────
+  document.getElementById('btnAceitarTermos').addEventListener('click', () => {
+    if (typeof chrome !== 'undefined' && chrome.runtime) {
+      chrome.runtime.sendMessage({ tipo: 'aceitarTermos' }, () => window.close());
+    } else {
+      alert('✓ Termos aceitos (preview)');
+    }
+  });
+
+  document.getElementById('btnDesinstalar').addEventListener('click', () => {
+    if (typeof chrome !== 'undefined' && chrome.management) {
+      chrome.management.uninstallSelf({ showConfirmDialog: true });
+    } else {
+      alert('Em produção: abre o diálogo de desinstalação da extensão.');
+    }
+  });
+</script>
+
+</body>
+</html>

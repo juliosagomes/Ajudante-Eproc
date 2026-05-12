@@ -167,6 +167,30 @@ html, body {
   font-variant-numeric: tabular-nums;
 }
 
+.sidebar-credits {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 10.5px;
+  line-height: 1.4;
+  color: #475569;
+}
+
+.sidebar-credits__author {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.sidebar-credits__contact a {
+  color: #2d6fa8;
+  text-decoration: none;
+}
+
+.sidebar-credits__contact a:hover {
+  text-decoration: underline;
+}
+
 /* ─── Content area ───────────────────────────────────────────────── */
 .content-area {
   flex: 1;
