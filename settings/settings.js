@@ -70,6 +70,11 @@
       label: 'Tarjas Customizadas',
       descricao: 'Aplica cores personalizadas às tarjas (etiquetas) da capa do processo. Clique direito sobre uma tarja escolhe cor; clique do meio reseta todas.',
     },
+    {
+      id: 'esmaecerZerados',
+      label: 'Esmaecer itens zerados no Painel Inicial',
+      descricao: 'No Painel Inicial, deixa as linhas dos localizadores com 0 processos esmaecidas (cinza-claro), realçando os que têm pendências.',
+    },
   ];
 
   let settings = { modules: {}, scripts: {} };

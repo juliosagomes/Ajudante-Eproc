@@ -29,7 +29,8 @@
         "modules/expansor-numero-processo/expansor-numero-processo.js",
         "scripts/localizador-busca/localizador-busca.js",
         "scripts/informacoes-adicionais/informacoes-adicionais.js",
-        "scripts/tarjas-customizadas/tarjas-customizadas.js"
+        "scripts/tarjas-customizadas/tarjas-customizadas.js",
+        "scripts/esmaecer-zerados/esmaecer-zerados.js"
       ],
       "css": [
         "styles.css",
