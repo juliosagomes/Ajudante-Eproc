@@ -28,6 +28,7 @@
         "modules/filtros-eventos/filtros-eventos.js",
         "modules/expansor-numero-processo/expansor-numero-processo.js",
         "modules/busca-inteligente/busca-inteligente.js",
+        "modules/pagina-processo-plus/pagina-processo-plus.js",
         "scripts/localizador-busca/localizador-busca.js",
         "scripts/informacoes-adicionais/informacoes-adicionais.js",
         "scripts/tarjas-customizadas/tarjas-customizadas.js",
@@ -41,6 +42,7 @@
         "modules/filtros-eventos/filtros-eventos.css",
         "modules/expansor-numero-processo/expansor-numero-processo.css",
         "modules/busca-inteligente/busca-inteligente.css",
+        "modules/pagina-processo-plus/pagina-processo-plus.css",
         "scripts/localizador-busca/localizador-busca.css",
         "scripts/tarjas-customizadas/tarjas-customizadas.css",
         "scripts/painel-reordenar/painel-reordenar.css"
