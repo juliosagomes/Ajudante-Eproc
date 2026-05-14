@@ -93,6 +93,10 @@
     const el = document.getElementById('txtNumProcesso');
     return el ? (el.textContent || '').trim() : '';
   }
+  function obterClasse() {
+    const el = document.getElementById('txtClasse');
+    return el ? (el.textContent || '').trim() : '';
+  }
   function obterLocalizadores() {
     const div = document.getElementById('dvLocalizadoresOrgao');
     if (!div) return [];
@@ -141,7 +145,13 @@
   function renderBarraConteudo() {
     if (!barraEl) return;
     const numEl = barraEl.querySelector('.fe-pp-num');
+    const classeEl = barraEl.querySelector('.fe-pp-classe');
     if (numEl) numEl.textContent = obterNumProc() || '—';
+    if (classeEl) {
+      const classe = obterClasse();
+      classeEl.textContent = classe;
+      classeEl.style.display = classe ? '' : 'none';
+    }
     renderLocalizadores();
   }
 
@@ -155,17 +165,23 @@
     barraEl.id = BARRA_ID;
     barraEl.className = 'fe-pp-barra';
 
-    // Bloco numero
+    // Bloco numero + classe
     const numWrap = document.createElement('div');
     numWrap.className = 'fe-pp-bloco fe-pp-bloco--num';
     const numIcon = document.createElement('span');
     numIcon.className = 'fe-pp-bloco__icon';
     numIcon.innerHTML = ICON_TAG;
+    const numStack = document.createElement('div');
+    numStack.className = 'fe-pp-num-stack';
     const numVal = document.createElement('span');
     numVal.className = 'fe-pp-num';
     numVal.title = 'Clique para copiar o número';
+    const classeVal = document.createElement('span');
+    classeVal.className = 'fe-pp-classe';
+    numStack.appendChild(numVal);
+    numStack.appendChild(classeVal);
     numWrap.appendChild(numIcon);
-    numWrap.appendChild(numVal);
+    numWrap.appendChild(numStack);
 
     // Bloco atalho Arvore (populado por renderBotaoArvore se a sub-feature estiver ligada)
     const arvoreWrap = document.createElement('div');
