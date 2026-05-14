@@ -1,0 +1,115 @@
+/* scripts/painel-reordenar/painel-reordenar.css
+   Linguagem visual alinhada ao Ajudante Eproc (slate + eproc-blue, Inter, radius 4-6px). */
+
+/* ─── Grupo ▲/▼ na legenda do fieldset ──────────────────────────── */
+.fe-painel-reorder-header {
+  display: inline-flex;
+  margin-left: 10px;
+  vertical-align: middle;
+  /* segmented control: borda compartilhada, sem gap interno */
+  border-radius: 5px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  overflow: hidden;
+  box-shadow: 0 1px 1px rgba(15, 23, 42, 0.04);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 0; /* evita gap inferior de baseline entre os botoes */
+}
+
+.fe-painel-reorder-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 20px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.fe-painel-reorder-btn + .fe-painel-reorder-btn {
+  border-left: 1px solid #cbd5e1;
+}
+
+.fe-painel-reorder-btn svg {
+  width: 11px;
+  height: 11px;
+  display: block;
+}
+
+.fe-painel-reorder-btn:hover:not(:disabled) {
+  background: #e2e8f0;
+  color: #2d6fa8;
+}
+
+.fe-painel-reorder-btn:active:not(:disabled) {
+  background: #cbd5e1;
+  color: #1d4ed8;
+}
+
+.fe-painel-reorder-btn:focus-visible {
+  outline: 2px solid #7ab3d8;
+  outline-offset: 1px;
+  z-index: 1;
+  position: relative;
+}
+
+.fe-painel-reorder-btn:disabled {
+  opacity: 0.32;
+  cursor: not-allowed;
+}
+
+/* ─── Botao "Restaurar ordem nativa" ─────────────────────────────── */
+.fe-painel-reset-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin: 4px 0 10px 0;
+}
+
+#fe-painel-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px 5px 10px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #475569;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 1px 1px rgba(15, 23, 42, 0.03);
+}
+
+#fe-painel-reset-btn svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  color: #94a3b8;
+  transition: color 0.15s ease;
+}
+
+#fe-painel-reset-btn:hover {
+  color: #b91c1c;
+  border-color: #fca5a5;
+  background: #fef2f2;
+}
+
+#fe-painel-reset-btn:hover svg {
+  color: #dc2626;
+}
+
+#fe-painel-reset-btn:active {
+  background: #fee2e2;
+}
+
+#fe-painel-reset-btn:focus-visible {
+  outline: 2px solid #7ab3d8;
+  outline-offset: 1px;
+}

@@ -75,6 +75,11 @@
       label: 'Esmaecer itens zerados no Painel Inicial',
       descricao: 'No Painel Inicial, deixa as linhas dos localizadores com 0 processos esmaecidas (cinza-claro), realçando os que têm pendências.',
     },
+    {
+      id: 'painelReordenar',
+      label: 'Reordenar blocos no Painel Inicial',
+      descricao: 'Adiciona botões ▲/▼ em cada bloco do Painel Inicial para mover sua posição. A ordem é lembrada nos próximos acessos. Inclui botão para restaurar a ordem nativa.',
+    },
   ];
 
   let settings = { modules: {}, scripts: {} };

@@ -30,7 +30,8 @@
         "scripts/localizador-busca/localizador-busca.js",
         "scripts/informacoes-adicionais/informacoes-adicionais.js",
         "scripts/tarjas-customizadas/tarjas-customizadas.js",
-        "scripts/esmaecer-zerados/esmaecer-zerados.js"
+        "scripts/esmaecer-zerados/esmaecer-zerados.js",
+        "scripts/painel-reordenar/painel-reordenar.js"
       ],
       "css": [
         "styles.css",
@@ -39,7 +40,8 @@
         "modules/filtros-eventos/filtros-eventos.css",
         "modules/expansor-numero-processo/expansor-numero-processo.css",
         "scripts/localizador-busca/localizador-busca.css",
-        "scripts/tarjas-customizadas/tarjas-customizadas.css"
+        "scripts/tarjas-customizadas/tarjas-customizadas.css",
+        "scripts/painel-reordenar/painel-reordenar.css"
       ],
       "run_at": "document_idle",
       "all_frames": true
