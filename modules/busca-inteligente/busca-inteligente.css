@@ -1,0 +1,132 @@
+/* modules/busca-inteligente/busca-inteligente.css
+   Barra de Busca Inteligente — identidade visual Ajudante Eproc. */
+
+.fe-bi-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  margin: 6px 0 10px 0;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  color: #0f172a;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.fe-bi-bar:focus-within {
+  border-color: #7ab3d8;
+  box-shadow: 0 0 0 3px rgba(122, 179, 216, 0.18);
+}
+
+.fe-bi-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #4a8fc4;
+  flex-shrink: 0;
+}
+
+.fe-bi-icon svg {
+  width: 15px;
+  height: 15px;
+  display: block;
+}
+
+.fe-bi-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+  white-space: nowrap;
+  user-select: none;
+  flex-shrink: 0;
+  padding-right: 2px;
+  border-right: 1px solid #e2e8f0;
+  margin-right: 4px;
+  padding-left: 2px;
+}
+
+.fe-bi-input {
+  flex: 1;
+  min-width: 0;
+  height: 26px;
+  padding: 0 6px;
+  border: none;
+  background: transparent;
+  color: #0f172a;
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  letter-spacing: 0.01em;
+}
+
+.fe-bi-input::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.fe-bi-input:disabled {
+  cursor: not-allowed;
+}
+
+/* Botao de limpar */
+.fe-bi-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #64748b;
+  flex-shrink: 0;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.fe-bi-clear svg {
+  width: 13px;
+  height: 13px;
+  display: block;
+}
+
+.fe-bi-clear:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+/* Realce em negrito sem cor de fundo */
+.fe-bi-highlight {
+  font-weight: 700;
+  color: #1d4f80;
+  background: none;
+  padding: 0;
+}
+
+/* Mensagem de "sem resultados" */
+.fe-bi-empty {
+  margin: -4px 0 12px 0;
+  padding: 10px 14px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 12px;
+  color: #64748b;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 6px;
+  text-align: center;
+  font-style: italic;
+}
+
+/* Focus visible para acessibilidade */
+.fe-bi-clear:focus-visible {
+  outline: 2px solid #7ab3d8;
+  outline-offset: 1px;
+}

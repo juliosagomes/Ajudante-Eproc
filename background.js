@@ -6,6 +6,7 @@ const DEFAULT_SETTINGS = {
     colorirLocalizadores:    { enabled: true },
     filtrosEventos:          { enabled: true },
     expansorNumeroProcesso:  { enabled: true, defaultOOOO: '', anoMin: 2010 },
+    buscaInteligente:        { enabled: true },
   },
   scripts: {
     localizadorBusca:        { enabled: true },
@@ -41,6 +42,11 @@ chrome.runtime.onInstalled.addListener((details) => {
       if (!atual.modules?.expansorNumeroProcesso) {
         if (!atual.modules) atual.modules = {};
         atual.modules.expansorNumeroProcesso = DEFAULT_SETTINGS.modules.expansorNumeroProcesso;
+        dirty = true;
+      }
+      if (!atual.modules?.buscaInteligente) {
+        if (!atual.modules) atual.modules = {};
+        atual.modules.buscaInteligente = DEFAULT_SETTINGS.modules.buscaInteligente;
         dirty = true;
       }
       // Move: "tarjasCustomizadas" deixou de ser módulo e virou script em Ajustes Gerais

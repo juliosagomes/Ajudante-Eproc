@@ -51,6 +51,12 @@
       descricao: 'Permite busca de processos por nº abreviado, sem digitar completamente.',
       icon: '<svg viewBox="0 0 20 20" fill="none"><path d="M3 6h14M3 10h14M3 14h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M14 14l2 2 3-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     },
+    {
+      id: 'buscaInteligente',
+      label: 'Busca Inteligente',
+      descricao: 'Campo de busca em tempo real no Painel Inicial, Meus Localizadores, Lista de Processos por Localizador e Relatório Geral.',
+      icon: '<svg viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5" stroke="currentColor" stroke-width="1.4"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
+    },
   ];
 
   // ─── Definição dos ajustes gerais (scripts globais) ─────────────

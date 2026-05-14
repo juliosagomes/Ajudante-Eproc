@@ -63,6 +63,11 @@
           Expansor de nº de processo
         </button>
 
+        <button class="sidebar-nav__item" data-panel="buscaInteligente">
+          <svg class="sidebar-nav__icon" viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5" stroke="currentColor" stroke-width="1.4"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Busca Inteligente
+        </button>
+
       </nav>
 
       <div class="sidebar-footer">
@@ -528,6 +533,100 @@
               <div class="card__row-info">
                 <span class="card__row-label">Número completo (20 dígitos ou canônico)</span>
                 <span class="card__row-sub">Validado contra o algoritmo CNJ Mod 97 e passado direto.</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Painel: Busca Inteligente -->
+      <section class="content-panel content-panel--hidden" id="panel-buscaInteligente" data-panel="buscaInteligente">
+        <div class="panel-header">
+          <div class="panel-header__icon">
+            <svg viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <h1 class="panel-header__title">Busca Inteligente</h1>
+            <p class="panel-header__desc">Filtra rapidamente blocos e processos enquanto você digita, em quatro telas do Eproc. Pressione qualquer letra na página para começar a buscar; ESC limpa o filtro.</p>
+          </div>
+        </div>
+
+        <div class="panel-body">
+
+          <!-- Card: status do módulo -->
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">Status do módulo</span>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Busca Inteligente</span>
+                <span class="card__row-sub">Ativar ou desativar o módulo por completo.</span>
+              </div>
+              <div class="toggle-group">
+                <span class="toggle-label" id="lbl-mod-buscaInteligente">Ativo</span>
+                <label class="toggle" title="Ativar/desativar módulo Busca Inteligente">
+                  <input type="checkbox" class="toggle__input" id="toggle-mod-buscaInteligente" checked>
+                  <span class="toggle__slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: telas suportadas -->
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">Telas suportadas</span>
+              <span class="card__hint">A barra aparece automaticamente nestas páginas</span>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Painel Inicial (Secretaria)</span>
+                <span class="card__row-sub">Filtra os blocos inteiros e as linhas dentro de cada bloco. Blocos cuja legenda casa com o termo também ficam visíveis.</span>
+              </div>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Meus Localizadores</span>
+                <span class="card__row-sub">Filtra as linhas da tabela de localizadores monitorados.</span>
+              </div>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Lista de Processos por Localizador</span>
+                <span class="card__row-sub">Filtra os processos exibidos dentro de um localizador específico.</span>
+              </div>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Relatório Geral</span>
+                <span class="card__row-sub">Filtra os resultados retornados pelo relatório geral de processos.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: como usar -->
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">Como usar</span>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Digite em qualquer lugar</span>
+                <span class="card__row-sub">Com a busca ativada na tela, comece a digitar — o foco vai automaticamente para o campo de busca.</span>
+              </div>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Limpar com ESC</span>
+                <span class="card__row-sub">Pressione ESC ou clique no ícone ✕ ao lado do campo para limpar o filtro.</span>
+              </div>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Realce</span>
+                <span class="card__row-sub">Trechos que casam aparecem em negrito azul, sem cor de fundo — leitura limpa sobre o layout original.</span>
               </div>
             </div>
           </div>
