@@ -43,9 +43,9 @@
 
         <div class="sidebar-nav__section-label">Módulos</div>
 
-        <button class="sidebar-nav__item" data-panel="lembretes">
+        <button class="sidebar-nav__item" data-panel="anotacoesPreferencias">
           <svg class="sidebar-nav__icon" viewBox="0 0 20 20" fill="none"><path d="M10 2.5a5.5 5.5 0 0 1 5.5 5.5c0 3.5 1.5 4.5 1.5 5H3c0-.5 1.5-1.5 1.5-5A5.5 5.5 0 0 1 10 2.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8.5 13v.5a1.5 1.5 0 0 0 3 0V13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-          Lembretes
+          Anotações em preferências
         </button>
 
         <button class="sidebar-nav__item" data-panel="colorirLocalizadores">
@@ -105,15 +105,15 @@
         </div>
       </section>
 
-      <!-- Painel: Lembretes -->
-      <section class="content-panel content-panel--hidden" id="panel-lembretes" data-panel="lembretes">
+      <!-- Painel: Anotações em preferências -->
+      <section class="content-panel content-panel--hidden" id="panel-anotacoesPreferencias" data-panel="anotacoesPreferencias">
         <div class="panel-header">
           <div class="panel-header__icon">
             <svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5a5.5 5.5 0 0 1 5.5 5.5c0 3.5 1.5 4.5 1.5 5H3c0-.5 1.5-1.5 1.5-5A5.5 5.5 0 0 1 10 2.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8.5 13v.5a1.5 1.5 0 0 0 3 0V13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
           </div>
           <div>
-            <h1 class="panel-header__title">Lembretes</h1>
-            <p class="panel-header__desc">Adiciona lembretes personalizados às preferências do Eproc — Minutas, Movimentações, Intimações e Automatizações.</p>
+            <h1 class="panel-header__title">Anotações em preferências</h1>
+            <p class="panel-header__desc">Adiciona anotações personalizadas às preferências do Eproc — Minutas, Movimentações, Intimações e Automatizações.</p>
           </div>
         </div>
 
@@ -126,13 +126,13 @@
             </div>
             <div class="card__row">
               <div class="card__row-info">
-                <span class="card__row-label">Lembretes</span>
+                <span class="card__row-label">Anotações em preferências</span>
                 <span class="card__row-sub">Ativar ou desativar o módulo por completo.</span>
               </div>
               <div class="toggle-group">
-                <span class="toggle-label" id="lbl-mod-lembretes">Ativo</span>
-                <label class="toggle" title="Ativar/desativar módulo Lembretes">
-                  <input type="checkbox" class="toggle__input" id="toggle-mod-lembretes" checked>
+                <span class="toggle-label" id="lbl-mod-anotacoesPreferencias">Ativo</span>
+                <label class="toggle" title="Ativar/desativar módulo Anotações em preferências">
+                  <input type="checkbox" class="toggle__input" id="toggle-mod-anotacoesPreferencias" checked>
                   <span class="toggle__slider"></span>
                 </label>
               </div>
@@ -140,14 +140,14 @@
           </div>
 
           <!-- Card: gerenciar dados -->
-          <div class="card" id="card-lembretes-dados">
+          <div class="card" id="card-anotacoes-dados">
             <div class="card__head">
               <span class="card__title">Gerenciar dados</span>
             </div>
             <div class="card__row">
               <div class="card__row-info">
-                <span class="card__row-label">Exportar lembretes</span>
-                <span class="card__row-sub">Salva todos os lembretes em um arquivo JSON.</span>
+                <span class="card__row-label">Exportar anotações</span>
+                <span class="card__row-sub">Salva todas as anotações em um arquivo JSON.</span>
               </div>
               <button class="btn-outline-sm" id="btn-exportar-json">
                 <svg viewBox="0 0 16 16" fill="none" width="13" height="13"><path d="M8 2v7M5 6.5l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -156,8 +156,8 @@
             </div>
             <div class="card__row">
               <div class="card__row-info">
-                <span class="card__row-label">Importar lembretes</span>
-                <span class="card__row-sub">Mescla lembretes de um arquivo JSON com os existentes.</span>
+                <span class="card__row-label">Importar anotações</span>
+                <span class="card__row-sub">Mescla anotações de um arquivo JSON com as existentes.</span>
               </div>
               <div>
                 <label class="btn-outline-sm" for="import-json-settings" style="cursor:pointer;">
@@ -169,26 +169,26 @@
             </div>
             <div class="card__row card__row--danger">
               <div class="card__row-info">
-                <span class="card__row-label card__row-label--danger">Limpar todos os lembretes</span>
-                <span class="card__row-sub">Remove permanentemente todos os lembretes salvos.</span>
+                <span class="card__row-label card__row-label--danger">Limpar todas as anotações</span>
+                <span class="card__row-sub">Remove permanentemente todas as anotações salvas.</span>
               </div>
               <button class="btn-danger-sm" id="btn-limpar-todos">Limpar tudo</button>
             </div>
           </div>
 
-          <!-- Card: lista de lembretes salvos -->
-          <div class="card" id="card-lembretes-lista">
+          <!-- Card: lista de anotações salvas -->
+          <div class="card" id="card-anotacoes-lista">
             <div class="card__head">
-              <span class="card__title">Lembretes salvos</span>
+              <span class="card__title">Anotações salvas</span>
               <div class="card__head-actions">
-                <span class="card__hint" id="lembretes-total-hint"></span>
+                <span class="card__hint" id="anotacoes-total-hint"></span>
                 <button class="btn-outline-sm" id="btn-exportar-csv">
                   <svg viewBox="0 0 16 16" fill="none" width="13" height="13"><path d="M8 2v7M5 6.5l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                   Exportar CSV
                 </button>
               </div>
             </div>
-            <div id="lembretes-lista-body" class="lembretes-lista"></div>
+            <div id="anotacoes-lista-body" class="anotacoes-lista"></div>
           </div>
 
         </div>

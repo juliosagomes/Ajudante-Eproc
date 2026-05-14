@@ -21,20 +21,24 @@
       "matches": ["*://*.jus.br/*"],
       "js": [
         "content.js",
-        "modules/lembretes/lembretes.js",
+        "lib/modal-manager.js",
+        "lib/alertas.js",
+        "modules/anotacoes-preferencias/anotacoes-preferencias.js",
         "modules/colorir-localizadores/colorir-localizadores.js",
         "modules/filtros-eventos/filtros-eventos.js",
         "modules/expansor-numero-processo/expansor-numero-processo.js",
         "scripts/localizador-busca/localizador-busca.js",
-        "scripts/informacoes-adicionais/informacoes-adicionais.js"
+        "scripts/informacoes-adicionais/informacoes-adicionais.js",
+        "scripts/tarjas-customizadas/tarjas-customizadas.js"
       ],
       "css": [
         "styles.css",
-        "modules/lembretes/lembretes.css",
+        "modules/anotacoes-preferencias/anotacoes-preferencias.css",
         "modules/colorir-localizadores/colorir-localizadores.css",
         "modules/filtros-eventos/filtros-eventos.css",
         "modules/expansor-numero-processo/expansor-numero-processo.css",
-        "scripts/localizador-busca/localizador-busca.css"
+        "scripts/localizador-busca/localizador-busca.css",
+        "scripts/tarjas-customizadas/tarjas-customizadas.css"
       ],
       "run_at": "document_idle",
       "all_frames": true

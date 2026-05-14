@@ -28,9 +28,9 @@
   // ─── Definição dos módulos ───────────────────────────────────────
   const MODULOS = [
     {
-      id: 'lembretes',
-      label: 'Lembretes',
-      descricao: 'Adiciona possibilidade de inserir lembretes às preferências do Eproc.',
+      id: 'anotacoesPreferencias',
+      label: 'Anotações em preferências',
+      descricao: 'Adiciona possibilidade de inserir anotações às preferências do Eproc.',
       icon: '<svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5a5.5 5.5 0 0 1 5.5 5.5c0 3.5 1.5 4.5 1.5 5H3c0-.5 1.5-1.5 1.5-5A5.5 5.5 0 0 1 10 2.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8.5 13v.5a1.5 1.5 0 0 0 3 0V13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
     },
     {
@@ -65,6 +65,11 @@
       label: 'Informações Adicionais',
       descricao: 'Moderniza visualmente a seção Informações Adicionais e permite a personalização com cores de destaque ou ocultação de itens.',
     },
+    {
+      id: 'tarjasCustomizadas',
+      label: 'Tarjas Customizadas',
+      descricao: 'Aplica cores personalizadas às tarjas (etiquetas) da capa do processo. Clique direito sobre uma tarja escolhe cor; clique do meio reseta todas.',
+    },
   ];
 
   let settings = { modules: {}, scripts: {} };
@@ -91,8 +96,8 @@
       bindToggles();
       bindSidebarNav();
       bindCsvButton();
-      bindDadosLembretes();
-      renderListaLembretes();
+      bindDadosAnotacoes();
+      renderListaAnotacoes();
       bindDadosLocalizadores();
       renderCoresLocalizadores();
       bindPolosFiltrosEventos();
@@ -113,7 +118,7 @@
     if (typeof chrome !== 'undefined' && chrome.storage) {
       chrome.storage.onChanged.addListener((changes, area) => {
         if (area !== 'local') return;
-        if (changes.eprocLembretes)            renderListaLembretes();
+        if (changes.eprocAnotacoesPreferencias) renderListaAnotacoes();
         if (changes.eprocCoresLocalizadores)   renderCoresLocalizadores();
         if (changes.eprocFiltrosEventosPolos)  renderPolosFiltrosEventos();
       });
@@ -233,30 +238,30 @@
     contentArea.querySelectorAll('.content-panel').forEach((p) => {
       p.classList.toggle('content-panel--hidden', p.dataset.panel !== panelId);
     });
-    if (panelId === 'lembretes')            renderListaLembretes();
+    if (panelId === 'anotacoesPreferencias') renderListaAnotacoes();
     if (panelId === 'colorirLocalizadores') renderCoresLocalizadores();
     if (panelId === 'filtrosEventos')       renderPolosFiltrosEventos();
   }
 
-  // ─── Lista de lembretes salvos ────────────────────────────────────
-  function renderListaLembretes() {
-    const listaEl = document.getElementById('lembretes-lista-body');
-    const hintEl  = document.getElementById('lembretes-total-hint');
+  // ─── Lista de anotações salvas ────────────────────────────────────
+  function renderListaAnotacoes() {
+    const listaEl = document.getElementById('anotacoes-lista-body');
+    const hintEl  = document.getElementById('anotacoes-total-hint');
     if (!listaEl) return;
 
-    const doRender = (lembretes) => {
-      const entradas = Object.entries(lembretes || {});
+    const doRender = (anotacoes) => {
+      const entradas = Object.entries(anotacoes || {});
       entradas.sort(([a], [b]) => a.localeCompare(b, 'pt'));
 
       if (hintEl) {
-        hintEl.textContent = `${entradas.length} lembrete${entradas.length !== 1 ? 's' : ''}`;
+        hintEl.textContent = `${entradas.length} anotaç${entradas.length !== 1 ? 'ões' : 'ão'}`;
       }
 
       if (entradas.length === 0) {
         listaEl.innerHTML = `
           <div class="card__empty">
             <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span>Nenhum lembrete salvo ainda.</span>
+            <span>Nenhuma anotação salva ainda.</span>
           </div>`;
         return;
       }
@@ -266,37 +271,37 @@
         const { tipo, nome } = parsearChave(chave);
         const label = TIPO_LABELS[tipo] || tipo;
         const item  = document.createElement('div');
-        item.className = 'lembrete-item';
+        item.className = 'anotacao-item';
         item.innerHTML = `
-          <span class="lembrete-badge lembrete-badge--${escapeHtml(tipo)}">${escapeHtml(label)}</span>
-          <div class="lembrete-item__info">
-            <span class="lembrete-item__nome" title="${escapeHtml(nome)}">${escapeHtml(nome)}</span>
-            <span class="lembrete-item__texto">${escapeHtml(texto)}</span>
+          <span class="anotacao-badge anotacao-badge--${escapeHtml(tipo)}">${escapeHtml(label)}</span>
+          <div class="anotacao-item__info">
+            <span class="anotacao-item__nome" title="${escapeHtml(nome)}">${escapeHtml(nome)}</span>
+            <span class="anotacao-item__texto">${escapeHtml(texto)}</span>
           </div>`;
         listaEl.appendChild(item);
       }
     };
 
     if (typeof chrome !== 'undefined' && chrome.storage) {
-      chrome.storage.local.get('eprocLembretes', (data) => doRender(data.eprocLembretes));
+      chrome.storage.local.get('eprocAnotacoesPreferencias', (data) => doRender(data.eprocAnotacoesPreferencias));
     } else {
       doRender({});
     }
   }
 
   // ─── Gerenciar dados (JSON import/export/clear) ──────────────────
-  function bindDadosLembretes() {
+  function bindDadosAnotacoes() {
     const btnExportar = document.getElementById('btn-exportar-json');
     if (btnExportar) {
       btnExportar.addEventListener('click', () => {
         if (typeof chrome === 'undefined' || !chrome.storage) return;
-        chrome.storage.local.get('eprocLembretes', (data) => {
-          const lembretes = data.eprocLembretes || {};
-          const blob = new Blob([JSON.stringify(lembretes, null, 2)], { type: 'application/json' });
+        chrome.storage.local.get('eprocAnotacoesPreferencias', (data) => {
+          const anotacoes = data.eprocAnotacoesPreferencias || {};
+          const blob = new Blob([JSON.stringify(anotacoes, null, 2)], { type: 'application/json' });
           const url  = URL.createObjectURL(blob);
           const a    = document.createElement('a');
           a.href     = url;
-          a.download = `lembretes-eproc-${new Date().toISOString().slice(0, 10)}.json`;
+          a.download = `anotacoes-preferencias-eproc-${new Date().toISOString().slice(0, 10)}.json`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
@@ -315,11 +320,12 @@
           try {
             const dados = JSON.parse(ev.target.result);
             if (typeof chrome === 'undefined' || !chrome.storage) return;
-            chrome.storage.local.get('eprocLembretes', (data) => {
-              const merged = { ...(data.eprocLembretes || {}), ...dados };
-              chrome.storage.local.set({ eprocLembretes: merged }, () => {
-                mostrarToast(`✓ ${Object.keys(dados).length} lembrete(s) importado(s)`);
-                renderListaLembretes();
+            chrome.storage.local.get('eprocAnotacoesPreferencias', (data) => {
+              const merged = { ...(data.eprocAnotacoesPreferencias || {}), ...dados };
+              chrome.storage.local.set({ eprocAnotacoesPreferencias: merged }, () => {
+                const n = Object.keys(dados).length;
+                mostrarToast(`✓ ${n} anotaç${n !== 1 ? 'ões' : 'ão'} importada${n !== 1 ? 's' : ''}`);
+                renderListaAnotacoes();
               });
             });
           } catch {
@@ -334,11 +340,11 @@
     const btnLimpar = document.getElementById('btn-limpar-todos');
     if (btnLimpar) {
       btnLimpar.addEventListener('click', () => {
-        if (!confirm('Tem certeza? Todos os lembretes serão apagados permanentemente.')) return;
+        if (!confirm('Tem certeza? Todas as anotações serão apagadas permanentemente.')) return;
         if (typeof chrome === 'undefined' || !chrome.storage) return;
-        chrome.storage.local.set({ eprocLembretes: {} }, () => {
-          mostrarToast('✓ Todos os lembretes apagados');
-          renderListaLembretes();
+        chrome.storage.local.set({ eprocAnotacoesPreferencias: {} }, () => {
+          mostrarToast('✓ Todas as anotações apagadas');
+          renderListaAnotacoes();
         });
       });
     }
@@ -350,12 +356,12 @@
     if (!btn) return;
     btn.addEventListener('click', () => {
       if (typeof chrome === 'undefined' || !chrome.storage) return;
-      chrome.storage.local.get('eprocLembretes', (data) => {
-        const lembretes = data.eprocLembretes || {};
-        const entradas  = Object.entries(lembretes);
+      chrome.storage.local.get('eprocAnotacoesPreferencias', (data) => {
+        const anotacoes = data.eprocAnotacoesPreferencias || {};
+        const entradas  = Object.entries(anotacoes);
         entradas.sort(([a], [b]) => a.localeCompare(b, 'pt'));
 
-        const linhas = [['Tipo', 'Preferência', 'Lembrete']];
+        const linhas = [['Tipo', 'Preferência', 'Anotação']];
         for (const [chave, texto] of entradas) {
           const { tipo, nome } = parsearChave(chave);
           linhas.push([TIPO_LABELS[tipo] || tipo, nome, texto]);
@@ -369,7 +375,7 @@
         const url  = URL.createObjectURL(blob);
         const a    = document.createElement('a');
         a.href     = url;
-        a.download = `lembretes-eproc-${new Date().toISOString().slice(0, 10)}.csv`;
+        a.download = `anotacoes-preferencias-eproc-${new Date().toISOString().slice(0, 10)}.csv`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);

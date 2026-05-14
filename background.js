@@ -2,13 +2,14 @@
 
 const DEFAULT_SETTINGS = {
   modules: {
-    lembretes:               { enabled: true },
+    anotacoesPreferencias:   { enabled: true },
     colorirLocalizadores:    { enabled: true },
     filtrosEventos:          { enabled: true },
     expansorNumeroProcesso:  { enabled: true, defaultOOOO: '', anoMin: 2010 },
   },
   scripts: {
-    localizadorBusca: { enabled: true }
+    localizadorBusca:        { enabled: true },
+    tarjasCustomizadas:      { enabled: true },
   }
 };
 
@@ -40,8 +41,43 @@ chrome.runtime.onInstalled.addListener((details) => {
         atual.modules.expansorNumeroProcesso = DEFAULT_SETTINGS.modules.expansorNumeroProcesso;
         dirty = true;
       }
+      // Move: "tarjasCustomizadas" deixou de ser módulo e virou script em Ajustes Gerais
+      if (atual.modules?.tarjasCustomizadas) {
+        if (!atual.scripts) atual.scripts = {};
+        if (!atual.scripts.tarjasCustomizadas) {
+          atual.scripts.tarjasCustomizadas = { ...atual.modules.tarjasCustomizadas };
+        }
+        delete atual.modules.tarjasCustomizadas;
+        dirty = true;
+      }
+      if (!atual.scripts?.tarjasCustomizadas) {
+        if (!atual.scripts) atual.scripts = {};
+        atual.scripts.tarjasCustomizadas = DEFAULT_SETTINGS.scripts.tarjasCustomizadas;
+        dirty = true;
+      }
+      // Rename: módulo "lembretes" → "anotacoesPreferencias"
+      if (!atual.modules?.anotacoesPreferencias) {
+        if (!atual.modules) atual.modules = {};
+        atual.modules.anotacoesPreferencias = atual.modules.lembretes
+          ? { ...atual.modules.lembretes }
+          : DEFAULT_SETTINGS.modules.anotacoesPreferencias;
+        dirty = true;
+      }
+      if (atual.modules?.lembretes) {
+        delete atual.modules.lembretes;
+        dirty = true;
+      }
       if (dirty) chrome.storage.local.set({ eprocSettings: atual });
     }
+  });
+
+  // Rename: dados "eprocLembretes" → "eprocAnotacoesPreferencias" (move, não duplica)
+  chrome.storage.local.get(['eprocLembretes', 'eprocAnotacoesPreferencias'], (d) => {
+    if (!d.eprocLembretes) return;
+    const novo = { ...(d.eprocAnotacoesPreferencias || {}), ...d.eprocLembretes };
+    chrome.storage.local.set({ eprocAnotacoesPreferencias: novo }, () => {
+      chrome.storage.local.remove('eprocLembretes');
+    });
   });
 
   // Abre a página de Termos de Uso na primeira instalação,
@@ -95,36 +131,36 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     return true;
   }
 
-  // ─── Módulo Lembretes ────────────────────────────────────────────
-  if (msg.tipo === 'exportarDireto') {
-    chrome.storage.local.get('eprocLembretes', (data) => {
-      sendResponse({ lembretes: data.eprocLembretes || {} });
+  // ─── Módulo Anotações em Preferências ────────────────────────────
+  if (msg.tipo === 'exportarAnotacoesPreferencias') {
+    chrome.storage.local.get('eprocAnotacoesPreferencias', (data) => {
+      sendResponse({ anotacoes: data.eprocAnotacoesPreferencias || {} });
     });
     return true;
   }
 
-  if (msg.tipo === 'importarDireto') {
-    chrome.storage.local.get('eprocLembretes', (data) => {
-      const existentes = data.eprocLembretes || {};
+  if (msg.tipo === 'importarAnotacoesPreferencias') {
+    chrome.storage.local.get('eprocAnotacoesPreferencias', (data) => {
+      const existentes = data.eprocAnotacoesPreferencias || {};
       const novos = msg.dados || {};
       const merged = { ...existentes, ...novos };
-      chrome.storage.local.set({ eprocLembretes: merged }, () => {
+      chrome.storage.local.set({ eprocAnotacoesPreferencias: merged }, () => {
         sendResponse({ ok: true, total: Object.keys(merged).length });
       });
     });
     return true;
   }
 
-  if (msg.tipo === 'obterTotalLembretes') {
-    chrome.storage.local.get('eprocLembretes', (data) => {
-      const lembretes = data.eprocLembretes || {};
-      sendResponse({ total: Object.keys(lembretes).length });
+  if (msg.tipo === 'obterTotalAnotacoesPreferencias') {
+    chrome.storage.local.get('eprocAnotacoesPreferencias', (data) => {
+      const anotacoes = data.eprocAnotacoesPreferencias || {};
+      sendResponse({ total: Object.keys(anotacoes).length });
     });
     return true;
   }
 
-  if (msg.tipo === 'limparTodosLembretes') {
-    chrome.storage.local.set({ eprocLembretes: {} }, () => {
+  if (msg.tipo === 'limparTodasAnotacoesPreferencias') {
+    chrome.storage.local.set({ eprocAnotacoesPreferencias: {} }, () => {
       sendResponse({ ok: true });
     });
     return true;

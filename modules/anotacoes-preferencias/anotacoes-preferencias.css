@@ -1,4 +1,4 @@
-/* modules/lembretes/lembretes.css — Estilos do módulo de Lembretes */
+/* modules/anotacoes-preferencias/anotacoes-preferencias.css — Estilos do módulo de Anotações em Preferências */
 
 /* ─── Forçar inline nas âncoras dos painéis de preferência ─────── */
 
@@ -10,15 +10,15 @@
 
 
 /* ─── Wrapper do ícone + balão ─────────────────────────────── */
-.eproc-lembrete-wrapper {
+.eproc-anotacao-wrapper {
   display: inline-block;
   position: relative;
   margin-left: 4px;
   vertical-align: middle;
 }
 
-/* ─── Ícone de lembrete ────────────────────────────────────── */
-.eproc-lembrete-icon {
+/* ─── Ícone de anotação ────────────────────────────────────── */
+.eproc-anotacao-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -33,19 +33,19 @@
   flex-shrink: 0;
 }
 
-.eproc-lembrete-icon--ativo {
+.eproc-anotacao-icon--ativo {
   background: #fef3c7;
   border: 1.5px solid #f59e0b;
   font-size: 11px;
 }
 
-.eproc-lembrete-icon--ativo:hover {
+.eproc-anotacao-icon--ativo:hover {
   background: #fde68a;
   transform: scale(1.15);
   box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
 }
 
-.eproc-lembrete-icon--vazio {
+.eproc-anotacao-icon--vazio {
   background: #f3f4f6;
   border: 1.5px dashed #9ca3af;
   color: #6b7280;
@@ -54,7 +54,7 @@
   opacity: 0.5;
 }
 
-.eproc-lembrete-icon--vazio:hover {
+.eproc-anotacao-icon--vazio:hover {
   opacity: 1;
   background: #e0f2fe;
   border-color: #3b82f6;
@@ -63,7 +63,7 @@
 }
 
 /* ─── Balão de tooltip ─────────────────────────────────────── */
-.eproc-lembrete-balao {
+.eproc-anotacao-balao {
   display: none;
   position: absolute;
   bottom: calc(100% + 8px);
@@ -86,7 +86,7 @@
   animation: eprocBalaoEntrar 0.15s ease-out;
 }
 
-.eproc-lembrete-balao::after {
+.eproc-anotacao-balao::after {
   content: '';
   position: absolute;
   top: 100%;
@@ -96,7 +96,7 @@
   border-top-color: #1e293b;
 }
 
-.eproc-lembrete-wrapper:hover .eproc-lembrete-balao {
+.eproc-anotacao-wrapper:hover .eproc-anotacao-balao {
   display: block;
 }
 
@@ -111,8 +111,8 @@
   }
 }
 
-/* ─── Editor de lembrete ───────────────────────────────────── */
-.eproc-lembrete-editor {
+/* ─── Editor de anotação ───────────────────────────────────── */
+.eproc-anotacao-editor {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
@@ -134,14 +134,14 @@
   }
 }
 
-.eproc-lembrete-editor__titulo {
+.eproc-anotacao-editor__titulo {
   font-size: 13px;
   font-weight: 600;
   color: #334155;
   margin-bottom: 8px;
 }
 
-.eproc-lembrete-editor__textarea {
+.eproc-anotacao-editor__textarea {
   width: 100%;
   box-sizing: border-box;
   border: 1.5px solid #e2e8f0;
@@ -156,24 +156,24 @@
   min-height: 60px;
 }
 
-.eproc-lembrete-editor__textarea:focus {
+.eproc-anotacao-editor__textarea:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
-.eproc-lembrete-editor__textarea::placeholder {
+.eproc-anotacao-editor__textarea::placeholder {
   color: #94a3b8;
 }
 
-.eproc-lembrete-editor__botoes {
+.eproc-anotacao-editor__botoes {
   display: flex;
   gap: 6px;
   margin-top: 10px;
   justify-content: flex-end;
 }
 
-.eproc-lembrete-editor__btn {
+.eproc-anotacao-editor__btn {
   padding: 5px 14px;
   font-size: 12px;
   font-weight: 500;
@@ -184,32 +184,32 @@
   transition: all 0.15s;
 }
 
-.eproc-lembrete-editor__btn--salvar {
+.eproc-anotacao-editor__btn--salvar {
   background: #2563eb;
   color: #fff;
 }
-.eproc-lembrete-editor__btn--salvar:hover {
+.eproc-anotacao-editor__btn--salvar:hover {
   background: #1d4ed8;
 }
 
-.eproc-lembrete-editor__btn--remover {
+.eproc-anotacao-editor__btn--remover {
   background: #fee2e2;
   color: #dc2626;
 }
-.eproc-lembrete-editor__btn--remover:hover {
+.eproc-anotacao-editor__btn--remover:hover {
   background: #fecaca;
 }
 
-.eproc-lembrete-editor__btn--cancelar {
+.eproc-anotacao-editor__btn--cancelar {
   background: #f1f5f9;
   color: #64748b;
 }
-.eproc-lembrete-editor__btn--cancelar:hover {
+.eproc-anotacao-editor__btn--cancelar:hover {
   background: #e2e8f0;
 }
 
 /* ─── Notificação toast ────────────────────────────────────── */
-.eproc-lembrete-notificacao {
+.eproc-anotacao-notificacao {
   position: fixed;
   bottom: 24px;
   right: 24px;
@@ -224,7 +224,7 @@
   animation: eprocNotifEntrar 0.3s ease-out;
 }
 
-.eproc-lembrete-notificacao--saindo {
+.eproc-anotacao-notificacao--saindo {
   animation: eprocNotifSair 0.4s ease-in forwards;
 }
 
@@ -239,7 +239,7 @@
 }
 
 /* ─── Modo edição: destaque visual ─────────────────────────── */
-.eproc-lembrete-modo-edicao .eproc-lembrete-icon--vazio {
+.eproc-anotacao-modo-edicao .eproc-anotacao-icon--vazio {
   opacity: 0.85;
   animation: eprocPulsar 1.5s ease-in-out infinite;
 }

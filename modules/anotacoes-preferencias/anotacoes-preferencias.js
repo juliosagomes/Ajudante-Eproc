@@ -1,4 +1,4 @@
-// modules/lembretes/lembretes.js — Módulo de Lembretes do Ajudante Eproc
+// modules/anotacoes-preferencias/anotacoes-preferencias.js — Módulo de Anotações em Preferências do Ajudante Eproc
 
 (function () {
   'use strict';
@@ -6,24 +6,24 @@
   if (!window.location.hostname.includes('eproc')) return;
 
   const SETTINGS_KEY = 'eprocSettings';
-  const STORAGE_KEY  = 'eprocLembretes';
-  const MODULE_NAME  = 'lembretes';
+  const STORAGE_KEY  = 'eprocAnotacoesPreferencias';
+  const MODULE_NAME  = 'anotacoesPreferencias';
 
-  let lembretes  = {};
-  let modoEdicao = false;
+  let anotacoes   = {};
+  let modoEdicao  = false;
   let moduloAtivo = false;
-  let observer   = null;
+  let observer    = null;
 
   // ─── Storage ────────────────────────────────────────────────────
-  function carregarLembretes(callback) {
+  function carregarAnotacoes(callback) {
     chrome.storage.local.get(STORAGE_KEY, (data) => {
-      lembretes = data[STORAGE_KEY] || {};
+      anotacoes = data[STORAGE_KEY] || {};
       if (callback) callback();
     });
   }
 
-  function salvarLembretes(callback) {
-    chrome.storage.local.set({ [STORAGE_KEY]: lembretes }, callback);
+  function salvarAnotacoes(callback) {
+    chrome.storage.local.set({ [STORAGE_KEY]: anotacoes }, callback);
   }
 
   // Grupos de preferências do Eproc — seletores estáveis por tipo
@@ -51,32 +51,32 @@
   // ─── Injetar ícone após o <a> da preferência ────────────────────
   function injetarIcone(chave, linkEl) {
     // Não duplicar — wrapper já é o irmão imediato
-    if (linkEl.nextElementSibling?.classList.contains('eproc-lembrete-wrapper')) return;
+    if (linkEl.nextElementSibling?.classList.contains('eproc-anotacao-wrapper')) return;
 
     const wrapper = document.createElement('span');
-    wrapper.className = 'eproc-lembrete-wrapper';
+    wrapper.className = 'eproc-anotacao-wrapper';
 
     const icone = document.createElement('span');
-    icone.className = 'eproc-lembrete-icon';
+    icone.className = 'eproc-anotacao-icon';
     icone.setAttribute('data-chave', chave);
 
-    const temLembrete = lembretes[chave];
-    icone.innerHTML = temLembrete ? '📌' : '＋';
-    icone.classList.toggle('eproc-lembrete-icon--ativo', !!temLembrete);
-    icone.classList.toggle('eproc-lembrete-icon--vazio', !temLembrete);
-    icone.title = temLembrete ? '' : 'Clique para adicionar lembrete';
+    const temAnotacao = anotacoes[chave];
+    icone.innerHTML = temAnotacao ? '📌' : '＋';
+    icone.classList.toggle('eproc-anotacao-icon--ativo', !!temAnotacao);
+    icone.classList.toggle('eproc-anotacao-icon--vazio', !temAnotacao);
+    icone.title = temAnotacao ? '' : 'Clique para adicionar anotação';
 
-    if (temLembrete) {
+    if (temAnotacao) {
       const balao = document.createElement('span');
-      balao.className = 'eproc-lembrete-balao';
-      balao.textContent = lembretes[chave];
+      balao.className = 'eproc-anotacao-balao';
+      balao.textContent = anotacoes[chave];
       wrapper.appendChild(balao);
     }
 
     icone.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      abrirEditorLembrete(chave, linkEl, icone);
+      abrirEditorAnotacao(chave, linkEl, icone);
     });
 
     wrapper.appendChild(icone);
@@ -85,41 +85,41 @@
   }
 
   // ─── Editor inline ──────────────────────────────────────────────
-  function abrirEditorLembrete(chave, elemento, icone) {
-    document.querySelectorAll('.eproc-lembrete-editor').forEach(el => el.remove());
+  function abrirEditorAnotacao(chave, elemento, icone) {
+    document.querySelectorAll('.eproc-anotacao-editor').forEach(el => el.remove());
 
     const editor = document.createElement('div');
-    editor.className = 'eproc-lembrete-editor';
+    editor.className = 'eproc-anotacao-editor';
 
     const titulo = document.createElement('div');
-    titulo.className = 'eproc-lembrete-editor__titulo';
-    titulo.textContent = '📌 Lembrete';
+    titulo.className = 'eproc-anotacao-editor__titulo';
+    titulo.textContent = '📌 Anotação';
 
     const textarea = document.createElement('textarea');
-    textarea.className = 'eproc-lembrete-editor__textarea';
-    textarea.placeholder = 'Digite seu lembrete aqui...';
-    textarea.value = lembretes[chave] || '';
+    textarea.className = 'eproc-anotacao-editor__textarea';
+    textarea.placeholder = 'Digite sua anotação aqui...';
+    textarea.value = anotacoes[chave] || '';
     textarea.rows = 3;
 
     const botoes = document.createElement('div');
-    botoes.className = 'eproc-lembrete-editor__botoes';
+    botoes.className = 'eproc-anotacao-editor__botoes';
 
     const btnSalvar = document.createElement('button');
     btnSalvar.type      = 'button';
-    btnSalvar.className = 'eproc-lembrete-editor__btn eproc-lembrete-editor__btn--salvar';
+    btnSalvar.className = 'eproc-anotacao-editor__btn eproc-anotacao-editor__btn--salvar';
     btnSalvar.textContent = 'Salvar';
     btnSalvar.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
       const texto = textarea.value.trim();
       if (texto) {
-        lembretes[chave] = texto;
+        anotacoes[chave] = texto;
       } else {
-        delete lembretes[chave];
+        delete anotacoes[chave];
       }
-      salvarLembretes(() => {
+      salvarAnotacoes(() => {
         editor.remove();
-        if (elemento.nextElementSibling?.classList.contains('eproc-lembrete-wrapper')) {
+        if (elemento.nextElementSibling?.classList.contains('eproc-anotacao-wrapper')) {
           elemento.nextElementSibling.remove();
         }
         injetarIcone(chave, elemento);
@@ -128,15 +128,15 @@
 
     const btnRemover = document.createElement('button');
     btnRemover.type      = 'button';
-    btnRemover.className = 'eproc-lembrete-editor__btn eproc-lembrete-editor__btn--remover';
+    btnRemover.className = 'eproc-anotacao-editor__btn eproc-anotacao-editor__btn--remover';
     btnRemover.textContent = 'Remover';
     btnRemover.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      delete lembretes[chave];
-      salvarLembretes(() => {
+      delete anotacoes[chave];
+      salvarAnotacoes(() => {
         editor.remove();
-        if (elemento.nextElementSibling?.classList.contains('eproc-lembrete-wrapper')) {
+        if (elemento.nextElementSibling?.classList.contains('eproc-anotacao-wrapper')) {
           elemento.nextElementSibling.remove();
         }
         injetarIcone(chave, elemento);
@@ -145,7 +145,7 @@
 
     const btnCancelar = document.createElement('button');
     btnCancelar.type      = 'button';
-    btnCancelar.className = 'eproc-lembrete-editor__btn eproc-lembrete-editor__btn--cancelar';
+    btnCancelar.className = 'eproc-anotacao-editor__btn eproc-anotacao-editor__btn--cancelar';
     btnCancelar.textContent = 'Cancelar';
     btnCancelar.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); editor.remove(); });
 
@@ -188,7 +188,7 @@
 
         const chave = gerarChave(g.tipo, texto);
 
-        if (lembretes[chave] || modoEdicao) {
+        if (anotacoes[chave] || modoEdicao) {
           injetarIcone(chave, el);
         }
       });
@@ -198,25 +198,25 @@
   // ─── Modo edição ────────────────────────────────────────────────
   function toggleModoEdicao(ativo) {
     modoEdicao = ativo;
-    document.body.classList.toggle('eproc-lembrete-modo-edicao', ativo);
-    document.querySelectorAll('.eproc-lembrete-wrapper').forEach(el => el.remove());
+    document.body.classList.toggle('eproc-anotacao-modo-edicao', ativo);
+    document.querySelectorAll('.eproc-anotacao-wrapper').forEach(el => el.remove());
     escanearPreferencias();
     mostrarNotificacao(ativo
-      ? '📌 Modo lembrete ATIVADO — clique no ＋ para adicionar'
-      : '📌 Modo lembrete desativado');
+      ? '📌 Modo anotação ATIVADO — clique no ＋ para adicionar'
+      : '📌 Modo anotação desativado');
   }
 
   function mostrarNotificacao(msg) {
-    const existente = document.querySelector('.eproc-lembrete-notificacao');
+    const existente = document.querySelector('.eproc-anotacao-notificacao');
     if (existente) existente.remove();
 
     const notif = document.createElement('div');
-    notif.className = 'eproc-lembrete-notificacao';
+    notif.className = 'eproc-anotacao-notificacao';
     notif.textContent = msg;
     document.body.appendChild(notif);
 
     setTimeout(() => {
-      notif.classList.add('eproc-lembrete-notificacao--saindo');
+      notif.classList.add('eproc-anotacao-notificacao--saindo');
       setTimeout(() => notif.remove(), 400);
     }, 2500);
   }
@@ -226,7 +226,7 @@
     if (moduloAtivo) return;
     moduloAtivo = true;
 
-    carregarLembretes(() => {
+    carregarAnotacoes(() => {
       escanearPreferencias();
 
       observer = new MutationObserver(() => {
@@ -246,10 +246,10 @@
     }
 
     document.querySelectorAll(
-      '.eproc-lembrete-wrapper, .eproc-lembrete-editor, .eproc-lembrete-notificacao'
+      '.eproc-anotacao-wrapper, .eproc-anotacao-editor, .eproc-anotacao-notificacao'
     ).forEach(el => el.remove());
 
-    document.body.classList.remove('eproc-lembrete-modo-edicao');
+    document.body.classList.remove('eproc-anotacao-modo-edicao');
     modoEdicao = false;
   }
 
@@ -260,28 +260,28 @@
       sendResponse({ ok: true });
     }
 
-    if (msg.tipo === 'exportarLembretes') {
-      sendResponse({ lembretes });
+    if (msg.tipo === 'exportarAnotacoes') {
+      sendResponse({ anotacoes });
     }
 
-    if (msg.tipo === 'importarLembretes') {
+    if (msg.tipo === 'importarAnotacoes') {
       const novos = msg.dados;
       if (novos && typeof novos === 'object') {
-        Object.assign(lembretes, novos);
-        salvarLembretes(() => {
+        Object.assign(anotacoes, novos);
+        salvarAnotacoes(() => {
           if (moduloAtivo) {
-            document.querySelectorAll('.eproc-lembrete-wrapper').forEach(el => el.remove());
+            document.querySelectorAll('.eproc-anotacao-wrapper').forEach(el => el.remove());
             escanearPreferencias();
-            mostrarNotificacao(`📌 ${Object.keys(novos).length} lembrete(s) importado(s)`);
+            mostrarNotificacao(`📌 ${Object.keys(novos).length} anotaç${Object.keys(novos).length !== 1 ? 'ões' : 'ão'} importada${Object.keys(novos).length !== 1 ? 's' : ''}`);
           }
-          sendResponse({ ok: true, total: Object.keys(lembretes).length });
+          sendResponse({ ok: true, total: Object.keys(anotacoes).length });
         });
         return true;
       }
     }
 
     if (msg.tipo === 'obterEstado') {
-      sendResponse({ modoEdicao, totalLembretes: Object.keys(lembretes).length, moduloAtivo });
+      sendResponse({ modoEdicao, totalAnotacoes: Object.keys(anotacoes).length, moduloAtivo });
     }
 
     return true;
@@ -307,8 +307,8 @@
     }
 
     if (changes[STORAGE_KEY] && moduloAtivo) {
-      lembretes = changes[STORAGE_KEY].newValue || {};
-      document.querySelectorAll('.eproc-lembrete-wrapper').forEach(el => el.remove());
+      anotacoes = changes[STORAGE_KEY].newValue || {};
+      document.querySelectorAll('.eproc-anotacao-wrapper').forEach(el => el.remove());
       escanearPreferencias();
     }
   });

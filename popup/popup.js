@@ -5,11 +5,11 @@
 
   const MODULOS_DEFINIDOS = [
     {
-      id: 'lembretes',
-      label: 'Lembretes',
+      id: 'anotacoesPreferencias',
+      label: 'Anotações em preferências',
       iconeSvg: '<svg viewBox="0 0 20 20" fill="none" width="14" height="14"><path d="M10 2.5a5.5 5.5 0 0 1 5.5 5.5c0 3.5 1.5 4.5 1.5 5H3c0-.5 1.5-1.5 1.5-5A5.5 5.5 0 0 1 10 2.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8.5 13v.5a1.5 1.5 0 0 0 3 0V13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
-      carregarStat: carregarStatLembretes,
-      renderPainel: renderPainelLembretes,
+      carregarStat: carregarStatAnotacoes,
+      renderPainel: renderPainelAnotacoes,
     },
     {
       id: 'colorirLocalizadores',
@@ -134,22 +134,22 @@
   }
 
   // ═══════════════════════════════════════════════════════════════
-  // PAINEL DO MÓDULO LEMBRETES
+  // PAINEL DO MÓDULO ANOTAÇÕES EM PREFERÊNCIAS
   // ═══════════════════════════════════════════════════════════════
 
-  function carregarStatLembretes(cb) {
-    chrome.runtime.sendMessage({ tipo: 'obterTotalLembretes' }, (resp) => {
+  function carregarStatAnotacoes(cb) {
+    chrome.runtime.sendMessage({ tipo: 'obterTotalAnotacoesPreferencias' }, (resp) => {
       const total = resp?.total ?? 0;
-      cb(`${total} lembrete${total !== 1 ? 's' : ''}`);
+      cb(`${total} anotaç${total !== 1 ? 'ões' : 'ão'}`);
     });
   }
 
-  function renderPainelLembretes(panel) {
+  function renderPainelAnotacoes(panel) {
     panel.innerHTML = `
       <div class="mod-panel">
-        <div class="mod-stat" id="lembretes-stat-box">
-          <span class="mod-stat__count" id="lembrete-count">…</span>
-          <span class="mod-stat__label">lembretes salvos</span>
+        <div class="mod-stat" id="anotacoes-stat-box">
+          <span class="mod-stat__count" id="anotacao-count">…</span>
+          <span class="mod-stat__label">anotações salvas</span>
         </div>
         <button class="popup-btn popup-btn--secondary" id="btn-modo-edicao">
           ✏️ Ativar modo edição
@@ -157,8 +157,8 @@
       </div>
     `;
 
-    chrome.runtime.sendMessage({ tipo: 'obterTotalLembretes' }, (resp) => {
-      const el = panel.querySelector('#lembrete-count');
+    chrome.runtime.sendMessage({ tipo: 'obterTotalAnotacoesPreferencias' }, (resp) => {
+      const el = panel.querySelector('#anotacao-count');
       if (el) el.textContent = resp?.total ?? 0;
     });
 

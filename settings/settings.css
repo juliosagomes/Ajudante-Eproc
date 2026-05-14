@@ -537,8 +537,8 @@ html, body {
 .card__row--danger { border-top: 1px solid var(--border); }
 .card__row-label--danger { color: #dc2626; }
 
-/* ─── Lista de lembretes ─────────────────────────────────────────── */
-.lembrete-item {
+/* ─── Lista de anotações em preferências ────────────────────────── */
+.anotacao-item {
   display: flex;
   align-items: flex-start;
   gap: 12px;
@@ -546,7 +546,7 @@ html, body {
   border-top: 1px solid var(--border);
 }
 
-.lembrete-badge {
+.anotacao-badge {
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -557,14 +557,14 @@ html, body {
   margin-top: 1px;
 }
 
-.lembrete-badge--minuta        { background: #eff6ff; color: #2563eb; border: 1px solid #dbeafe; }
-.lembrete-badge--movimentacao  { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
-.lembrete-badge--intimacao     { background: #fff1f2; color: #dc2626; border: 1px solid #fecaca; }
-.lembrete-badge--automatizacao { background: #faf5ff; color: #7c3aed; border: 1px solid #e9d5ff; }
+.anotacao-badge--minuta        { background: #eff6ff; color: #2563eb; border: 1px solid #dbeafe; }
+.anotacao-badge--movimentacao  { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+.anotacao-badge--intimacao     { background: #fff1f2; color: #dc2626; border: 1px solid #fecaca; }
+.anotacao-badge--automatizacao { background: #faf5ff; color: #7c3aed; border: 1px solid #e9d5ff; }
 
-.lembrete-item__info { flex: 1; min-width: 0; }
+.anotacao-item__info { flex: 1; min-width: 0; }
 
-.lembrete-item__nome {
+.anotacao-item__nome {
   font-size: 13px;
   font-weight: 500;
   color: var(--text-primary);
@@ -574,7 +574,7 @@ html, body {
   text-overflow: ellipsis;
 }
 
-.lembrete-item__texto {
+.anotacao-item__texto {
   font-size: 12px;
   color: var(--text-secondary);
   margin-top: 3px;
