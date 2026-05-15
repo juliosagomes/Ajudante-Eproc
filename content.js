@@ -8,7 +8,7 @@
   const EXT_SELECTOR = [
     '[id^="fe-"]',
     '[class*="fe-"]',
-    '[class*="eproc-lembrete"]',
+    '[class*="eproc-anotacao"]',
     '[class*="loc-btn-cor"]',
     '[class*="loc-editor-cor"]',
     '[class*="ajudante-loc-"]',

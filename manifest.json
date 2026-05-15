@@ -21,20 +21,31 @@
       "matches": ["*://*.jus.br/*"],
       "js": [
         "content.js",
-        "modules/lembretes/lembretes.js",
+        "lib/modal-manager.js",
+        "lib/alertas.js",
+        "modules/anotacoes-preferencias/anotacoes-preferencias.js",
         "modules/colorir-localizadores/colorir-localizadores.js",
         "modules/filtros-eventos/filtros-eventos.js",
         "modules/expansor-numero-processo/expansor-numero-processo.js",
+        "modules/busca-inteligente/busca-inteligente.js",
+        "modules/pagina-processo-plus/pagina-processo-plus.js",
         "scripts/localizador-busca/localizador-busca.js",
-        "scripts/informacoes-adicionais/informacoes-adicionais.js"
+        "scripts/informacoes-adicionais/informacoes-adicionais.js",
+        "scripts/tarjas-customizadas/tarjas-customizadas.js",
+        "scripts/esmaecer-zerados/esmaecer-zerados.js",
+        "scripts/painel-reordenar/painel-reordenar.js"
       ],
       "css": [
         "styles.css",
-        "modules/lembretes/lembretes.css",
+        "modules/anotacoes-preferencias/anotacoes-preferencias.css",
         "modules/colorir-localizadores/colorir-localizadores.css",
         "modules/filtros-eventos/filtros-eventos.css",
         "modules/expansor-numero-processo/expansor-numero-processo.css",
-        "scripts/localizador-busca/localizador-busca.css"
+        "modules/busca-inteligente/busca-inteligente.css",
+        "modules/pagina-processo-plus/pagina-processo-plus.css",
+        "scripts/localizador-busca/localizador-busca.css",
+        "scripts/tarjas-customizadas/tarjas-customizadas.css",
+        "scripts/painel-reordenar/painel-reordenar.css"
       ],
       "run_at": "document_idle",
       "all_frames": true

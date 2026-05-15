@@ -1,0 +1,7 @@
+/* modules/tarjas-customizadas/tarjas-customizadas.css */
+
+/* Garante que links dentro de uma tarja colorida adotem a cor do texto da tarja,
+   sobrepondo o estilo nativo do eproc que vem com cor inline no <a>. */
+#divInfraBarraComandosSuperior label[data-ajudante-cor]:not([data-ajudante-cor="0"]) a {
+  color: var(--ajudante-tarja-text-color) !important;
+}

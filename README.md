@@ -17,12 +17,12 @@ A estrutura de arquivos da extensão é organizada da seguinte forma:
 - `content.js`: Script de conteúdo injetado nas páginas do Eproc.
 - `styles.css`: Estilos globais da extensão.
 - `icons/`: Pasta contendo ícones da extensão.
-- `modules/`: Pasta com módulos personalizáveis, como `lembretes/` (contém `lembretes.css` e `lembretes.js`).
+- `modules/`: Pasta com módulos personalizáveis, como `anotacoes-preferencias/` (contém `anotacoes-preferencias.css` e `anotacoes-preferencias.js`).
 - `popup/`: Interface popup da extensão (`popup.html`, `popup.css`, `popup.js`).
 - `scripts/`: Pasta com scripts adicionais, como `localizador-busca/` (contém `localizador-busca.css` e `localizador-busca.js`).
 - `settings/`: Página de configurações (`settings.html`, `settings.css`, `settings.js`).
 
 ## Recursos:
-- **Lembretes em Preferências**: Possibilidade de inserir orientações adicionais a preferências
+- **Anotações em preferências**: Possibilidade de inserir orientações adicionais a preferências do Eproc (Minutas, Movimentações, Intimações e Automatizações)
 - **Colorir Localizadores**: Possbilidade de adicionar cores aos localizadores
 - **Busca no campo "novo localizador**: Retira a necessidade do usuário scrollar até o novo localizador desejado ao realizar agendamento de minuta
