@@ -59,7 +59,7 @@
     },
     {
       id: 'paginaProcessoPlus',
-      label: 'Página de Processo+',
+      label: 'Capa de Processo+',
       descricao: 'Barra fixa, copiar número formatado, atalho à árvore e scroll rápido para preferências.',
       icon: '<svg viewBox="0 0 20 20" fill="none"><rect x="3" y="3.5" width="14" height="13" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 7.5h14" stroke="currentColor" stroke-width="1.4"/><circle cx="5.5" cy="5.5" r="0.6" fill="currentColor"/><circle cx="7.5" cy="5.5" r="0.6" fill="currentColor"/><path d="M6 11h4M6 13h6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>',
     },
@@ -795,7 +795,7 @@
     });
   }
 
-  // ─── Página de Processo+ — sub-toggles ───────────────────────────
+  // ─── Capa de Processo+ — sub-toggles ───────────────────────────
   function bindPaginaProcessoPlusSubToggles() {
     const sub = ['barraInfo', 'copyNumero', 'botaoFlutuante', 'atalhosPreferencias'];
     if (!settings.modules.paginaProcessoPlus) {
