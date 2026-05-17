@@ -92,6 +92,11 @@
       label: 'Reordenar blocos no Painel Inicial',
       descricao: 'Adiciona botões ▲/▼ em cada bloco do Painel Inicial para mover sua posição. A ordem é lembrada nos próximos acessos. Inclui botão para restaurar a ordem nativa.',
     },
+    {
+      id: 'filtroPreferencias',
+      label: 'Filtrar preferências (capa do processo)',
+      descricao: 'Adiciona um campo de busca em cima das listas de preferências de Minutas, Movimentações e Intimações na capa do processo, com destaque do termo digitado. ESC limpa.',
+    },
   ];
 
   let settings = { modules: {}, scripts: {} };

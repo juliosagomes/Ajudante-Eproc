@@ -33,7 +33,8 @@
         "scripts/informacoes-adicionais/informacoes-adicionais.js",
         "scripts/tarjas-customizadas/tarjas-customizadas.js",
         "scripts/esmaecer-zerados/esmaecer-zerados.js",
-        "scripts/painel-reordenar/painel-reordenar.js"
+        "scripts/painel-reordenar/painel-reordenar.js",
+        "scripts/filtro-preferencias/filtro-preferencias.js"
       ],
       "css": [
         "styles.css",
@@ -45,7 +46,8 @@
         "modules/pagina-processo-plus/pagina-processo-plus.css",
         "scripts/localizador-busca/localizador-busca.css",
         "scripts/tarjas-customizadas/tarjas-customizadas.css",
-        "scripts/painel-reordenar/painel-reordenar.css"
+        "scripts/painel-reordenar/painel-reordenar.css",
+        "scripts/filtro-preferencias/filtro-preferencias.css"
       ],
       "run_at": "document_idle",
       "all_frames": true
