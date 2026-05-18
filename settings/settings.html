@@ -481,6 +481,36 @@
             </div>
             <div class="card__row">
               <div class="card__row-info">
+                <span class="card__row-label">Segmento da Justiça (J)</span>
+                <span class="card__row-sub">1 dígito. Conforme Res. CNJ 65/2008: 1=STF, 2=CNJ, 3=STJ, 4=JF, 5=JT, 6=JE, 7=JM da União, 8=Justiça Estadual e DF, 9=JM Estadual. Padrão TJMG: <code>8</code>.</span>
+              </div>
+              <input
+                type="text"
+                id="expro-J"
+                class="loc-input-nome"
+                pattern="\d"
+                inputmode="numeric"
+                maxlength="1"
+                placeholder="8"
+                style="max-width:80px;text-align:center;font-variant-numeric:tabular-nums;">
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Tribunal (TR)</span>
+                <span class="card__row-sub">2 dígitos. Identifica o tribunal dentro do segmento (ex.: TJMG = <code>13</code>).</span>
+              </div>
+              <input
+                type="text"
+                id="expro-TR"
+                class="loc-input-nome"
+                pattern="\d{2}"
+                inputmode="numeric"
+                maxlength="2"
+                placeholder="13"
+                style="max-width:80px;text-align:center;letter-spacing:.1em;font-variant-numeric:tabular-nums;">
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
                 <span class="card__row-label">Código do órgão padrão (OOOO)</span>
                 <span class="card__row-sub">4 dígitos. Usado quando o input não traz override (ex.: <code>43325.0850</code>).</span>
               </div>
@@ -493,6 +523,24 @@
                 maxlength="4"
                 placeholder="0702"
                 style="max-width:120px;text-align:center;letter-spacing:.1em;font-variant-numeric:tabular-nums;">
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Primeiros dígitos possíveis do nº sequencial</span>
+                <span class="card__row-sub">
+                  Lista (separada por vírgula) de candidatos para o 1º dígito do <code>NNNNNNN</code>.
+                  No TJMG, processos Eproc nativos começam com <code>1</code> e processos migrados do PJe com <code>5</code> — padrão: <code>1, 5</code>.
+                  Em <code>N-DD</code> a extensão escolhe o candidato automaticamente pelo dígito verificador; em <code>N+YY</code> usa o primeiro da lista (ordem importa).
+                  Se você digitar o número sequencial completo (7 dígitos), essa lista é ignorada.
+                </span>
+              </div>
+              <input
+                type="text"
+                id="expro-primeirosN"
+                class="loc-input-nome"
+                inputmode="numeric"
+                placeholder="1, 5"
+                style="max-width:160px;text-align:center;letter-spacing:.05em;font-variant-numeric:tabular-nums;">
             </div>
             <div class="card__row">
               <div class="card__row-info">
@@ -519,13 +567,19 @@
             <div class="card__row">
               <div class="card__row-info">
                 <span class="card__row-label"><code>43325</code> → N + ano (últimos 2 dígitos)</span>
-                <span class="card__row-sub">Usa o órgão padrão configurado acima.</span>
+                <span class="card__row-sub">Usa o órgão padrão configurado acima e o primeiro candidato em <em>Primeiros dígitos</em>.</span>
               </div>
             </div>
             <div class="card__row">
               <div class="card__row-info">
                 <span class="card__row-label"><code>433-07</code> → N + DD</span>
-                <span class="card__row-sub">Deduz o ano automaticamente. Útil para processos redistribuídos.</span>
+                <span class="card__row-sub">Deduz o ano automaticamente e escolhe o candidato em <em>Primeiros dígitos</em> que bate com o DD — resolve sozinho processos Eproc nativos vs migrados do PJe.</span>
+              </div>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label"><code>1000433-07</code> ou <code>100043325</code> → N completo (7 dígitos)</span>
+                <span class="card__row-sub">Se o nº sequencial vier com 7 dígitos, é tomado como <code>NNNNNNN</code> completo e a lista de <em>Primeiros dígitos</em> é ignorada.</span>
               </div>
             </div>
             <div class="card__row">

@@ -755,21 +755,47 @@
 
   // ─── Expansor de nº de processo ──────────────────────────────────
   function bindExpansorNumeroProcesso() {
-    const inpOOOO   = document.getElementById('expro-defaultOOOO');
-    const inpAnoMin = document.getElementById('expro-anoMin');
-    if (!inpOOOO || !inpAnoMin) return;
+    const inpOOOO       = document.getElementById('expro-defaultOOOO');
+    const inpAnoMin     = document.getElementById('expro-anoMin');
+    const inpJ          = document.getElementById('expro-J');
+    const inpTR         = document.getElementById('expro-TR');
+    const inpPrimeirosN = document.getElementById('expro-primeirosN');
+    if (!inpOOOO || !inpAnoMin || !inpJ || !inpTR || !inpPrimeirosN) return;
 
     if (!settings.modules.expansorNumeroProcesso) {
       settings.modules.expansorNumeroProcesso = { enabled: true };
     }
     const m = settings.modules.expansorNumeroProcesso;
 
-    inpOOOO.value   = typeof m.defaultOOOO === 'string' ? m.defaultOOOO : '';
-    inpAnoMin.value = Number.isFinite(m.anoMin) ? m.anoMin : 2010;
+    // Backfill em memória dos padrões TJMG caso a settings venha de uma versão antiga
+    if (typeof m.J !== 'string')  m.J  = '8';
+    if (typeof m.TR !== 'string') m.TR = '13';
+    if (!Array.isArray(m.primeirosN) || !m.primeirosN.length) {
+      // Compat: campo anterior chamava-se primeiroN (string).
+      m.primeirosN = (typeof m.primeiroN === 'string' && /^\d$/.test(m.primeiroN))
+        ? [m.primeiroN]
+        : ['1', '5'];
+    }
 
-    inpOOOO.addEventListener('input', () => {
-      // Aceita apenas dígitos, máx 4
-      inpOOOO.value = inpOOOO.value.replace(/\D/g, '').slice(0, 4);
+    inpOOOO.value       = typeof m.defaultOOOO === 'string' ? m.defaultOOOO : '';
+    inpAnoMin.value     = Number.isFinite(m.anoMin) ? m.anoMin : 2010;
+    inpJ.value          = m.J;
+    inpTR.value         = m.TR;
+    inpPrimeirosN.value = m.primeirosN.join(', ');
+
+    // Helper: input só aceita dígitos, com limite de tamanho
+    const apenasDigitos = (el, max) => {
+      el.addEventListener('input', () => {
+        el.value = el.value.replace(/\D/g, '').slice(0, max);
+      });
+    };
+    apenasDigitos(inpOOOO, 4);
+    apenasDigitos(inpJ, 1);
+    apenasDigitos(inpTR, 2);
+
+    // Lista: aceita dígitos, vírgulas e espaços enquanto digita
+    inpPrimeirosN.addEventListener('input', () => {
+      inpPrimeirosN.value = inpPrimeirosN.value.replace(/[^\d,\s]/g, '');
     });
 
     inpOOOO.addEventListener('change', () => {
@@ -779,6 +805,52 @@
         return;
       }
       settings.modules.expansorNumeroProcesso.defaultOOOO = v;
+      salvar();
+    });
+
+    inpJ.addEventListener('change', () => {
+      const v = inpJ.value.trim();
+      if (!/^\d$/.test(v)) {
+        mostrarToast('Segmento (J) deve ter 1 dígito', true);
+        inpJ.value = settings.modules.expansorNumeroProcesso.J || '8';
+        return;
+      }
+      settings.modules.expansorNumeroProcesso.J = v;
+      salvar();
+    });
+
+    inpTR.addEventListener('change', () => {
+      const v = inpTR.value.trim();
+      if (!/^\d{2}$/.test(v)) {
+        mostrarToast('Tribunal (TR) deve ter 2 dígitos', true);
+        inpTR.value = settings.modules.expansorNumeroProcesso.TR || '13';
+        return;
+      }
+      settings.modules.expansorNumeroProcesso.TR = v;
+      salvar();
+    });
+
+    inpPrimeirosN.addEventListener('change', () => {
+      const bruto = inpPrimeirosN.value;
+      const tokens = bruto.split(/[,\s]+/).map(t => t.trim()).filter(Boolean);
+      const invalido = tokens.find(t => !/^\d$/.test(t));
+      if (invalido !== undefined) {
+        mostrarToast(`"${invalido}" não é um dígito válido`, true);
+        inpPrimeirosN.value = settings.modules.expansorNumeroProcesso.primeirosN.join(', ');
+        return;
+      }
+      // Deduplica preservando ordem
+      const lista = [];
+      for (const t of tokens) if (!lista.includes(t)) lista.push(t);
+      if (!lista.length) {
+        mostrarToast('Informe pelo menos um dígito', true);
+        inpPrimeirosN.value = settings.modules.expansorNumeroProcesso.primeirosN.join(', ');
+        return;
+      }
+      settings.modules.expansorNumeroProcesso.primeirosN = lista;
+      // Limpa campo legado se existir
+      delete settings.modules.expansorNumeroProcesso.primeiroN;
+      inpPrimeirosN.value = lista.join(', ');
       salvar();
     });
 

@@ -10,12 +10,23 @@
   const MODULE_NAME  = 'expansorNumeroProcesso';
   const FIELD_ID     = 'txtNumProcessoPesquisaRapida';
 
-  const J_FIXO  = '8';
-  const TR_FIXO = '13';
+  // Padrões TJMG: J=8 (TJ Estadual), TR=13 (MG).
+  // primeirosN: lista de candidatos para o 1º dígito do NNNNNNN — TJMG usa
+  // 1 (Eproc nativo) e 5 (processos migrados do PJe). Ordem importa: define
+  // tiebreaker quando o modo N+YY é ambíguo.
+  const J_DEFAULT          = '8';
+  const TR_DEFAULT         = '13';
+  const PRIMEIROS_N_DEFAULT = ['1', '5'];
 
   let moduloAtivo = false;
   let observer    = null;
-  let cfg         = { defaultOOOO: '', anoMin: 2010 };
+  let cfg         = {
+    defaultOOOO: '',
+    anoMin: 2010,
+    J: J_DEFAULT,
+    TR: TR_DEFAULT,
+    primeirosN: PRIMEIROS_N_DEFAULT.slice(),
+  };
   // Mapa: input.id ou referência → { handler, errEl }
   const camposGrudados = new WeakMap();
 
@@ -42,7 +53,7 @@
     return BigInt(`${N}${A}${J}${TR}${O}${DD}`) % 97n === 1n;
   }
 
-  function deduzirAno(N, DD, OOOO, J = J_FIXO, TR = TR_FIXO, anoMin = 2010) {
+  function deduzirAno(N, DD, OOOO, J = J_DEFAULT, TR = TR_DEFAULT, anoMin = 2010) {
     const anoMax = new Date().getFullYear() + 1;
     for (let ano = anoMax; ano >= anoMin; ano--) {
       const full = `${N}${ano}${J}${TR}${OOOO}${DD}`;
@@ -88,6 +99,13 @@
       return { ok: false, erro: 'Configure o órgão padrão nas opções da extensão.' };
     }
 
+    const J          = /^\d$/.test(config.J)     ? config.J  : J_DEFAULT;
+    const TR         = /^\d{2}$/.test(config.TR) ? config.TR : TR_DEFAULT;
+    const primeirosN = Array.isArray(config.primeirosN) && config.primeirosN.length
+      ? config.primeirosN.filter(d => /^\d$/.test(d))
+      : [];
+    const primeirosNEfetivo = primeirosN.length ? primeirosN : PRIMEIROS_N_DEFAULT.slice();
+
     // Modo N-DD vs N+YY
     let parteN, parteDD = null, YY = null, modoAno = 'YY';
     const idxTraco = prefixo.indexOf('-');
@@ -115,30 +133,53 @@
     if (parteN === '') {
       return { ok: false, erro: 'Número sequencial inválido.' };
     }
-    if (!/^\d{1,6}$/.test(parteN)) {
+    if (!/^\d{1,7}$/.test(parteN)) {
       return { ok: false, erro: 'Número sequencial inválido.' };
     }
 
-    const NNNNNNN = '1' + parteN.padStart(6, '0');
+    // Candidatos para o NNNNNNN (7 dígitos canônicos):
+    //  - parteN com 7 dígitos: tomado como N completo, ignora primeirosN
+    //  - parteN com 1-6 dígitos: prefixa cada um dos primeirosN configurados
+    const candidatosN = parteN.length === 7
+      ? [parteN]
+      : primeirosNEfetivo.map(pN => pN + parteN.padStart(6, '0'));
 
-    let AAAA, DD, modoFinal;
+    let NNNNNNN, AAAA, DD, modoFinal;
     if (modoAno === 'YY') {
       AAAA = '20' + YY;
-      DD   = calcularDD(NNNNNNN, AAAA, J_FIXO, TR_FIXO, OOOO);
+      // N+YY é ambíguo entre os candidatos (cada um produz um DD válido distinto).
+      // Convenção: usa o primeiro candidato da lista (= preferência do usuário em settings).
+      NNNNNNN = candidatosN[0];
+      DD = calcularDD(NNNNNNN, AAAA, J, TR, OOOO);
       modoFinal = oooOverride ? 'N+YY+OOOO' : 'N+YY';
     } else {
       DD = parteDD;
-      const ano = deduzirAno(NNNNNNN, DD, OOOO, J_FIXO, TR_FIXO, config.anoMin || 2010);
-      if (!ano) {
+      const achou = deduzirNeAno(candidatosN, DD, OOOO, J, TR, config.anoMin || 2010);
+      if (!achou) {
         return { ok: false, erro: 'DD não confere. Verifique o número, o DD ou o órgão.' };
       }
-      AAAA = ano;
+      NNNNNNN = achou.N;
+      AAAA    = achou.ano;
       modoFinal = oooOverride ? 'N-DD+OOOO' : 'N-DD';
     }
 
     // Formato canônico: N + DD + A + J + TR + O
-    const numero = `${NNNNNNN}${DD}${AAAA}${J_FIXO}${TR_FIXO}${OOOO}`;
+    const numero = `${NNNNNNN}${DD}${AAAA}${J}${TR}${OOOO}`;
     return { ok: true, numero, modo: modoFinal };
+  }
+
+  // Deduz simultaneamente (NNNNNNN, ano): ano-major (mais recente primeiro),
+  // candidato-minor (ordem da lista). Empata pelo ano mais recente; em colisão
+  // no mesmo ano (raríssima: ~1/97), respeita a ordem em primeirosN.
+  function deduzirNeAno(candidatosN, DD, OOOO, J, TR, anoMin) {
+    const anoMax = new Date().getFullYear() + 1;
+    for (let ano = anoMax; ano >= anoMin; ano--) {
+      for (const N of candidatosN) {
+        const full = `${N}${ano}${J}${TR}${OOOO}${DD}`;
+        if (BigInt(full) % 97n === 1n) return { N, ano: String(ano) };
+      }
+    }
+    return null;
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -227,13 +268,31 @@
   // CICLO DE VIDA
   // ═══════════════════════════════════════════════════════════════
 
+  function normalizarCfg(m) {
+    let primeirosN;
+    if (Array.isArray(m.primeirosN)) {
+      primeirosN = m.primeirosN.filter(d => typeof d === 'string' && /^\d$/.test(d));
+    } else if (/^\d$/.test(m.primeiroN)) {
+      // Compat: versão anterior salvava string única.
+      primeirosN = [m.primeiroN];
+    } else {
+      primeirosN = [];
+    }
+    if (!primeirosN.length) primeirosN = PRIMEIROS_N_DEFAULT.slice();
+
+    return {
+      defaultOOOO: typeof m.defaultOOOO === 'string' ? m.defaultOOOO : '',
+      anoMin:      Number.isFinite(m.anoMin) ? m.anoMin : 2010,
+      J:           /^\d$/.test(m.J)     ? m.J  : J_DEFAULT,
+      TR:          /^\d{2}$/.test(m.TR) ? m.TR : TR_DEFAULT,
+      primeirosN,
+    };
+  }
+
   function lerCfg(callback) {
     chrome.storage.local.get(SETTINGS_KEY, (data) => {
       const m = data[SETTINGS_KEY]?.modules?.[MODULE_NAME] || {};
-      cfg = {
-        defaultOOOO: typeof m.defaultOOOO === 'string' ? m.defaultOOOO : '',
-        anoMin:      Number.isFinite(m.anoMin) ? m.anoMin : 2010,
-      };
+      cfg = normalizarCfg(m);
       if (callback) callback();
     });
   }
@@ -269,10 +328,7 @@
     const m = novo.modules?.[MODULE_NAME] || {};
     const enabled = m.enabled ?? true;
 
-    cfg = {
-      defaultOOOO: typeof m.defaultOOOO === 'string' ? m.defaultOOOO : '',
-      anoMin:      Number.isFinite(m.anoMin) ? m.anoMin : 2010,
-    };
+    cfg = normalizarCfg(m);
 
     if (enabled && !moduloAtivo) ativarModulo();
     if (!enabled && moduloAtivo) desativarModulo();
@@ -289,7 +345,7 @@
   // Cole no console: window.__EXPANSOR_TESTAR = true; location.reload();
   // ═══════════════════════════════════════════════════════════════
   if (typeof window !== 'undefined' && window.__EXPANSOR_TESTAR === true) {
-    const testCfg = { defaultOOOO: '0702', anoMin: 2010 };
+    const testCfg = { defaultOOOO: '0702', anoMin: 2010, J: '8', TR: '13', primeirosN: ['1', '5'] };
     const casos = [
       // [input, esperado, modo]
       ['43325',                        '10004330720258130702', 'N+YY'],
@@ -299,6 +355,9 @@
       ['1000433-07.2025.8.13.0702',    '10004330720258130702', 'completo'],
       ['10004330720258130702',         '10004330720258130702', 'completo'],
       ['  43325  ',                    '10004330720258130702', 'N+YY'],
+      // parteN com 7 dígitos: tomado como N completo, ignora primeirosN
+      ['1000433-07',                   '10004330720258130702', 'N-DD'],
+      ['100043325',                    '10004330720258130702', 'N+YY'],
     ];
     const erros = [
       ['abc'],

@@ -5,7 +5,7 @@ const DEFAULT_SETTINGS = {
     anotacoesPreferencias:   { enabled: true },
     colorirLocalizadores:    { enabled: true },
     filtrosEventos:          { enabled: true },
-    expansorNumeroProcesso:  { enabled: true, defaultOOOO: '', anoMin: 2010 },
+    expansorNumeroProcesso:  { enabled: true, defaultOOOO: '', anoMin: 2010, J: '8', TR: '13', primeirosN: ['1', '5'] },
     buscaInteligente:        { enabled: true },
     paginaProcessoPlus: {
       enabled: true,
@@ -51,6 +51,25 @@ chrome.runtime.onInstalled.addListener((details) => {
         if (!atual.modules) atual.modules = {};
         atual.modules.expansorNumeroProcesso = DEFAULT_SETTINGS.modules.expansorNumeroProcesso;
         dirty = true;
+      } else {
+        // Backfill: J, TR e primeirosN passaram a ser configuráveis (padrão TJMG).
+        // primeirosN é lista ordenada (TJMG: 1=Eproc nativo, 5=migrado do PJe).
+        const exp = atual.modules.expansorNumeroProcesso;
+        if (typeof exp.J !== 'string')  { exp.J  = '8';  dirty = true; }
+        if (typeof exp.TR !== 'string') { exp.TR = '13'; dirty = true; }
+        if (!Array.isArray(exp.primeirosN) || !exp.primeirosN.length) {
+          // Migra string única primeiroN → lista; senão usa padrão TJMG
+          if (typeof exp.primeiroN === 'string' && /^\d$/.test(exp.primeiroN)) {
+            exp.primeirosN = [exp.primeiroN];
+          } else {
+            exp.primeirosN = ['1', '5'];
+          }
+          dirty = true;
+        }
+        if ('primeiroN' in exp) {
+          delete exp.primeiroN;
+          dirty = true;
+        }
       }
       if (!atual.modules?.buscaInteligente) {
         if (!atual.modules) atual.modules = {};

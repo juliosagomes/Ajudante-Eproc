@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Identidade Visual — Ajudante +Eproc</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* Brand palette */
+  --sky:    #7ab3d8;
+  --mid:    #4a8fc4;
+  --deep:   #2d6fa8;
+  --navy:   #0f172a;
+  --ink:    #1e3a5f;
+
+  /* Extended palette */
+  --sky-10:  #f0f7fc;
+  --sky-20:  #ddeef8;
+  --sky-40:  #a9cce5;
+  --mid-80:  #2d6fa8;
+
+  --slate:   #475569;
+  --mist:    #94a3b8;
+  --cloud:   #f1f5f9;
+  --white:   #ffffff;
+
+  /* Typography */
+  --font: 'DM Sans', system-ui, sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+
+html { font-family: var(--font); background: var(--cloud); color: var(--navy); -webkit-font-smoothing: antialiased; }
+
+/* ─── Page shell ─── */
+.page { max-width: 1100px; margin: 0 auto; padding: 60px 40px 100px; }
+
+/* ─── Section ─── */
+.section { margin-bottom: 72px; }
+
+.section-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--mist);
+  margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+}
+
+.section-label::after {
+  content: ''; flex: 1; height: 1px; background: #e2e8f0;
+}
+
+.section-title {
+  font-size: 28px; font-weight: 700; letter-spacing: -0.03em;
+  color: var(--navy); margin-bottom: 8px;
+}
+
+.section-sub {
+  font-size: 14px; color: var(--slate); line-height: 1.6; margin-bottom: 32px; max-width: 560px;
+}
+
+/* ─── Cover ─── */
+.cover {
+  background: var(--navy);
+  border-radius: 20px;
+  padding: 64px 56px;
+  margin-bottom: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.cover::before {
+  content: '';
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 360px; height: 360px;
+  background: radial-gradient(circle, rgba(122,179,216,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cover-text {}
+.cover-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--sky); margin-bottom: 12px; }
+.cover-title { font-size: 38px; font-weight: 700; color: white; letter-spacing: -0.03em; line-height: 1.1; }
+.cover-sub { font-size: 14px; color: rgba(255,255,255,0.45); margin-top: 10px; line-height: 1.6; }
+
+.cover-badge {
+  background: rgba(122,179,216,0.1);
+  border: 1px solid rgba(122,179,216,0.25);
+  border-radius: 12px;
+  padding: 20px 28px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.cover-badge-version { font-size: 11px; color: var(--sky); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+.cover-badge-num { font-size: 32px; font-weight: 700; color: white; }
+
+/* ─── Logo lockups ─── */
+.logo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+
+.logo-card {
+  border-radius: 14px;
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  min-height: 200px;
+}
+
+.logo-card--light { background: white; border: 1px solid #e2e8f0; }
+.logo-card--cloud { background: var(--cloud); border: 1px solid #e2e8f0; }
+.logo-card--dark  { background: var(--navy); }
+.logo-card--brand { background: linear-gradient(135deg, var(--deep) 0%, var(--mid) 100%); }
+
+.logo-card__label {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--mist); margin-top: 4px;
+}
+
+.logo-card--dark  .logo-card__label { color: rgba(255,255,255,0.3); }
+.logo-card--brand .logo-card__label { color: rgba(255,255,255,0.5); }
+
+/* ─── Lockup SVG inline ─── */
+.lockup { display: flex; align-items: center; gap: 14px; }
+.lockup--stacked { flex-direction: column; gap: 10px; align-items: center; }
+
+.lockup__icon { flex-shrink: 0; }
+
+.lockup__text {}
+.lockup__name {
+  font-family: var(--font);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--navy);
+}
+.lockup__tagline {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mist);
+  margin-top: 5px;
+}
+
+.lockup__name--white { color: white; }
+.lockup__tagline--white { color: rgba(255,255,255,0.5); }
+
+.lockup__stacked-name {
+  font-family: var(--font);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-align: center;
+  line-height: 1;
+}
+
+/* ─── Colors ─── */
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+}
+
+.color-swatch {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
+.color-swatch__chip {
+  height: 80px;
+}
+
+.color-swatch__info {
+  background: white;
+  padding: 10px 12px;
+}
+
+.color-swatch__name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--navy);
+  display: block;
+}
+
+.color-swatch__hex {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--mist);
+  display: block;
+  margin-top: 2px;
+}
+
+.color-swatch__role {
+  font-size: 10px;
+  color: var(--mist);
+  display: block;
+  margin-top: 3px;
+  line-height: 1.3;
+}
+
+/* ─── Typography ─── */
+.type-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.type-row {
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+  padding: 24px 28px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.type-row:last-child { border-bottom: none; }
+
+.type-row__meta {
+  width: 160px;
+  flex-shrink: 0;
+}
+
+.type-row__label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mist);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  display: block;
+}
+
+.type-row__spec {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: #cbd5e1;
+  display: block;
+  margin-top: 3px;
+}
+
+.type-row__sample { flex: 1; }
+
+/* ─── Components demo ─── */
+.components-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.comp-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 28px;
+}
+
+.comp-card__label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--mist);
+  margin-bottom: 20px;
+}
+
+/* mini settings sidebar */
+.mini-settings {
+  display: flex;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  height: 180px;
+}
+
+.mini-sidebar {
+  width: 100px;
+  background: var(--navy);
+  padding: 10px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.mini-sidebar-brand {
+  padding: 6px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.mini-sidebar-brand span {
+  font-size: 8px;
+  font-weight: 700;
+  color: white;
+  line-height: 1.2;
+}
+
+.mini-nav-item {
+  padding: 5px 6px;
+  border-radius: 5px;
+  font-size: 8px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.4);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.mini-nav-item--active {
+  background: rgba(122,179,216,0.18);
+  color: #e2f0fb;
+}
+
+.mini-nav-dot {
+  width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.2); flex-shrink: 0;
+}
+
+.mini-nav-dot--active { background: var(--sky); }
+
+.mini-content {
+  flex: 1;
+  background: var(--cloud);
+  padding: 10px;
+  overflow: hidden;
+}
+
+.mini-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+}
+
+.mini-card-head {
+  font-size: 7px;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.mini-card-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.mini-card-label { font-size: 7px; color: var(--slate); }
+
+.mini-toggle {
+  width: 18px; height: 10px;
+  background: #2563eb;
+  border-radius: 10px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.mini-toggle::after {
+  content: '';
+  position: absolute;
+  width: 7px; height: 7px;
+  background: white;
+  border-radius: 50%;
+  top: 1.5px; right: 1.5px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+/* ─── Buttons demo ─── */
+.btn-demo { display: flex; flex-direction: column; gap: 10px; }
+
+.demo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+.demo-btn--primary { background: #2563eb; color: white; }
+.demo-btn--secondary { background: var(--cloud); color: var(--navy); border: 1px solid #e2e8f0; }
+.demo-btn--ghost { background: transparent; color: #2563eb; border: 1px solid #dbeafe; }
+.demo-btn--danger { background: #fff1f2; color: #dc2626; border: 1px solid #fecaca; }
+
+/* ─── Clear zone ─── */
+.clearzone-demo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  position: relative;
+}
+
+.clearzone-box {
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 4px;
+  padding: 24px;
+  position: relative;
+}
+
+.clearzone-box::before {
+  content: '× clear zone';
+  position: absolute;
+  top: -10px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--mist);
+  background: white;
+  padding: 0 6px;
+  text-transform: uppercase;
+}
+
+/* ─── Don't do ─── */
+.dont-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.dont-card {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1.5px solid #fecaca;
+}
+
+.dont-card__preview {
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  min-height: 100px;
+}
+
+.dont-card__footer {
+  background: #fff1f2;
+  padding: 8px 12px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #dc2626;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* icon SVG reuse */
+.icon-svg { display: block; }
+
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── Cover ── -->
+  <div class="cover">
+    <div class="cover-text">
+      <div class="cover-eyebrow">Guia de Identidade Visual</div>
+      <div class="cover-title">Ajudante <span style="color:#7ab3d8;font-weight:500">+Eproc</span></div>
+      <div class="cover-sub">Cores, tipografia, logo e componentes.<br>Referência oficial da extensão.</div>
+    </div>
+  </div>
+
+  <!-- ── 1. Logo ── -->
+  <div class="section">
+    <div class="section-label">01 — Logo</div>
+    <div class="section-title">Logotipo</div>
+    <div class="section-sub">O logotipo combina o símbolo de três círculos sobrepostos com o nome da extensão em DM Sans Bold. Use sempre o arquivo original — nunca redesenhe ou recrie à mão.</div>
+
+    <div class="logo-grid">
+
+      <!-- Horizontal claro -->
+      <div class="logo-card logo-card--light">
+        <div class="lockup">
+          <div class="lockup__icon">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <circle cx="20" cy="20" r="16" fill="#7ab3d8" opacity="0.85"/>
+              <circle cx="32" cy="22" r="11" fill="#4a8fc4" opacity="0.75"/>
+              <circle cx="26" cy="33" r="9"  fill="#2d6fa8" opacity="0.80"/>
+              <path d="M14 20 L18.5 25 L27 15" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="lockup__text">
+            <div class="lockup__name">Ajudante <span style="color:#2d6fa8;font-weight:500">+Eproc</span></div>
+            <div class="lockup__tagline">Extensão para Chrome</div>
+          </div>
+        </div>
+        <div class="logo-card__label">Horizontal — Fundo claro</div>
+      </div>
+
+      <!-- Horizontal escuro -->
+      <div class="logo-card logo-card--dark">
+        <div class="lockup">
+          <div class="lockup__icon">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <circle cx="20" cy="20" r="16" fill="#7ab3d8" opacity="0.85"/>
+              <circle cx="32" cy="22" r="11" fill="#4a8fc4" opacity="0.75"/>
+              <circle cx="26" cy="33" r="9"  fill="#2d6fa8" opacity="0.80"/>
+              <path d="M14 20 L18.5 25 L27 15" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="lockup__text">
+            <div class="lockup__name lockup__name--white">Ajudante <span style="color:#7ab3d8;font-weight:500">+Eproc</span></div>
+            <div class="lockup__tagline lockup__tagline--white">Extensão para Chrome</div>
+          </div>
+        </div>
+        <div class="logo-card__label">Horizontal — Fundo escuro</div>
+      </div>
+
+      <!-- Horizontal marca -->
+      <div class="logo-card logo-card--brand">
+        <div class="lockup">
+          <div class="lockup__icon">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <circle cx="20" cy="20" r="16" fill="rgba(255,255,255,0.35)"/>
+              <circle cx="32" cy="22" r="11" fill="rgba(255,255,255,0.22)"/>
+              <circle cx="26" cy="33" r="9"  fill="rgba(255,255,255,0.28)"/>
+              <path d="M14 20 L18.5 25 L27 15" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="lockup__text">
+            <div class="lockup__name lockup__name--white">Ajudante <span style="color:#1e3a5f;font-weight:700">+Eproc</span></div>
+            <div class="lockup__tagline lockup__tagline--white">Extensão para Chrome</div>
+          </div>
+        </div>
+        <div class="logo-card__label">Horizontal — Fundo marca</div>
+      </div>
+
+      <!-- Stacked claro -->
+      <div class="logo-card logo-card--light">
+        <div class="lockup lockup--stacked">
+          <div class="lockup__icon">
+            <svg width="56" height="56" viewBox="0 0 48 48" fill="none">
+              <circle cx="20" cy="20" r="16" fill="#7ab3d8" opacity="0.85"/>
+              <circle cx="32" cy="22" r="11" fill="#4a8fc4" opacity="0.75"/>
+              <circle cx="26" cy="33" r="9"  fill="#2d6fa8" opacity="0.80"/>
+              <path d="M14 20 L18.5 25 L27 15" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="lockup__stacked-name" style="color:var(--navy)">Ajudante <span style="color:#2d6fa8;font-weight:500">+Eproc</span></div>
+            <div class="lockup__tagline" style="text-align:center;display:block;margin-top:5px">Extensão para Chrome</div>
+          </div>
+        </div>
+        <div class="logo-card__label">Vertical — Fundo claro</div>
+      </div>
+
+      <!-- Somente ícone -->
+      <div class="logo-card logo-card--cloud">
+        <svg width="72" height="72" viewBox="0 0 48 48" fill="none">
+          <circle cx="20" cy="20" r="16" fill="#7ab3d8" opacity="0.85"/>
+          <circle cx="32" cy="22" r="11" fill="#4a8fc4" opacity="0.75"/>
+          <circle cx="26" cy="33" r="9"  fill="#2d6fa8" opacity="0.80"/>
+          <path d="M14 20 L18.5 25 L27 15" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="logo-card__label">Símbolo isolado</div>
+      </div>
+
+      <!-- Wordmark -->
+      <div class="logo-card logo-card--light">
+        <div style="text-align:center">
+          <div style="font-size:26px;font-weight:700;letter-spacing:-0.02em;color:var(--navy);line-height:1">Ajudante<br><span style="color:var(--mid)">+Eproc</span></div>
+        </div>
+        <div class="logo-card__label">Wordmark bicolor</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── 2. Cores ── -->
+  <div class="section">
+    <div class="section-label">02 — Cores</div>
+    <div class="section-title">Paleta de Cores</div>
+    <div class="section-sub">A paleta é derivada da identidade visual do Eproc, com três azuis graduais como cores primárias e um sistema de suporte em cinzas e neutros.</div>
+
+    <div class="color-grid">
+      <div class="color-swatch">
+        <div class="color-swatch__chip" style="background:#7ab3d8"></div>
+        <div class="color-swatch__info">
+          <span class="color-swatch__name">Sky</span>
+          <span class="color-swatch__hex">#7AB3D8</span>
+          <span class="color-swatch__role">Primária clara · destaque</span>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-swatch__chip" style="background:#4a8fc4"></div>
+        <div class="color-swatch__info">
+          <span class="color-swatch__name">Mid</span>
+          <span class="color-swatch__hex">#4A8FC4</span>
+          <span class="color-swatch__role">Primária média · interação</span>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-swatch__chip" style="background:#2d6fa8"></div>
+        <div class="color-swatch__info">
+          <span class="color-swatch__name">Deep</span>
+          <span class="color-swatch__hex">#2D6FA8</span>
+          <span class="color-swatch__role">Primária escura · ênfase</span>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-swatch__chip" style="background:#0f172a"></div>
+        <div class="color-swatch__info">
+          <span class="color-swatch__name">Navy</span>
+          <span class="color-swatch__hex">#0F172A</span>
+          <span class="color-swatch__role">Sidebar · fundo escuro</span>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-swatch__chip" style="background:#2563eb"></div>
+        <div class="color-swatch__info">
+          <span class="color-swatch__name">Action</span>
+          <span class="color-swatch__hex">#2563EB</span>
+          <span class="color-swatch__role">Botões · links · toggles</span>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-swatch__chip" style="background:#f1f5f9"></div>
+        <div class="color-swatch__info">
+          <span class="color-swatch__name">Cloud</span>
+          <span class="color-swatch__hex">#F1F5F9</span>
+          <span class="color-swatch__role">Fundo principal · superfícies</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 3. Tipografia ── -->
+  <div class="section">
+    <div class="section-label">03 — Tipografia</div>
+    <div class="section-title">Escala Tipográfica</div>
+    <div class="section-sub">DM Sans como fonte principal — moderna, legível e neutra. DM Mono para valores técnicos como versões, códigos e tokens.</div>
+
+    <div class="type-grid">
+      <div class="type-row">
+        <div class="type-row__meta">
+          <span class="type-row__label">Display</span>
+          <span class="type-row__spec">38px · 700 · −3%</span>
+        </div>
+        <div class="type-row__sample">
+          <span style="font-size:38px;font-weight:700;letter-spacing:-0.03em;color:var(--navy);line-height:1">Ajudante <span style="color:#2d6fa8;font-weight:500">+Eproc</span></span>
+        </div>
+      </div>
+      <div class="type-row">
+        <div class="type-row__meta">
+          <span class="type-row__label">Título</span>
+          <span class="type-row__spec">22px · 700 · −2%</span>
+        </div>
+        <div class="type-row__sample">
+          <span style="font-size:22px;font-weight:700;letter-spacing:-0.02em;color:var(--navy)">Configurações da Extensão</span>
+        </div>
+      </div>
+      <div class="type-row">
+        <div class="type-row__meta">
+          <span class="type-row__label">Subtítulo</span>
+          <span class="type-row__spec">16px · 600 · −1%</span>
+        </div>
+        <div class="type-row__sample">
+          <span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--navy)">Módulo de Anotações em Preferências</span>
+        </div>
+      </div>
+      <div class="type-row">
+        <div class="type-row__meta">
+          <span class="type-row__label">Corpo</span>
+          <span class="type-row__spec">14px · 400 · 0%</span>
+        </div>
+        <div class="type-row__sample">
+          <span style="font-size:14px;font-weight:400;color:var(--slate);line-height:1.6">Adiciona anotações personalizadas às preferências do Eproc — Minutas, Movimentações, Intimações e Automatizações.</span>
+        </div>
+      </div>
+      <div class="type-row">
+        <div class="type-row__meta">
+          <span class="type-row__label">Label</span>
+          <span class="type-row__spec">11px · 600 · +8%</span>
+        </div>
+        <div class="type-row__sample">
+          <span style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--mist)">Módulos · Status · Configurações</span>
+        </div>
+      </div>
+      <div class="type-row">
+        <div class="type-row__meta">
+          <span class="type-row__label">Mono</span>
+          <span class="type-row__spec">DM Mono · 12px · 400</span>
+        </div>
+        <div class="type-row__sample">
+          <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--mist)">#7AB3D8 · v2.0.0 · rgba(122,179,216,0.18)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 4. Componentes ── -->
+  <div class="section">
+    <div class="section-label">04 — Componentes</div>
+    <div class="section-title">Componentes UI</div>
+    <div class="section-sub">Principais componentes da interface — botões, sidebar e cards de configuração.</div>
+
+    <div class="components-grid">
+      <!-- Mini settings UI -->
+      <div class="comp-card">
+        <div class="comp-card__label">Página de Configurações</div>
+        <div class="mini-settings">
+          <div class="mini-sidebar">
+            <div class="mini-sidebar-brand">
+              <svg width="14" height="14" viewBox="0 0 48 48" fill="none">
+                <circle cx="20" cy="20" r="16" fill="#7ab3d8" opacity="0.85"/>
+                <circle cx="32" cy="22" r="11" fill="#4a8fc4" opacity="0.75"/>
+                <circle cx="26" cy="33" r="9"  fill="#2d6fa8" opacity="0.80"/>
+                <path d="M14 20 L18.5 25 L27 15" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>Ajudante<br>Eproc</span>
+            </div>
+            <div class="mini-nav-item">
+              <div class="mini-nav-dot"></div>Geral
+            </div>
+            <div style="font-size:7px;color:rgba(255,255,255,0.2);padding:6px 6px 3px;letter-spacing:0.06em;text-transform:uppercase">Módulos</div>
+            <div class="mini-nav-item mini-nav-item--active">
+              <div class="mini-nav-dot mini-nav-dot--active"></div>Anotações
+            </div>
+          </div>
+          <div class="mini-content">
+            <div style="font-size:9px;font-weight:700;color:#0f172a;margin-bottom:8px">Anotações em Preferências</div>
+            <div class="mini-card">
+              <div class="mini-card-head">Status do módulo</div>
+              <div class="mini-card-row">
+                <span class="mini-card-label">Ativo</span>
+                <div class="mini-toggle"></div>
+              </div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-card-head">Opções</div>
+              <div style="font-size:7px;color:#94a3b8">Em breve...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botões -->
+      <div class="comp-card">
+        <div class="comp-card__label">Botões</div>
+        <div class="btn-demo">
+          <button class="demo-btn demo-btn--primary">Gerenciar Anotações</button>
+          <button class="demo-btn demo-btn--secondary">Importar / Exportar</button>
+          <button class="demo-btn demo-btn--ghost">Ver configurações</button>
+          <button class="demo-btn demo-btn--danger">Apagar todos os dados</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── 5. Espaçamento e zona de proteção ── -->
+  <div class="section">
+    <div class="section-label">05 — Uso</div>
+    <div class="section-title">Zona de Proteção</div>
+    <div class="section-sub">Mantenha sempre um espaço em torno do logotipo equivalente à altura da letra "A" do wordmark. Nunca posicione outros elementos dentro dessa zona.</div>
+
+    <div style="background:white;border:1px solid #e2e8f0;border-radius:14px;padding:48px;display:flex;align-items:center;justify-content:center;gap:80px;flex-wrap:wrap">
+      <!-- com zona de proteção -->
+      <div style="position:relative">
+        <div style="border:1.5px dashed #cbd5e1;border-radius:6px;padding:28px;display:inline-block">
+          <div class="lockup">
+            <svg width="44" height="44" viewBox="0 0 48 48" fill="none">
+              <circle cx="20" cy="20" r="16" fill="#7ab3d8" opacity="0.85"/>
+              <circle cx="32" cy="22" r="11" fill="#4a8fc4" opacity="0.75"/>
+              <circle cx="26" cy="33" r="9"  fill="#2d6fa8" opacity="0.80"/>
+              <path d="M14 20 L18.5 25 L27 15" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div class="lockup__text">
+              <div class="lockup__name">Ajudante <span style="color:#2d6fa8;font-weight:500">+Eproc</span></div>
+              <div class="lockup__tagline">Extensão para Chrome</div>
+            </div>
+          </div>
+        </div>
+        <div style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:white;padding:0 8px;font-size:9px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:#94a3b8;white-space:nowrap">✓ zona de proteção</div>
+      </div>
+
+      <!-- Don't examples -->
+      <div>
+        <div style="font-size:10px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:#dc2626;margin-bottom:12px">Não fazer</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <!-- distorcido -->
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid #fecaca;border-radius:8px;background:#fff1f2">
+            <svg width="54" height="36" viewBox="0 0 48 48" fill="none" style="opacity:0.5">
+              <circle cx="20" cy="20" r="16" fill="#7ab3d8" opacity="0.85"/>
+              <circle cx="32" cy="22" r="11" fill="#4a8fc4" opacity="0.75"/>
+              <circle cx="26" cy="33" r="9"  fill="#2d6fa8" opacity="0.80"/>
+              <path d="M14 20 L18.5 25 L27 15" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span style="font-size:11px;color:#dc2626;font-weight:500">Não distorça o ícone</span>
+          </div>
+          <!-- cor errada -->
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid #fecaca;border-radius:8px;background:#fff1f2">
+            <svg width="36" height="36" viewBox="0 0 48 48" fill="none">
+              <circle cx="20" cy="20" r="16" fill="#e53e3e" opacity="0.85"/>
+              <circle cx="32" cy="22" r="11" fill="#c53030" opacity="0.75"/>
+              <circle cx="26" cy="33" r="9"  fill="#9b2c2c" opacity="0.80"/>
+              <path d="M14 20 L18.5 25 L27 15" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span style="font-size:11px;color:#dc2626;font-weight:500">Não altere as cores</span>
+          </div>
+          <!-- texto diferente -->
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid #fecaca;border-radius:8px;background:#fff1f2">
+            <svg width="36" height="36" viewBox="0 0 48 48" fill="none">
+              <circle cx="20" cy="20" r="16" fill="#7ab3d8" opacity="0.85"/>
+              <circle cx="32" cy="22" r="11" fill="#4a8fc4" opacity="0.75"/>
+              <circle cx="26" cy="33" r="9"  fill="#2d6fa8" opacity="0.80"/>
+              <path d="M14 20 L18.5 25 L27 15" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span style="font-size:14px;font-weight:700;font-family:Georgia,serif;color:#dc2626">Ajudante +Eproc</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Footer ── -->
+  <div style="text-align:center;padding-top:32px;border-top:1px solid #e2e8f0">
+    <div style="display:inline-flex;align-items:center;gap:12px;opacity:0.4">
+      <svg width="20" height="20" viewBox="0 0 48 48" fill="none">
+        <circle cx="20" cy="20" r="16" fill="#7ab3d8" opacity="0.85"/>
+        <circle cx="32" cy="22" r="11" fill="#4a8fc4" opacity="0.75"/>
+        <circle cx="26" cy="33" r="9"  fill="#2d6fa8" opacity="0.80"/>
+        <path d="M14 20 L18.5 25 L27 15" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span style="font-size:12px;font-weight:600;color:#475569">Ajudante <span style="color:#2d6fa8">+Eproc</span> — Identidade Visual v1.0</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

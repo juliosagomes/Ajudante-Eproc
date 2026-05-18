@@ -24,7 +24,7 @@ Orientações para o Claude Code (claude.ai/code) ao trabalhar neste repositóri
   - `anotacoes-preferencias/` — anotações por preferência do Eproc (armazenadas em `eprocAnotacoesPreferencias`).
   - `colorir-localizadores/` — cores customizadas por localizador (`eprocCoresLocalizadores`).
   - `filtros-eventos/` — filtros adicionais sobre a lista de eventos.
-  - `expansor-numero-processo/` — expande números de processo abreviados (config: `defaultOOOO`, `anoMin`).
+  - `expansor-numero-processo/` — expande números de processo abreviados (config: `defaultOOOO`, `anoMin`, `J`, `TR`, `primeirosN`; padrões TJMG: `J=8`, `TR=13`, `primeirosN=['1','5']` — 1 = Eproc nativo, 5 = migrado do PJe). Aceita parteN de 1–7 dígitos: 7 dígitos é tratado como `NNNNNNN` completo; 1–6 são prefixados por um dos candidatos em `primeirosN` (em modo `N-DD` o expansor escolhe automaticamente pelo DD; em `N+YY` usa o primeiro da lista).
 - `scripts/` — utilitários menores, sem armazenamento próprio:
   - `localizador-busca/` — campo de busca dentro do seletor de "novo localizador".
   - `informacoes-adicionais/` — exibe informações adicionais em telas específicas.
