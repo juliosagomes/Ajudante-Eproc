@@ -7,7 +7,7 @@
     {
       id: 'anotacoesPreferencias',
       label: 'Anotações em preferências',
-      iconeSvg: '<svg viewBox="0 0 20 20" fill="none" width="14" height="14"><path d="M10 2.5a5.5 5.5 0 0 1 5.5 5.5c0 3.5 1.5 4.5 1.5 5H3c0-.5 1.5-1.5 1.5-5A5.5 5.5 0 0 1 10 2.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8.5 13v.5a1.5 1.5 0 0 0 3 0V13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+      iconeSvg: '<svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M4 4h13l3 3v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 11h8M8 15h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
       carregarStat: carregarStatAnotacoes,
       renderPainel: renderPainelAnotacoes,
     },
