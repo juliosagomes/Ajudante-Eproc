@@ -1,14 +1,22 @@
-// scripts/filtro-preferencias/filtro-preferencias.js — Ajudante Eproc
+// modules/pagina-processo-plus/filtro-preferencias/filtro-preferencias.js
+// Sub-recurso do módulo "Capa de Processo+".
 // Adiciona barra de busca em cima das três listas de preferências da capa
-// do processo (Minutas, Movimentação, Intimação). Portado do AZFlow.
+// do processo (Minutas, Movimentação, Intimação) com:
+//   • realce do termo digitado;
+//   • captura de teclado opcional (botão atalho);
+//   • Filtros Favoritos — chips clicáveis abaixo do campo para reaplicar
+//     buscas frequentes sem redigitar.
 
 (function () {
   'use strict';
 
   if (!window.location.hostname.includes('eproc')) return;
 
-  const SETTINGS_KEY = 'eprocSettings';
-  const SCRIPT_ID    = 'filtroPreferencias';
+  const SETTINGS_KEY  = 'eprocSettings';
+  const FAVORITOS_KEY = 'eprocFiltroFavoritos';
+  const MODULE_NAME   = 'paginaProcessoPlus';
+  const SUB_FEATURE   = 'filtrarPreferencias';
+  const SUB_ATALHO    = 'filtrarPreferenciasAtalhoAtivo';
 
   // ── Configuração de cada um dos três tipos ───────────────────────
   const TIPOS = {
@@ -42,6 +50,8 @@
   let escListener  = null;
   let keyListener  = null;
   let atalhoAtivo  = null; // 'minuta' | 'movimentacao' | 'intimacao' | null
+  // { minuta: ['…','…'], movimentacao: [...], intimacao: [...] }
+  let favoritos    = { minuta: [], movimentacao: [], intimacao: [] };
 
   // ── Utilitários de texto ─────────────────────────────────────────
   function normalizar(texto) {
@@ -151,6 +161,8 @@
       msg.textContent = cfg.mensagemVazio;
       containerFiltro.parentNode.insertBefore(msg, containerFiltro.nextSibling);
     }
+
+    atualizarBotaoFavoritar(tipo);
   }
 
   function limparFiltro(tipo) {
@@ -161,6 +173,139 @@
       input.value = '';
       filtrar(tipo, '');
     }
+  }
+
+  function aplicarFiltro(tipo, termo) {
+    const container = document.getElementById(TIPOS[tipo].idContainer);
+    if (!container) return;
+    const input = container.querySelector('input[type="text"]');
+    if (!input) return;
+    input.value = termo;
+    filtrar(tipo, termo);
+    input.focus();
+  }
+
+  // ── Filtros Favoritos ────────────────────────────────────────────
+  function normalizarLista(lista) {
+    if (!Array.isArray(lista)) return [];
+    const out = [];
+    const vistos = new Set();
+    for (const item of lista) {
+      const s = String(item || '').trim();
+      if (!s) continue;
+      const chave = s.toLowerCase();
+      if (vistos.has(chave)) continue;
+      vistos.add(chave);
+      out.push(s);
+    }
+    return out;
+  }
+
+  function salvarFavoritos() {
+    chrome.storage.local.set({ [FAVORITOS_KEY]: favoritos });
+  }
+
+  function adicionarFavorito(tipo, termo) {
+    const t = String(termo || '').trim();
+    if (!t) return false;
+    const lista = favoritos[tipo] || [];
+    if (lista.some((x) => x.toLowerCase() === t.toLowerCase())) return false;
+    favoritos[tipo] = [...lista, t];
+    salvarFavoritos();
+    renderFavoritos(tipo);
+    return true;
+  }
+
+  function removerFavorito(tipo, termo) {
+    const lista = favoritos[tipo] || [];
+    favoritos[tipo] = lista.filter((x) => x.toLowerCase() !== String(termo).toLowerCase());
+    salvarFavoritos();
+    renderFavoritos(tipo);
+  }
+
+  function jaEhFavorito(tipo, termo) {
+    const t = String(termo || '').trim().toLowerCase();
+    if (!t) return false;
+    return (favoritos[tipo] || []).some((x) => x.toLowerCase() === t);
+  }
+
+  function atualizarBotaoFavoritar(tipo) {
+    const container = document.getElementById(TIPOS[tipo].idContainer);
+    if (!container) return;
+    const input = container.querySelector('input[type="text"]');
+    const btn   = container.querySelector('.ae-fp-btn-favoritar');
+    if (!input || !btn) return;
+    const valor = input.value.trim();
+    const temTexto = valor.length > 0;
+    const ehFav    = jaEhFavorito(tipo, valor);
+    btn.disabled = !temTexto || ehFav;
+    btn.classList.toggle('is-ja-favorito', ehFav && temTexto);
+    if (!temTexto) {
+      btn.title = 'Digite um filtro para salvá-lo como favorito';
+    } else if (ehFav) {
+      btn.title = 'Este filtro já está nos favoritos';
+    } else {
+      btn.title = `Salvar "${valor}" como filtro favorito`;
+    }
+  }
+
+  function renderFavoritos(tipo) {
+    const container = document.getElementById(TIPOS[tipo].idContainer);
+    if (!container) return;
+    const wrap = container.parentNode?.querySelector(`.ae-fp-favoritos[data-tipo="${tipo}"]`);
+    if (!wrap) return;
+
+    const lista = favoritos[tipo] || [];
+    wrap.innerHTML = '';
+    if (lista.length === 0) {
+      wrap.classList.add('is-vazio');
+      return;
+    }
+    wrap.classList.remove('is-vazio');
+
+    const label = document.createElement('span');
+    label.className = 'ae-fp-favoritos__label';
+    label.textContent = 'FAVORITOS:';
+    wrap.appendChild(label);
+
+    lista.forEach((termo) => {
+      const chip = document.createElement('span');
+      chip.className = `ae-fp-favorito ae-fp-favorito--${tipo}`;
+      chip.dataset.tipo = tipo;
+      chip.dataset.termo = termo;
+      chip.title = `Aplicar filtro: ${termo}`;
+
+      const btnAplicar = document.createElement('button');
+      btnAplicar.type = 'button';
+      btnAplicar.className = 'ae-fp-favorito__termo';
+      btnAplicar.textContent = termo;
+      btnAplicar.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        aplicarFiltro(tipo, termo);
+      });
+
+      const btnRemover = document.createElement('button');
+      btnRemover.type = 'button';
+      btnRemover.className = 'ae-fp-favorito__remover';
+      btnRemover.title = 'Remover favorito';
+      btnRemover.setAttribute('aria-label', `Remover favorito ${termo}`);
+      btnRemover.textContent = '×';
+      btnRemover.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        removerFavorito(tipo, termo);
+        atualizarBotaoFavoritar(tipo);
+      });
+
+      chip.appendChild(btnAplicar);
+      chip.appendChild(btnRemover);
+      wrap.appendChild(chip);
+    });
+  }
+
+  function renderTodosFavoritos() {
+    Object.keys(TIPOS).forEach(renderFavoritos);
   }
 
   // ── Botão "atalho de teclado" (botão especial do AZflow) ─────────
@@ -180,9 +325,9 @@
   function salvarAtalho() {
     chrome.storage.local.get(SETTINGS_KEY, (data) => {
       const cfg = data[SETTINGS_KEY] || {};
-      if (!cfg.scripts) cfg.scripts = {};
-      if (!cfg.scripts[SCRIPT_ID]) cfg.scripts[SCRIPT_ID] = { enabled: true };
-      cfg.scripts[SCRIPT_ID].atalhoAtivo = atalhoAtivo;
+      if (!cfg.modules) cfg.modules = {};
+      if (!cfg.modules[MODULE_NAME]) cfg.modules[MODULE_NAME] = {};
+      cfg.modules[MODULE_NAME][SUB_ATALHO] = atalhoAtivo;
       chrome.storage.local.set({ [SETTINGS_KEY]: cfg });
     });
   }
@@ -213,6 +358,30 @@
     return btn;
   }
 
+  function criarBotaoFavoritar(tipo) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'ae-fp-btn-favoritar';
+    btn.dataset.tipo = tipo;
+    btn.setAttribute('aria-label', 'Salvar filtro atual como favorito');
+    btn.innerHTML = `
+      <svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true">
+        <path d="M10 2.5l2.2 4.55 5.05.7-3.65 3.55.85 5.05L10 13.95 5.55 16.35l.85-5.05L2.75 7.75l5.05-.7L10 2.5z"
+              fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+      </svg>`;
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const container = document.getElementById(TIPOS[tipo].idContainer);
+      const input = container?.querySelector('input[type="text"]');
+      const termo = (input?.value || '').trim();
+      if (!termo) return;
+      const adicionado = adicionarFavorito(tipo, termo);
+      if (adicionado) atualizarBotaoFavoritar(tipo);
+    });
+    return btn;
+  }
+
   // ── Construção da barra de filtro ────────────────────────────────
   function montarContainerFiltro(tipo) {
     const cfg = TIPOS[tipo];
@@ -236,8 +405,18 @@
         input.value = '';
         filtrar(tipo, '');
         input.blur();
+      } else if (e.key === 'Enter') {
+        // Enter no campo salva o filtro atual como favorito
+        e.preventDefault();
+        const termo = input.value.trim();
+        if (termo) {
+          const adicionado = adicionarFavorito(tipo, termo);
+          if (adicionado) atualizarBotaoFavoritar(tipo);
+        }
       }
     });
+
+    const btnFavoritar = criarBotaoFavoritar(tipo);
 
     const btnLimpar = document.createElement('button');
     btnLimpar.type = 'button';
@@ -256,6 +435,7 @@
 
     const grupoBotoes = document.createElement('div');
     grupoBotoes.className = 'ae-fp-botoes';
+    grupoBotoes.appendChild(btnFavoritar);
     grupoBotoes.appendChild(btnAtalho);
     grupoBotoes.appendChild(btnLimpar);
 
@@ -264,6 +444,13 @@
     container.appendChild(grupoBotoes);
 
     return container;
+  }
+
+  function montarFavoritos(tipo) {
+    const wrap = document.createElement('div');
+    wrap.className = 'ae-fp-favoritos is-vazio';
+    wrap.dataset.tipo = tipo;
+    return wrap;
   }
 
   function obterHospedeiroETopo(tipo) {
@@ -296,7 +483,13 @@
     if (!hospedeiro) return;
 
     const container = montarContainerFiltro(tipo);
-    hospedeiro.insertBefore(container, hospedeiro.firstChild);
+    const favoritosWrap = montarFavoritos(tipo);
+    // Ordem (de cima para baixo): campo de filtro, depois chips de favoritos.
+    hospedeiro.insertBefore(favoritosWrap, hospedeiro.firstChild);
+    hospedeiro.insertBefore(container, favoritosWrap);
+
+    renderFavoritos(tipo);
+    atualizarBotaoFavoritar(tipo);
   }
 
   function injetarTodos() {
@@ -400,6 +593,7 @@
       const c = document.getElementById(cfg.idContainer);
       if (c) c.remove();
     });
+    document.querySelectorAll('.ae-fp-favoritos').forEach((f) => f.remove());
     document.querySelectorAll('.ae-fp-msg-vazio').forEach((m) => m.remove());
     document.querySelectorAll('.ae-fp-highlight').forEach((h) => {
       const pai = h.parentNode;
@@ -421,24 +615,47 @@
   }
 
   // ── Bootstrap: lê settings e ativa/desativa ──────────────────────
+  function lerEstadoModulo(eprocSettings) {
+    const mod = eprocSettings?.modules?.[MODULE_NAME] || {};
+    const moduloAtivo = mod.enabled !== false;
+    const subAtivo    = mod[SUB_FEATURE] !== false;
+    return {
+      enabled:     moduloAtivo && subAtivo,
+      atalhoAtivo: mod[SUB_ATALHO] ?? null,
+    };
+  }
+
+  function aplicarFavoritosSalvos(raw) {
+    favoritos = {
+      minuta:       normalizarLista(raw?.minuta),
+      movimentacao: normalizarLista(raw?.movimentacao),
+      intimacao:    normalizarLista(raw?.intimacao),
+    };
+  }
+
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (area !== 'local' || !changes[SETTINGS_KEY]) return;
-    const cfgNovo = changes[SETTINGS_KEY].newValue?.scripts?.[SCRIPT_ID];
-    const enabled = cfgNovo?.enabled ?? true;
-    const novoAtalho = cfgNovo?.atalhoAtivo ?? null;
-    if (novoAtalho !== atalhoAtivo) {
-      atalhoAtivo = novoAtalho;
+    if (area !== 'local') return;
+
+    if (changes[FAVORITOS_KEY]) {
+      aplicarFavoritosSalvos(changes[FAVORITOS_KEY].newValue);
+      if (scriptAtivo) renderTodosFavoritos();
+    }
+
+    if (!changes[SETTINGS_KEY]) return;
+    const novo = lerEstadoModulo(changes[SETTINGS_KEY].newValue);
+    if (novo.atalhoAtivo !== atalhoAtivo) {
+      atalhoAtivo = novo.atalhoAtivo;
       atualizarTodosBotoesAtalho();
     }
-    if (enabled && !scriptAtivo) ativar();
-    if (!enabled && scriptAtivo)  desativar();
+    if (novo.enabled && !scriptAtivo) ativar();
+    if (!novo.enabled && scriptAtivo)  desativar();
   });
 
-  chrome.storage.local.get(SETTINGS_KEY, (data) => {
-    const cfg = data[SETTINGS_KEY]?.scripts?.[SCRIPT_ID];
-    atalhoAtivo = cfg?.atalhoAtivo ?? null;
-    const enabled = cfg?.enabled ?? true;
-    if (enabled) ativar();
+  chrome.storage.local.get([SETTINGS_KEY, FAVORITOS_KEY], (data) => {
+    aplicarFavoritosSalvos(data[FAVORITOS_KEY]);
+    const estado = lerEstadoModulo(data[SETTINGS_KEY]);
+    atalhoAtivo = estado.atalhoAtivo;
+    if (estado.enabled) ativar();
   });
 
 })();

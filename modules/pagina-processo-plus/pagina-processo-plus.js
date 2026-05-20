@@ -1,9 +1,11 @@
 // modules/pagina-processo-plus/pagina-processo-plus.js
-// Modulo com 4 sub-recursos para a pagina do processo:
+// Modulo com sub-recursos para a pagina do processo:
 //   1. Barra de info sticky (numero + atalho Arvore + localizadores coloridos)
+//      O atalho para a Arvore acompanha a barra: sempre que ela estiver
+//      ligada, o botao Arvore aparece junto.
 //   2. Click no numero do processo copia formatado (pontos e tracos)
-//   3. Atalho para Arvore dentro da barra (substitui o botao flutuante)
-//   4. Atalhos de scroll para Minuta / Movimentacao / Intimacao
+//   3. Atalhos de scroll para Minuta / Movimentacao / Intimacao
+//   4. Filtrar preferências (no script irmão filtro-preferencias.js)
 //
 // Cada sub-recurso liga/desliga independente pelo seu sub-toggle.
 
@@ -353,7 +355,8 @@
       window.addEventListener('orientationchange', posResizeHandler);
     }
     if (cfg?.atalhosPreferencias) renderAtalhos();
-    if (cfg?.botaoFlutuante) renderBotaoArvore();
+    // Atalho para Árvore segue a Barra de info — não tem toggle próprio.
+    renderBotaoArvore();
     if (cfg?.copyNumero) wireCopyDentroDaBarra();
   }
 
@@ -448,20 +451,6 @@
     wrap.appendChild(btn);
   }
 
-  function removerBotaoArvore() {
-    if (!barraEl) return;
-    const wrap = barraEl.querySelector('.fe-pp-bloco--arvore');
-    if (wrap) wrap.innerHTML = '';
-  }
-
-  function enableBotaoFlutuante() {
-    if (cfg?.barraInfo) renderBotaoArvore();
-  }
-
-  function disableBotaoFlutuante() {
-    removerBotaoArvore();
-  }
-
   // ─── 4. Atalhos de preferências ─────────────────────────────────
   function renderAtalhos() {
     if (!barraEl) return;
@@ -509,7 +498,6 @@
     if (!cfg) return;
     if (cfg.barraInfo)   enableBarraInfo();   else disableBarraInfo();
     if (cfg.copyNumero)  enableCopyNumero();  else disableCopyNumero();
-    if (cfg.botaoFlutuante) enableBotaoFlutuante(); else disableBotaoFlutuante();
     if (cfg.atalhosPreferencias) enableAtalhosPreferencias(); else disableAtalhosPreferencias();
   }
 
@@ -524,7 +512,6 @@
     moduloAtivo = false;
     disableBarraInfo();
     disableCopyNumero();
-    disableBotaoFlutuante();
     disableAtalhosPreferencias();
   }
 
@@ -535,7 +522,6 @@
         enabled:              !!mod.enabled,
         barraInfo:            mod.barraInfo            !== false,
         copyNumero:           mod.copyNumero           !== false,
-        botaoFlutuante:       mod.botaoFlutuante       !== false,
         atalhosPreferencias:  mod.atalhosPreferencias  !== false,
       };
       coresLocal = data[CORES_KEY] || {};
@@ -561,7 +547,6 @@
         enabled:              !!mod.enabled,
         barraInfo:            mod.barraInfo            !== false,
         copyNumero:           mod.copyNumero           !== false,
-        botaoFlutuante:       mod.botaoFlutuante       !== false,
         atalhosPreferencias:  mod.atalhosPreferencias  !== false,
       };
       cfg = novoCfg;

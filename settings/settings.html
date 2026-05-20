@@ -701,7 +701,7 @@
           </div>
           <div>
             <h1 class="panel-header__title">Capa de Processo+</h1>
-            <p class="panel-header__desc">Conjunto de melhorias para a página do processo no Eproc — barra de info fixa, atalho à árvore, scroll rápido para Minuta/Movimentação/Intimação e clique para copiar o número formatado.</p>
+            <p class="panel-header__desc">Conjunto de melhorias para a página do processo no Eproc — barra de info fixa com atalho à árvore, scroll rápido para Minuta/Movimentação/Intimação, clique para copiar o número formatado e filtro de preferências com favoritos.</p>
           </div>
         </div>
 
@@ -737,7 +737,7 @@
             <div class="card__row">
               <div class="card__row-info">
                 <span class="card__row-label">Barra de info do processo</span>
-                <span class="card__row-sub">Faixa fixa no topo da página com número do processo, atalho para a Árvore, localizadores coloridos (pelo módulo Colorir Localizadores) e os atalhos de preferências.</span>
+                <span class="card__row-sub">Faixa fixa no topo da página com número do processo, atalho para a Árvore (sempre incluso), localizadores coloridos (pelo módulo Colorir Localizadores) e os atalhos de preferências.</span>
               </div>
               <div class="toggle-group">
                 <label class="toggle">
@@ -762,12 +762,12 @@
 
             <div class="card__row">
               <div class="card__row-info">
-                <span class="card__row-label">Atalho para Árvore</span>
-                <span class="card__row-sub">Adiciona um botão "Árvore" dentro da barra de info (à direita do número), que abre a Árvore do processo. Mesmo comportamento do botão Árvore nativo. Requer a Barra de info ligada.</span>
+                <span class="card__row-label">Atalhos de preferências</span>
+                <span class="card__row-sub">Três botões coloridos na barra de info (azul/verde/vermelho) que rolam a página até a seção de preferências de Minuta, Movimentação e Intimação. Aparecem apenas se a seção existir na página.</span>
               </div>
               <div class="toggle-group">
                 <label class="toggle">
-                  <input type="checkbox" class="toggle__input" id="toggle-pp-botaoFlutuante" data-pp-sub="botaoFlutuante" checked>
+                  <input type="checkbox" class="toggle__input" id="toggle-pp-atalhosPreferencias" data-pp-sub="atalhosPreferencias" checked>
                   <span class="toggle__slider"></span>
                 </label>
               </div>
@@ -775,12 +775,12 @@
 
             <div class="card__row">
               <div class="card__row-info">
-                <span class="card__row-label">Atalhos de preferências</span>
-                <span class="card__row-sub">Três botões coloridos na barra de info (azul/verde/vermelho) que rolam a página até a seção de preferências de Minuta, Movimentação e Intimação. Aparecem apenas se a seção existir na página.</span>
+                <span class="card__row-label">Filtrar preferências</span>
+                <span class="card__row-sub">Adiciona um campo de busca em cima das listas de preferências de Minutas, Movimentações e Intimações na capa do processo, com destaque do termo digitado e atalho opcional de captura de teclado. Você pode salvar filtros frequentes como <strong>Filtros Favoritos</strong> — eles aparecem como chips clicáveis abaixo do campo. ESC limpa.</span>
               </div>
               <div class="toggle-group">
                 <label class="toggle">
-                  <input type="checkbox" class="toggle__input" id="toggle-pp-atalhosPreferencias" data-pp-sub="atalhosPreferencias" checked>
+                  <input type="checkbox" class="toggle__input" id="toggle-pp-filtrarPreferencias" data-pp-sub="filtrarPreferencias" checked>
                   <span class="toggle__slider"></span>
                 </label>
               </div>

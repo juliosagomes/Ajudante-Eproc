@@ -92,11 +92,6 @@
       label: 'Reordenar blocos no Painel Inicial',
       descricao: 'Adiciona botões ▲/▼ em cada bloco do Painel Inicial para mover sua posição. A ordem é lembrada nos próximos acessos. Inclui botão para restaurar a ordem nativa.',
     },
-    {
-      id: 'filtroPreferencias',
-      label: 'Filtrar preferências (capa do processo)',
-      descricao: 'Adiciona um campo de busca em cima das listas de preferências de Minutas, Movimentações e Intimações na capa do processo, com destaque do termo digitado. ESC limpa.',
-    },
   ];
 
   let settings = { modules: {}, scripts: {} };
@@ -869,11 +864,14 @@
 
   // ─── Capa de Processo+ — sub-toggles ───────────────────────────
   function bindPaginaProcessoPlusSubToggles() {
-    const sub = ['barraInfo', 'copyNumero', 'botaoFlutuante', 'atalhosPreferencias'];
+    const sub = ['barraInfo', 'copyNumero', 'atalhosPreferencias', 'filtrarPreferencias'];
     if (!settings.modules.paginaProcessoPlus) {
       settings.modules.paginaProcessoPlus = { enabled: true };
     }
     const cfg = settings.modules.paginaProcessoPlus;
+    // O "Atalho para Árvore" deixou de ser um sub-toggle — agora segue a Barra
+    // de info. Limpa a chave herdada para manter o storage consistente.
+    if ('botaoFlutuante' in cfg) delete cfg.botaoFlutuante;
 
     sub.forEach((key) => {
       const input = document.querySelector(`[data-pp-sub="${key}"]`);

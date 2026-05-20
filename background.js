@@ -11,8 +11,9 @@ const DEFAULT_SETTINGS = {
       enabled: true,
       barraInfo: true,
       copyNumero: true,
-      botaoFlutuante: true,
       atalhosPreferencias: true,
+      filtrarPreferencias: true,
+      filtrarPreferenciasAtalhoAtivo: null,
     },
   },
   scripts: {
@@ -20,7 +21,6 @@ const DEFAULT_SETTINGS = {
     tarjasCustomizadas:      { enabled: true },
     esmaecerZerados:         { enabled: true },
     painelReordenar:         { enabled: true },
-    filtroPreferencias:      { enabled: true, atalhoAtivo: null },
   }
 };
 
@@ -78,7 +78,33 @@ chrome.runtime.onInstalled.addListener((details) => {
       }
       if (!atual.modules?.paginaProcessoPlus) {
         if (!atual.modules) atual.modules = {};
-        atual.modules.paginaProcessoPlus = DEFAULT_SETTINGS.modules.paginaProcessoPlus;
+        atual.modules.paginaProcessoPlus = { ...DEFAULT_SETTINGS.modules.paginaProcessoPlus };
+        dirty = true;
+      }
+      {
+        // Backfill: filtrarPreferencias virou sub-recurso do Capa de Processo+
+        // (antes era script global "filtroPreferencias"). Move o estado salvo.
+        const pp = atual.modules.paginaProcessoPlus;
+        const antigo = atual.scripts?.filtroPreferencias;
+        if (typeof pp.filtrarPreferencias !== 'boolean') {
+          pp.filtrarPreferencias = antigo && typeof antigo.enabled === 'boolean'
+            ? antigo.enabled
+            : true;
+          dirty = true;
+        }
+        if (!('filtrarPreferenciasAtalhoAtivo' in pp)) {
+          pp.filtrarPreferenciasAtalhoAtivo = antigo?.atalhoAtivo ?? null;
+          dirty = true;
+        }
+        // Remoção: "Atalho para Árvore" deixou de ser sub-toggle — agora segue a Barra de info.
+        if ('botaoFlutuante' in pp) {
+          delete pp.botaoFlutuante;
+          dirty = true;
+        }
+      }
+      // Limpa o registro antigo do script global, já migrado para paginaProcessoPlus
+      if (atual.scripts?.filtroPreferencias) {
+        delete atual.scripts.filtroPreferencias;
         dirty = true;
       }
       // Move: "tarjasCustomizadas" deixou de ser módulo e virou script em Ajustes Gerais
@@ -103,11 +129,6 @@ chrome.runtime.onInstalled.addListener((details) => {
       if (!atual.scripts?.painelReordenar) {
         if (!atual.scripts) atual.scripts = {};
         atual.scripts.painelReordenar = DEFAULT_SETTINGS.scripts.painelReordenar;
-        dirty = true;
-      }
-      if (!atual.scripts?.filtroPreferencias) {
-        if (!atual.scripts) atual.scripts = {};
-        atual.scripts.filtroPreferencias = DEFAULT_SETTINGS.scripts.filtroPreferencias;
         dirty = true;
       }
       // Rename: módulo "lembretes" → "anotacoesPreferencias"

@@ -1,4 +1,5 @@
-/* scripts/filtro-preferencias/filtro-preferencias.css — Ajudante Eproc */
+/* modules/pagina-processo-plus/filtro-preferencias/filtro-preferencias.css
+   Sub-recurso "Filtrar preferências" do módulo Capa de Processo+. */
 
 .ae-fp-container {
   padding: 8px 12px;
@@ -50,7 +51,8 @@
 }
 
 .ae-fp-btn-limpar,
-.ae-fp-btn-atalho {
+.ae-fp-btn-atalho,
+.ae-fp-btn-favoritar {
   padding: 4px 8px;
   border: 1px solid #ced4da;
   border-radius: 4px;
@@ -71,6 +73,30 @@
 .ae-fp-btn-atalho {
   background-color: #f8f9fa;
   margin-right: 8px;
+}
+.ae-fp-btn-favoritar {
+  background-color: #f8f9fa;
+}
+.ae-fp-btn-favoritar svg {
+  display: block;
+}
+.ae-fp-btn-favoritar:not(:disabled):hover {
+  background-color: #fff8dd;
+  border-color: #f0c64a;
+  color: #b8860b;
+}
+.ae-fp-btn-favoritar:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.ae-fp-btn-favoritar.is-ja-favorito {
+  background-color: #fff3c4;
+  border-color: #e0a90e;
+  color: #b8860b;
+  opacity: 1;
+}
+.ae-fp-btn-favoritar.is-ja-favorito svg path {
+  fill: currentColor;
 }
 .ae-fp-btn-limpar:hover {
   background-color: #e9ecef;
@@ -136,4 +162,99 @@
     background-color: #ffeb3b !important;
     transform: scale(1) !important;
   }
+}
+
+/* ── Filtros Favoritos (chips abaixo do campo de filtro) ────────── */
+.ae-fp-favoritos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: -4px 0 8px 0;
+  padding: 0 4px;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.ae-fp-favoritos.is-vazio {
+  display: none;
+}
+
+.ae-fp-favoritos__label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #6c757d;
+  text-transform: uppercase;
+  margin-right: 2px;
+}
+
+.ae-fp-favorito {
+  --fav-cor: #6c757d;
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--fav-cor);
+  border-radius: 999px;
+  overflow: hidden;
+  background-color: #fff;
+  transition: box-shadow 0.18s ease, transform 0.08s ease;
+  font-size: 11px;
+  line-height: 1;
+  max-width: 240px;
+}
+
+.ae-fp-favorito--minuta       { --fav-cor: #4a90e2; }
+.ae-fp-favorito--movimentacao { --fav-cor: #4a9e4a; }
+.ae-fp-favorito--intimacao    { --fav-cor: #e24a4a; }
+
+.ae-fp-favorito:hover {
+  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.12);
+}
+
+.ae-fp-favorito__termo,
+.ae-fp-favorito__remover {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--fav-cor);
+  padding: 4px 10px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.ae-fp-favorito__termo {
+  font-weight: 600;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.ae-fp-favorito__termo:hover {
+  background-color: var(--fav-cor);
+  color: #fff;
+}
+
+.ae-fp-favorito__remover {
+  border-left: 1px solid var(--fav-cor);
+  padding: 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fav-cor);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  opacity: 0.7;
+}
+
+.ae-fp-favorito__remover:hover {
+  background-color: var(--fav-cor);
+  color: #fff;
+  opacity: 1;
+}
+
+.ae-fp-favorito:active {
+  transform: translateY(1px);
 }
