@@ -1,7 +1,115 @@
-/* modules/tarjas-customizadas/tarjas-customizadas.css */
+/* scripts/tarjas-customizadas/tarjas-customizadas.css */
 
 /* Garante que links dentro de uma tarja colorida adotem a cor do texto da tarja,
    sobrepondo o estilo nativo do eproc que vem com cor inline no <a>. */
-#divInfraBarraComandosSuperior label[data-ajudante-cor]:not([data-ajudante-cor="0"]) a {
+#divInfraBarraComandosSuperior label[data-ajudante-cor]:not([data-ajudante-cor="none"]) a {
   color: var(--ajudante-tarja-text-color) !important;
 }
+
+/* ─── Editor inline de cor da tarja ────────────────────────────── */
+.ajudante-tarja-editor-cor {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(15,23,42,0.18), 0 2px 8px rgba(15,23,42,0.08);
+  padding: 14px 16px;
+  width: 240px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 13px;
+  color: #0f172a;
+  animation: ajudanteTarjaEditorEntrar 0.15s ease;
+}
+
+@keyframes ajudanteTarjaEditorEntrar {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ajudante-tarja-editor-cor__titulo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+.ajudante-tarja-editor-cor__nome {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ajudante-tarja-editor-cor__field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.ajudante-tarja-editor-cor__picker {
+  width: 40px;
+  height: 36px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 2px;
+  cursor: pointer;
+  background: none;
+  flex-shrink: 0;
+}
+
+.ajudante-tarja-editor-cor__preview {
+  flex: 1;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,0,0,0.08);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.1s, color 0.1s;
+}
+
+.ajudante-tarja-editor-cor__botoes {
+  display: flex;
+  gap: 6px;
+}
+
+.ajudante-tarja-editor-cor__btn {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.12s;
+}
+
+.ajudante-tarja-editor-cor__btn--salvar {
+  background: #2563eb;
+  color: #fff;
+}
+.ajudante-tarja-editor-cor__btn--salvar:hover { background: #1d4ed8; }
+
+.ajudante-tarja-editor-cor__btn--remover {
+  background: #fff1f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+.ajudante-tarja-editor-cor__btn--remover:hover { background: #fee2e2; }
+
+.ajudante-tarja-editor-cor__btn--cancelar {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+}
+.ajudante-tarja-editor-cor__btn--cancelar:hover { background: #e2e8f0; }
