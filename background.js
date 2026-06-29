@@ -22,6 +22,7 @@ const DEFAULT_SETTINGS = {
     esmaecerZerados:         { enabled: true },
     painelReordenar:         { enabled: true },
     historicoLocalizadores:  { enabled: true },
+    painelAcoes:             { enabled: true },
   }
 };
 
@@ -137,6 +138,11 @@ chrome.runtime.onInstalled.addListener((details) => {
         atual.scripts.historicoLocalizadores = DEFAULT_SETTINGS.scripts.historicoLocalizadores;
         dirty = true;
       }
+      if (!atual.scripts?.painelAcoes) {
+        if (!atual.scripts) atual.scripts = {};
+        atual.scripts.painelAcoes = DEFAULT_SETTINGS.scripts.painelAcoes;
+        dirty = true;
+      }
       // Rename: módulo "lembretes" → "anotacoesPreferencias"
       if (!atual.modules?.anotacoesPreferencias) {
         if (!atual.modules) atual.modules = {};
@@ -196,6 +202,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       });
     });
     return true;
+  }
+
+  // ─── Navegação ──────────────────────────────────────────────────
+  if (msg.tipo === 'abrirConfiguracoes') {
+    chrome.runtime.openOptionsPage();
+    return false;
   }
 
   // ─── Settings ───────────────────────────────────────────────────

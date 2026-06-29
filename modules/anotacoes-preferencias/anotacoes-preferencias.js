@@ -204,7 +204,17 @@
     mostrarNotificacao(ativo
       ? '📌 Modo anotação ATIVADO — clique no ＋ para adicionar'
       : '📌 Modo anotação desativado');
+    // Notifica o painel de ações para atualizar o label do botão
+    document.dispatchEvent(new CustomEvent('ajudante:modoEdicaoAnotacoes', { detail: { ativo } }));
   }
+
+  // API pública para o painel de ações (mesma janela/content-script context)
+  window.__AjudanteEproc = window.__AjudanteEproc || {};
+  window.__AjudanteEproc.anotacoes = {
+    toggle:        (ativo) => { if (moduloAtivo) toggleModoEdicao(ativo); },
+    isAtivo:       ()      => modoEdicao,
+    isModuloAtivo: ()      => moduloAtivo,
+  };
 
   function mostrarNotificacao(msg) {
     const existente = document.querySelector('.eproc-anotacao-notificacao');

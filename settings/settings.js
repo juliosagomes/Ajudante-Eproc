@@ -97,6 +97,11 @@
       label: 'Histórico+ de Localizadores',
       descricao: 'Substitui a tabela de Histórico de Localizadores por uma timeline visual com diff colorido (verde = incluído, vermelho = removido) e linhas de conexão ao passar o mouse.',
     },
+    {
+      id: 'painelAcoes',
+      label: 'Painel de Ações',
+      descricao: 'Injeta um painel "Ajudante +Eproc" na capa do processo, logo abaixo do painel de ações nativo. Outros recursos (ex: Gerar Ficha) usam este painel para exibir seus botões.',
+    },
   ];
 
   let settings = { modules: {}, scripts: {} };

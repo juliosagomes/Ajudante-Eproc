@@ -35,6 +35,7 @@
         "scripts/tarjas-customizadas/tarjas-customizadas.js",
         "scripts/esmaecer-zerados/esmaecer-zerados.js",
         "scripts/painel-reordenar/painel-reordenar.js",
+        "scripts/painel-acoes/painel-acoes.js",
         "scripts/historico-localizadores/historico-localizadores.js"
       ],
       "css": [
@@ -49,6 +50,7 @@
         "scripts/localizador-busca/localizador-busca.css",
         "scripts/tarjas-customizadas/tarjas-customizadas.css",
         "scripts/painel-reordenar/painel-reordenar.css",
+        "scripts/painel-acoes/painel-acoes.css",
         "scripts/historico-localizadores/historico-localizadores.css"
       ],
       "run_at": "document_idle",
