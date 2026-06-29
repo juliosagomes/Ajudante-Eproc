@@ -92,6 +92,11 @@
       label: 'Reordenar blocos no Painel Inicial',
       descricao: 'Adiciona botões ▲/▼ em cada bloco do Painel Inicial para mover sua posição. A ordem é lembrada nos próximos acessos. Inclui botão para restaurar a ordem nativa.',
     },
+    {
+      id: 'historicoLocalizadores',
+      label: 'Histórico+ de Localizadores',
+      descricao: 'Substitui a tabela de Histórico de Localizadores por uma timeline visual com diff colorido (verde = incluído, vermelho = removido) e linhas de conexão ao passar o mouse.',
+    },
   ];
 
   let settings = { modules: {}, scripts: {} };

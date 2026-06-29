@@ -21,6 +21,7 @@ const DEFAULT_SETTINGS = {
     tarjasCustomizadas:      { enabled: true },
     esmaecerZerados:         { enabled: true },
     painelReordenar:         { enabled: true },
+    historicoLocalizadores:  { enabled: true },
   }
 };
 
@@ -129,6 +130,11 @@ chrome.runtime.onInstalled.addListener((details) => {
       if (!atual.scripts?.painelReordenar) {
         if (!atual.scripts) atual.scripts = {};
         atual.scripts.painelReordenar = DEFAULT_SETTINGS.scripts.painelReordenar;
+        dirty = true;
+      }
+      if (!atual.scripts?.historicoLocalizadores) {
+        if (!atual.scripts) atual.scripts = {};
+        atual.scripts.historicoLocalizadores = DEFAULT_SETTINGS.scripts.historicoLocalizadores;
         dirty = true;
       }
       // Rename: módulo "lembretes" → "anotacoesPreferencias"
