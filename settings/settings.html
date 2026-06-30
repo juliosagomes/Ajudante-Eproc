@@ -43,6 +43,11 @@
 
         <div class="sidebar-nav__section-label">Módulos</div>
 
+        <button class="sidebar-nav__item" data-panel="gerarFicha">
+          <svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 18v-6M9 15h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Gerar Ficha
+        </button>
+
         <button class="sidebar-nav__item" data-panel="anotacoesPreferencias">
           <svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none"><path d="M4 4h13l3 3v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 11h8M8 15h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
           Anotações em preferências
@@ -112,6 +117,72 @@
             </div>
             <div id="scripts-gerais-list"></div>
           </div>
+        </div>
+      </section>
+
+      <!-- Painel: Gerar Ficha do Processo -->
+      <section class="content-panel content-panel--hidden" id="panel-gerarFicha" data-panel="gerarFicha">
+        <div class="panel-header">
+          <div class="panel-header__icon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 18v-6M9 15h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <h1 class="panel-header__title">Gerar Ficha do Processo</h1>
+            <p class="panel-header__desc">Adiciona o botão "📄 Gerar Ficha" no Painel de Ações da capa do processo. Um clique gera uma ficha HTML formatada com dados essenciais do processo, partes, chave de acesso e QR Code de consulta pública.</p>
+          </div>
+        </div>
+
+        <div class="panel-body">
+
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">Status do módulo</span>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Gerar Ficha do Processo</span>
+                <span class="card__row-sub">Ativar ou desativar o módulo por completo.</span>
+              </div>
+              <div class="toggle-group">
+                <span class="toggle-label" id="lbl-mod-gerarFicha">Ativo</span>
+                <label class="toggle" title="Ativar/desativar módulo Gerar Ficha do Processo">
+                  <input type="checkbox" class="toggle__input" id="toggle-mod-gerarFicha" checked>
+                  <span class="toggle__slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">O que a ficha contém</span>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Dados da ação</span>
+                <span class="card__row-sub">Número, classe, competência, situação, autuação, assuntos e valor da causa.</span>
+              </div>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Dados do juízo</span>
+                <span class="card__row-sub">Órgão julgador, magistrado(a) e contatos do juízo (telefone e e-mail, quando disponíveis).</span>
+              </div>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Partes e representantes</span>
+                <span class="card__row-sub">Tabela limpa de partes e advogados, sem links e sem elementos interativos.</span>
+              </div>
+            </div>
+            <div class="card__row">
+              <div class="card__row-info">
+                <span class="card__row-label">Acesso público</span>
+                <span class="card__row-sub">Chave de acesso, link de consulta pública e QR Code para leitura pelo celular.</span>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 

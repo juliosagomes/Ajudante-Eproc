@@ -2,6 +2,7 @@
 
 const DEFAULT_SETTINGS = {
   modules: {
+    gerarFicha:              { enabled: true },
     anotacoesPreferencias:   { enabled: true },
     colorirLocalizadores:    { enabled: true },
     filtrosEventos:          { enabled: true },
@@ -141,6 +142,11 @@ chrome.runtime.onInstalled.addListener((details) => {
       if (!atual.scripts?.painelAcoes) {
         if (!atual.scripts) atual.scripts = {};
         atual.scripts.painelAcoes = DEFAULT_SETTINGS.scripts.painelAcoes;
+        dirty = true;
+      }
+      if (!atual.modules?.gerarFicha) {
+        if (!atual.modules) atual.modules = {};
+        atual.modules.gerarFicha = DEFAULT_SETTINGS.modules.gerarFicha;
         dirty = true;
       }
       // Rename: módulo "lembretes" → "anotacoesPreferencias"
