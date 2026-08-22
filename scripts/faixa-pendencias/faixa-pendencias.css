@@ -1,0 +1,52 @@
+/* scripts/faixa-pendencias/faixa-pendencias.css
+   Faixa de pendências — prazos, mandados, audiências e remessas, acima da capa. */
+
+#pdp-bar {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 4px 6px;
+    border: 1px solid #e3e6ea; border-left: 4px solid #90a4ae;
+    background: #fbfcfd; border-radius: 5px;
+    margin: 0 0 6px 0; padding: 4px 9px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+#pdp-bar .pdp-rotulo {
+    font-size: 11px; font-weight: 700; color: #546e7a;
+    text-transform: uppercase; letter-spacing: .3px;
+    white-space: nowrap; margin-right: 2px;
+}
+#pdp-bar .pdp-pilula {
+    display: inline-flex; align-items: baseline; gap: 5px;
+    font-size: 11px; line-height: 1.75; white-space: nowrap;
+    border: 1px solid #cfd8dc; background: #fff; color: #263238;
+    border-radius: 10px; padding: 0 8px; cursor: default;
+}
+#pdp-bar .pdp-pilula b { font-weight: 700; }
+#pdp-bar .pdp-pilula .pdp-detalhe {
+    opacity: .75; max-width: 20ch; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap;
+}
+#pdp-bar .pdp-pilula .pdp-data { font-variant-numeric: tabular-nums; opacity: .9; }
+
+/* repouso por tipo */
+#pdp-bar .pdp-t-prazos     { border-color: #b0bec5; background: #f5f7f8; color: #37474f; }
+#pdp-bar .pdp-t-mandados   { border-color: #b39ddb; background: #f6f2fc; color: #4527a0; }
+#pdp-bar .pdp-t-audiencias { border-color: #80cbc4; background: #eff8f7; color: #00695c; }
+#pdp-bar .pdp-t-remessas   { border-color: #9fa8da; background: #f2f4fc; color: #283593; }
+
+/* conferência incompleta: não é pendência, é ressalva sobre a leitura — tracejada e
+   clicável, visualmente distinta do que a faixa afirma. */
+#pdp-bar .pdp-t-conferencia {
+    border-style: dashed; border-color: #b0bec5;
+    background: #fff; color: #546e7a; cursor: pointer;
+    font: inherit; font-size: 11px;
+}
+#pdp-bar .pdp-t-conferencia:hover,
+#pdp-bar .pdp-t-conferencia:focus-visible {
+    border-color: #78909c; background: #eceff1; color: #37474f;
+}
+#pdp-bar .pdp-t-conferencia[disabled] { opacity: .6; cursor: progress; }
+
+/* realce de urgência — sobrepõe a cor do tipo */
+#pdp-bar .pdp-urgente { border-color: #f0a500; background: #fff8e6; color: #7a4f00; }
+#pdp-bar .pdp-urgente .pdp-data { font-weight: 700; }
+#pdp-bar .pdp-vencido { border-color: #d9534f; background: #fdecea; color: #a12a26; }
+#pdp-bar .pdp-vencido .pdp-data { font-weight: 700; }

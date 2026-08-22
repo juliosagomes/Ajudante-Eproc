@@ -108,6 +108,11 @@
       label: 'Painel de Ações',
       descricao: 'Injeta um painel "Ajudante +Eproc" na capa do processo, logo abaixo do painel de ações nativo. Outros recursos (ex: Gerar Ficha) usam este painel para exibir seus botões.',
     },
+    {
+      id: 'faixaPendencias',
+      label: 'Faixa de Pendências',
+      descricao: 'Faixa acima da capa do processo com pílulas de prazos abertos, mandados aguardando cumprimento, audiências pendentes e remessas em curso — lidas diretamente do processo, sem uso de IA.',
+    },
   ];
 
   let settings = { modules: {}, scripts: {} };

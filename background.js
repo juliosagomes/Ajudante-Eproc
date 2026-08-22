@@ -24,6 +24,7 @@ const DEFAULT_SETTINGS = {
     painelReordenar:         { enabled: true },
     historicoLocalizadores:  { enabled: true },
     painelAcoes:             { enabled: true },
+    faixaPendencias:         { enabled: true },
   }
 };
 
@@ -142,6 +143,11 @@ chrome.runtime.onInstalled.addListener((details) => {
       if (!atual.scripts?.painelAcoes) {
         if (!atual.scripts) atual.scripts = {};
         atual.scripts.painelAcoes = DEFAULT_SETTINGS.scripts.painelAcoes;
+        dirty = true;
+      }
+      if (!atual.scripts?.faixaPendencias) {
+        if (!atual.scripts) atual.scripts = {};
+        atual.scripts.faixaPendencias = DEFAULT_SETTINGS.scripts.faixaPendencias;
         dirty = true;
       }
       if (!atual.modules?.gerarFicha) {

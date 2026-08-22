@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Ajudante +Eproc",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Assistente modular para o Eproc. Ative ou desative funcionalidades nas configurações.",
   "icons": {
     "16": "icons/icon-16.png",
@@ -36,7 +36,8 @@
         "scripts/esmaecer-zerados/esmaecer-zerados.js",
         "scripts/painel-reordenar/painel-reordenar.js",
         "scripts/painel-acoes/painel-acoes.js",
-        "scripts/historico-localizadores/historico-localizadores.js"
+        "scripts/historico-localizadores/historico-localizadores.js",
+        "scripts/faixa-pendencias/faixa-pendencias.js"
       ],
       "css": [
         "styles.css",
@@ -51,7 +52,8 @@
         "scripts/tarjas-customizadas/tarjas-customizadas.css",
         "scripts/painel-reordenar/painel-reordenar.css",
         "scripts/painel-acoes/painel-acoes.css",
-        "scripts/historico-localizadores/historico-localizadores.css"
+        "scripts/historico-localizadores/historico-localizadores.css",
+        "scripts/faixa-pendencias/faixa-pendencias.css"
       ],
       "run_at": "document_idle",
       "all_frames": true

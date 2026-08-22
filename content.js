@@ -1,7 +1,7 @@
 // content.js — Ajudante Eproc (namespace compartilhado)
 (function () {
   'use strict';
-  window.__AjudanteEproc = window.__AjudanteEproc || { version: '2.3.0' };
+  window.__AjudanteEproc = window.__AjudanteEproc || { version: '2.4.0' };
 
   // Salvaguarda: cancela submit do form nativo acionado por elemento da extensão.
   // Necessário porque botões sem type="button" dentro de <form> viram type="submit".
