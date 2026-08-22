@@ -111,7 +111,7 @@
     {
       id: 'faixaPendencias',
       label: 'Faixa de Pendências',
-      descricao: 'Faixa acima da capa do processo com pílulas de prazos abertos, mandados aguardando cumprimento, audiências pendentes e remessas em curso — lidas diretamente do processo, sem uso de IA.',
+      descricao: 'Faixa acima da capa do processo com pílulas de prazos abertos, mandados aguardando cumprimento, audiências pendentes e remessas em curso - recurso inspirado no Epryx.',
     },
   ];
 
