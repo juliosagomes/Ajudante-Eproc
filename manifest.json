@@ -67,10 +67,10 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["libs/qrcode.min.js"],
+      "resources": ["libs/qrcode.min.js", "icons/icon-16.png"],
       "matches": ["*://*.jus.br/*"]
     }
   ],
-  "permissions": ["storage", "activeTab"],
+  "permissions": ["storage"],
   "host_permissions": ["*://*.jus.br/*"]
 }
